@@ -163,6 +163,11 @@ export function handleUpdateRoomSettings(
     return;
   }
 
+  if (typeof msg.ratingVisible !== "boolean") {
+    sendError(ctx, "INVALID_MESSAGE", "ratingVisible must be a boolean");
+    return;
+  }
+
   store.setHandicapSettings(msg.roomId, msg.handicapSettings, msg.ratingVisible);
 
   ctx.broadcastToRoom(msg.roomId, {
@@ -207,7 +212,7 @@ export function handleStartGame(
       sendError(ctx, "INVALID_MESSAGE", "Invalid handicap settings");
       return;
     }
-    room.handicapSettings = msg.handicapSettings;
+    store.setHandicapSettings(msg.roomId, msg.handicapSettings, room.ratingVisible ?? true);
   }
 
   store.setStatus(msg.roomId, "playing");

@@ -597,6 +597,27 @@ describe("lobby handlers", () => {
       }
     });
 
+    it("rejects non-boolean ratingVisible", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId,
+          handicapSettings: validSettings,
+          ratingVisible: "yes" as unknown as boolean,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("INVALID_MESSAGE");
+      }
+    });
+
     it("rejects non-boolean delayEnabled", () => {
       const roomId = setupRoom(store);
       const ctx = createMockContext("host");
