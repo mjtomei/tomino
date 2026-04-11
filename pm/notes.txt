@@ -1,0 +1,23 @@
+## General
+
+Some notes to remember related to testing a game engine like ours:
+  - Determinism — given the same inputs and seed, the engine should produce identical
+  output. This is critical for client-server agreement in multiplayer.
+  - Edge cases over happy paths — wall kicks near boundaries, T-spin detection for all
+  orientations, line clears at the top of the board, garbage insertion while a piece is in
+  the landing zone. The happy path usually works; the edges are where Tetris bugs hide.
+  - State transitions — piece lock → line clear → garbage insert → next piece spawn. The
+  ordering and timing of these transitions is where subtle bugs live.
+  - Snapshot testing for rotation tables — SRS kick tables are well-defined lookup tables.
+  A snapshot test catches accidental changes without writing dozens of individual
+  assertions.
+
+## Implementation
+
+## Review
+
+## QA
+
+## Merge
+
+## Watcher
