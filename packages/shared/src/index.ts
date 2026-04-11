@@ -74,3 +74,16 @@ export type {
 
 export { SRSRotation } from "./engine/rotation-srs.js";
 export { NRSRotation } from "./engine/rotation-nrs.js";
+
+export type { Cell, Grid } from "./engine/board.js";
+
+export {
+  BOARD_HEIGHT,
+  BOARD_WIDTH,
+  BUFFER_HEIGHT,
+  VISIBLE_HEIGHT,
+  clearLines,
+  createGrid,
+  findCompletedRows,
+  placePiece,
+} from "./engine/board.js";
