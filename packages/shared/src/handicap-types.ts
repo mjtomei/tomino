@@ -1,5 +1,6 @@
 /** Handicap modifiers for a directed sender→receiver pair.
- *  All fields are multipliers (0.0–1.0 reduces, 1.0 = no change). */
+ *  All fields are multipliers (1.0 = no change). Exact valid ranges
+ *  will be enforced by the handicap calculator. */
 export interface HandicapModifiers {
   /** Multiplier applied to garbage line count (0.0 = full immunity). */
   garbageMultiplier: number;
@@ -9,17 +10,16 @@ export interface HandicapModifiers {
   messinessFactor: number;
 }
 
-/** Modifier matrix for all sender→receiver pairs in a game.
- *  Key format: `${senderUsername}→${receiverUsername}`. */
-export type ModifierMatrix = Map<string, HandicapModifiers>;
-
-/** Build a ModifierMatrix key from sender and receiver usernames. */
+/** Key for ModifierMatrix: `${senderUsername}→${receiverUsername}`. */
 export type ModifierMatrixKey = `${string}→${string}`;
 
 /** Construct a modifier matrix key. */
 export function modifierKey(sender: string, receiver: string): ModifierMatrixKey {
   return `${sender}→${receiver}`;
 }
+
+/** Modifier matrix for all sender→receiver pairs in a game. */
+export type ModifierMatrix = Map<ModifierMatrixKey, HandicapModifiers>;
 
 /** Weight distribution across opponents for auto-targeting.
  *  Keyed by opponent username, values are relative weights (sum to 1.0). */
