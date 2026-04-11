@@ -121,7 +121,13 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     });
 
     socket.on("roomUpdated", (msg) => {
-      setState((prev) => ({ ...prev, room: msg.room }));
+      setState((prev) => {
+        // When joining, the server confirms with a roomUpdated containing full state
+        if (prev.view === "joining") {
+          return { ...prev, view: "waiting", room: msg.room, error: null };
+        }
+        return { ...prev, room: msg.room };
+      });
     });
 
     socket.on("playerJoined", (msg) => {
