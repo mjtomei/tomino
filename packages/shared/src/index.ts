@@ -1,10 +1,12 @@
 /**
  * @tetris/shared — shared types and game logic
  *
- * This package will contain:
+ * This package contains:
  * - Game state types (board, pieces, scoring)
  * - Network protocol types (for multiplayer)
- * - Skill rating types (for adaptive balancing)
+ * - Message parsing/validation helpers
  */
 
-export {};
+export * from "./types.js";
+export * from "./protocol.js";
+export * from "./messages.js";
