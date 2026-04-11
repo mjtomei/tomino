@@ -596,6 +596,27 @@ describe("lobby handlers", () => {
         expect(ctx.sent[0].code).toBe("INVALID_MESSAGE");
       }
     });
+
+    it("rejects non-boolean delayEnabled", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId,
+          handicapSettings: { ...validSettings, delayEnabled: "yes" } as unknown as HandicapSettings,
+          ratingVisible: true,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("INVALID_MESSAGE");
+      }
+    });
   });
 
   describe("handleStartGame with handicap settings", () => {
@@ -647,6 +668,28 @@ describe("lobby handlers", () => {
 
       expect(ctx.broadcasts).toHaveLength(1);
       expect(ctx.broadcasts[0].msg.type).toBe("gameStarted");
+    });
+
+    it("rejects invalid handicap settings on startGame", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+
+      handleStartGame(
+        {
+          type: "startGame",
+          roomId,
+          handicapSettings: { intensity: "extreme", mode: "boost", targetingBiasStrength: 0.5 } as unknown as HandicapSettings,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("INVALID_MESSAGE");
+      }
+      // Room should still be in waiting status (game not started)
+      expect(store.getRoom(roomId)!.status).toBe("waiting");
     });
   });
 });

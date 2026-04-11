@@ -123,6 +123,20 @@ export function handleLeaveRoom(
 const VALID_INTENSITIES: ReadonlySet<string> = new Set<HandicapIntensity>(["off", "light", "standard", "heavy"]);
 const VALID_MODES: ReadonlySet<string> = new Set<HandicapMode>(["boost", "symmetric"]);
 
+function isValidHandicapSettings(s: unknown): s is import("@tetris/shared").HandicapSettings {
+  if (typeof s !== "object" || s === null) return false;
+  const obj = s as Record<string, unknown>;
+  return (
+    VALID_INTENSITIES.has(obj.intensity as string) &&
+    VALID_MODES.has(obj.mode as string) &&
+    typeof obj.targetingBiasStrength === "number" &&
+    obj.targetingBiasStrength >= 0 &&
+    obj.targetingBiasStrength <= 1 &&
+    (obj.delayEnabled === undefined || typeof obj.delayEnabled === "boolean") &&
+    (obj.messinessEnabled === undefined || typeof obj.messinessEnabled === "boolean")
+  );
+}
+
 export function handleUpdateRoomSettings(
   msg: C2S_UpdateRoomSettings,
   ctx: HandlerContext,
@@ -144,19 +158,12 @@ export function handleUpdateRoomSettings(
     return;
   }
 
-  const s = msg.handicapSettings;
-  if (
-    !VALID_INTENSITIES.has(s.intensity) ||
-    !VALID_MODES.has(s.mode) ||
-    typeof s.targetingBiasStrength !== "number" ||
-    s.targetingBiasStrength < 0 ||
-    s.targetingBiasStrength > 1
-  ) {
+  if (!isValidHandicapSettings(msg.handicapSettings)) {
     sendError(ctx, "INVALID_MESSAGE", "Invalid handicap settings");
     return;
   }
 
-  store.setHandicapSettings(msg.roomId, s, msg.ratingVisible);
+  store.setHandicapSettings(msg.roomId, msg.handicapSettings, msg.ratingVisible);
 
   ctx.broadcastToRoom(msg.roomId, {
     type: "roomUpdated",
@@ -196,6 +203,10 @@ export function handleStartGame(
 
   // Store final handicap settings snapshot if provided
   if (msg.handicapSettings) {
+    if (!isValidHandicapSettings(msg.handicapSettings)) {
+      sendError(ctx, "INVALID_MESSAGE", "Invalid handicap settings");
+      return;
+    }
     room.handicapSettings = msg.handicapSettings;
   }
 

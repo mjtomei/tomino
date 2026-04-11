@@ -2,6 +2,8 @@
  * Core game types shared between client and server.
  */
 
+import type { HandicapSettings } from "./handicap-types.js";
+
 // ---------------------------------------------------------------------------
 // Pieces
 // ---------------------------------------------------------------------------
@@ -72,7 +74,7 @@ export interface RoomState {
   /** The player who created the room and can start the game. */
   hostId: PlayerId;
   /** Lobby-configurable handicap settings. */
-  handicapSettings?: import("./handicap-types.js").HandicapSettings;
+  handicapSettings?: HandicapSettings;
   /** Whether player ratings are visible in the waiting room. */
   ratingVisible?: boolean;
   /** Player ratings keyed by player ID (looked up from skill store on join). */
