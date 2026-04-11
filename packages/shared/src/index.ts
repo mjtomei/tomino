@@ -58,3 +58,19 @@ export {
   ultraMode,
   zenMode,
 } from "./engine/rulesets.js";
+
+export type {
+  PieceType,
+  Rotation,
+  PieceShape,
+} from "./engine/pieces.js";
+
+export { ALL_PIECES, ALL_ROTATIONS } from "./engine/pieces.js";
+
+export type {
+  KickOffset,
+  RotationSystem,
+} from "./engine/rotation.js";
+
+export { SRSRotation } from "./engine/rotation-srs.js";
+export { NRSRotation } from "./engine/rotation-nrs.js";
