@@ -1,14 +1,21 @@
+import { join } from "node:path";
 import express from "express";
 import { createServer } from "node:http";
 import { createWebSocketServer } from "./ws-server.js";
+import { JsonSkillStore } from "./skill-store.js";
+import { createStatsRouter } from "./stats-routes.js";
 
 const PORT = parseInt(process.env["PORT"] ?? "3001", 10);
+const DATA_DIR = process.env["DATA_DIR"] ?? "data";
 
 const app = express();
+const store = new JsonSkillStore(join(DATA_DIR, "ratings.json"));
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
+
+app.use(createStatsRouter(store));
 
 const httpServer = createServer(app);
 const wsServer = createWebSocketServer(httpServer);

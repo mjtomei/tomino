@@ -1,0 +1,139 @@
+.stats-screen {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: system-ui, sans-serif;
+  color: #e0e0e0;
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stats-back-btn {
+  background: none;
+  border: 1px solid #555;
+  color: #e0e0e0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.stats-back-btn:hover {
+  border-color: #888;
+}
+
+.stats-rating-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #16213e;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats-rating-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stats-rank-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stats-rank-badge[data-rank="Beginner"] {
+  background: #4a4a4a;
+  color: #ccc;
+}
+
+.stats-rank-badge[data-rank="Intermediate"] {
+  background: #1b5e20;
+  color: #a5d6a7;
+}
+
+.stats-rank-badge[data-rank="Advanced"] {
+  background: #0d47a1;
+  color: #90caf9;
+}
+
+.stats-rank-badge[data-rank="Expert"] {
+  background: #b71c1c;
+  color: #ef9a9a;
+}
+
+.stats-meta {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.stats-section {
+  margin-bottom: 2rem;
+}
+
+.stats-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.stats-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #333;
+  color: #888;
+  font-weight: 500;
+}
+
+.stats-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #222;
+}
+
+.stats-result-win {
+  color: #66bb6a;
+  font-weight: 600;
+}
+
+.stats-result-loss {
+  color: #ef5350;
+  font-weight: 600;
+}
+
+.stats-change-positive {
+  color: #66bb6a;
+}
+
+.stats-change-negative {
+  color: #ef5350;
+}
+
+.stats-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+.stats-loading {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #888;
+}
