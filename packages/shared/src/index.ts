@@ -16,3 +16,21 @@ export type {
 } from "./handicap-types.js";
 
 export { modifierKey } from "./handicap-types.js";
+
+export type {
+  GameGoal,
+  GameMode,
+  GameModeConfig,
+  RuleSet,
+} from "./engine/types.js";
+
+export {
+  classicRuleSet,
+  customRuleSet,
+  gameModes,
+  marathonMode,
+  modernRuleSet,
+  sprintMode,
+  ultraMode,
+  zenMode,
+} from "./engine/rulesets.js";
