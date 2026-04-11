@@ -100,11 +100,22 @@ export interface S2C_PlayerLeft {
   playerId: PlayerId;
 }
 
+export interface S2C_Countdown {
+  type: "countdown";
+  roomId: RoomId;
+  /** Countdown value: 3, 2, 1, or 0 (Go). */
+  count: number;
+}
+
 export interface S2C_GameStarted {
   type: "gameStarted";
   roomId: RoomId;
   /** Per-player initial snapshots keyed by player ID. */
   initialStates: Record<PlayerId, GameStateSnapshot>;
+  /** Shared random seed for deterministic piece generation. */
+  seed: number;
+  /** Maps each player ID to their 0-based player index. */
+  playerIndexes: Record<PlayerId, number>;
 }
 
 export interface S2C_GameStateSnapshot {
@@ -171,6 +182,7 @@ export type ServerMessage =
   | S2C_RoomUpdated
   | S2C_PlayerJoined
   | S2C_PlayerLeft
+  | S2C_Countdown
   | S2C_GameStarted
   | S2C_GameStateSnapshot
   | S2C_GameOver
@@ -188,6 +200,7 @@ export const SERVER_MESSAGE_TYPES: readonly ServerMessageType[] = [
   "roomUpdated",
   "playerJoined",
   "playerLeft",
+  "countdown",
   "gameStarted",
   "gameStateSnapshot",
   "gameOver",
