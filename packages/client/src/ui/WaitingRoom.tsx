@@ -1,8 +1,11 @@
 import type { RoomState } from "@tetris/shared";
+import { HandicapSettings, type HandicapSettingsValues } from "./HandicapSettings";
 
 interface WaitingRoomProps {
   room: RoomState;
   currentPlayerId: string;
+  handicapSettings: HandicapSettingsValues;
+  onHandicapSettingsChange: (settings: HandicapSettingsValues) => void;
   onLeave: () => void;
   onStart: () => void;
 }
@@ -10,11 +13,14 @@ interface WaitingRoomProps {
 export function WaitingRoom({
   room,
   currentPlayerId,
+  handicapSettings,
+  onHandicapSettingsChange,
   onLeave,
   onStart,
 }: WaitingRoomProps) {
   const isHost = room.hostId === currentPlayerId;
   const canStart = room.players.length >= 2;
+  const showRatings = handicapSettings.ratingVisible;
 
   function handleCopyCode() {
     navigator.clipboard.writeText(room.id).catch(() => {
@@ -42,6 +48,11 @@ export function WaitingRoom({
           {room.players.map((player) => (
             <li key={player.id} style={styles.listItem}>
               <span>{player.name}</span>
+              {showRatings && room.playerRatings?.[player.id] != null && (
+                <span style={styles.ratingBadge}>
+                  {room.playerRatings[player.id]}
+                </span>
+              )}
               {player.id === room.hostId && (
                 <span style={styles.hostBadge}>Host</span>
               )}
@@ -52,6 +63,12 @@ export function WaitingRoom({
           ))}
         </ul>
       </div>
+
+      <HandicapSettings
+        settings={handicapSettings}
+        onChange={onHandicapSettingsChange}
+        disabled={!isHost}
+      />
 
       <div style={styles.actions}>
         {isHost ? (
@@ -135,6 +152,14 @@ const styles = {
     padding: "0.6rem 0.75rem",
     borderBottom: "1px solid #2a2a4a",
     fontSize: "1.05rem",
+  },
+  ratingBadge: {
+    fontSize: "0.75rem",
+    padding: "0.15rem 0.5rem",
+    borderRadius: "4px",
+    backgroundColor: "#2a2a4a",
+    color: "#aaa",
+    fontFamily: "monospace",
   },
   hostBadge: {
     fontSize: "0.75rem",

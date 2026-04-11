@@ -5,10 +5,11 @@ import {
   handleJoinRoom,
   handleLeaveRoom,
   handleStartGame,
+  handleUpdateRoomSettings,
   handleDisconnect,
   type HandlerContext,
 } from "../handlers/lobby-handlers.js";
-import type { ServerMessage } from "@tetris/shared";
+import type { ServerMessage, HandicapSettings } from "@tetris/shared";
 
 function createMockContext(playerId: string): HandlerContext & {
   sent: ServerMessage[];
@@ -462,6 +463,190 @@ describe("lobby handlers", () => {
       );
 
       expect(broadcasts).toHaveLength(0);
+    });
+  });
+
+  describe("handleUpdateRoomSettings", () => {
+    const validSettings: HandicapSettings = {
+      intensity: "standard",
+      mode: "boost",
+      targetingBiasStrength: 0.7,
+      delayEnabled: false,
+      messinessEnabled: false,
+    };
+
+    function setupRoom(store: RoomStore) {
+      const hostCtx = createMockContext("host");
+      handleCreateRoom(
+        {
+          type: "createRoom",
+          config: { name: "Test", maxPlayers: 4 },
+          player: { id: "host", name: "Host" },
+        },
+        hostCtx,
+        store,
+      );
+      const roomId = (hostCtx.sent[0] as { type: "roomCreated"; room: { id: string } }).room.id;
+      store.addPlayer(roomId, { id: "p2", name: "P2" });
+      return roomId;
+    }
+
+    it("updates settings and broadcasts roomUpdated", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId,
+          handicapSettings: validSettings,
+          ratingVisible: true,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.broadcasts).toHaveLength(1);
+      expect(ctx.broadcasts[0].msg.type).toBe("roomUpdated");
+      const room = store.getRoom(roomId)!;
+      expect(room.handicapSettings).toEqual(validSettings);
+      expect(room.ratingVisible).toBe(true);
+    });
+
+    it("rejects if sender is not the host", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("p2");
+
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId,
+          handicapSettings: validSettings,
+          ratingVisible: true,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent).toHaveLength(1);
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("NOT_HOST");
+      }
+    });
+
+    it("rejects for nonexistent room", () => {
+      const ctx = createMockContext("host");
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId: "ZZZZZ",
+          handicapSettings: validSettings,
+          ratingVisible: true,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("ROOM_NOT_FOUND");
+      }
+    });
+
+    it("rejects if game is in progress", () => {
+      const roomId = setupRoom(store);
+      store.setStatus(roomId, "playing");
+      const ctx = createMockContext("host");
+
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId,
+          handicapSettings: validSettings,
+          ratingVisible: true,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("GAME_IN_PROGRESS");
+      }
+    });
+
+    it("rejects invalid targeting bias strength", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+
+      handleUpdateRoomSettings(
+        {
+          type: "updateRoomSettings",
+          roomId,
+          handicapSettings: { ...validSettings, targetingBiasStrength: 1.5 },
+          ratingVisible: true,
+        },
+        ctx,
+        store,
+      );
+
+      expect(ctx.sent[0].type).toBe("error");
+      if (ctx.sent[0].type === "error") {
+        expect(ctx.sent[0].code).toBe("INVALID_MESSAGE");
+      }
+    });
+  });
+
+  describe("handleStartGame with handicap settings", () => {
+    function setupRoom(store: RoomStore) {
+      const hostCtx = createMockContext("host");
+      handleCreateRoom(
+        {
+          type: "createRoom",
+          config: { name: "Test", maxPlayers: 4 },
+          player: { id: "host", name: "Host" },
+        },
+        hostCtx,
+        store,
+      );
+      const roomId = (hostCtx.sent[0] as { type: "roomCreated"; room: { id: string } }).room.id;
+      store.addPlayer(roomId, { id: "p2", name: "P2" });
+      return roomId;
+    }
+
+    it("stores handicap settings when starting game", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+      const settings: HandicapSettings = {
+        intensity: "heavy",
+        mode: "symmetric",
+        targetingBiasStrength: 0.5,
+        delayEnabled: true,
+        messinessEnabled: true,
+      };
+
+      handleStartGame(
+        { type: "startGame", roomId, handicapSettings: settings },
+        ctx,
+        store,
+      );
+
+      expect(ctx.broadcasts).toHaveLength(1);
+      expect(ctx.broadcasts[0].msg.type).toBe("gameStarted");
+      const room = store.getRoom(roomId)!;
+      expect(room.handicapSettings).toEqual(settings);
+      expect(room.status).toBe("playing");
+    });
+
+    it("starts game without handicap settings (backward compatible)", () => {
+      const roomId = setupRoom(store);
+      const ctx = createMockContext("host");
+
+      handleStartGame({ type: "startGame", roomId }, ctx, store);
+
+      expect(ctx.broadcasts).toHaveLength(1);
+      expect(ctx.broadcasts[0].msg.type).toBe("gameStarted");
     });
   });
 });

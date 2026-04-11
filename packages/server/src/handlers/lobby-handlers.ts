@@ -10,8 +10,11 @@ import type {
   C2S_JoinRoom,
   C2S_LeaveRoom,
   C2S_StartGame,
+  C2S_UpdateRoomSettings,
   ErrorCode,
   GameStateSnapshot,
+  HandicapIntensity,
+  HandicapMode,
   PlayerId,
   ServerMessage,
 } from "@tetris/shared";
@@ -117,6 +120,50 @@ export function handleLeaveRoom(
   }
 }
 
+const VALID_INTENSITIES: ReadonlySet<string> = new Set<HandicapIntensity>(["off", "light", "standard", "heavy"]);
+const VALID_MODES: ReadonlySet<string> = new Set<HandicapMode>(["boost", "symmetric"]);
+
+export function handleUpdateRoomSettings(
+  msg: C2S_UpdateRoomSettings,
+  ctx: HandlerContext,
+  store: RoomStore,
+): void {
+  const room = store.getRoom(msg.roomId);
+  if (!room) {
+    sendError(ctx, "ROOM_NOT_FOUND", "Room not found");
+    return;
+  }
+
+  if (room.hostId !== ctx.playerId) {
+    sendError(ctx, "NOT_HOST", "Only the host can change settings");
+    return;
+  }
+
+  if (room.status !== "waiting") {
+    sendError(ctx, "GAME_IN_PROGRESS", "Cannot change settings during a game");
+    return;
+  }
+
+  const s = msg.handicapSettings;
+  if (
+    !VALID_INTENSITIES.has(s.intensity) ||
+    !VALID_MODES.has(s.mode) ||
+    typeof s.targetingBiasStrength !== "number" ||
+    s.targetingBiasStrength < 0 ||
+    s.targetingBiasStrength > 1
+  ) {
+    sendError(ctx, "INVALID_MESSAGE", "Invalid handicap settings");
+    return;
+  }
+
+  store.setHandicapSettings(msg.roomId, s, msg.ratingVisible);
+
+  ctx.broadcastToRoom(msg.roomId, {
+    type: "roomUpdated",
+    room: store.getRoom(msg.roomId)!,
+  });
+}
+
 export function handleStartGame(
   msg: C2S_StartGame,
   ctx: HandlerContext,
@@ -145,6 +192,11 @@ export function handleStartGame(
       "Need at least 2 players to start",
     );
     return;
+  }
+
+  // Store final handicap settings snapshot if provided
+  if (msg.handicapSettings) {
+    room.handicapSettings = msg.handicapSettings;
   }
 
   store.setStatus(msg.roomId, "playing");

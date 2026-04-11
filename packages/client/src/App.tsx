@@ -68,6 +68,8 @@ function App() {
         <WaitingRoom
           room={lobby.state.room}
           currentPlayerId={makePlayerInfo(lobby.playerName).id}
+          handicapSettings={lobby.handicapSettings}
+          onHandicapSettingsChange={lobby.updateHandicapSettings}
           onLeave={lobby.leaveRoom}
           onStart={lobby.startGame}
         />
