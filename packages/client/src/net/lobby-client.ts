@@ -1,0 +1,270 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+import type {
+  PlayerInfo,
+  RoomState,
+  RoomId,
+  ErrorCode,
+} from "@tetris/shared";
+import { ClientSocket } from "./client-socket";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export type LobbyView = "name-input" | "menu" | "joining" | "waiting";
+
+export interface LobbyState {
+  view: LobbyView;
+  room: RoomState | null;
+  error: string | null;
+  connectionState: "disconnected" | "connecting" | "connected";
+}
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const PLAYER_NAME_KEY = "tetris-player-name";
+
+function getDefaultServerUrl(): string {
+  const host = typeof window !== "undefined" ? window.location.hostname : "localhost";
+  return `ws://${host}:3001`;
+}
+
+// ---------------------------------------------------------------------------
+// Persisted player name
+// ---------------------------------------------------------------------------
+
+export function loadPlayerName(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem(PLAYER_NAME_KEY) ?? "";
+}
+
+export function savePlayerName(name: string): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(PLAYER_NAME_KEY, name);
+}
+
+// ---------------------------------------------------------------------------
+// Generate a per-session player ID (unique per tab)
+// ---------------------------------------------------------------------------
+
+let sessionPlayerId: string | null = null;
+
+function getSessionPlayerId(): string {
+  if (!sessionPlayerId) {
+    sessionPlayerId = crypto.randomUUID();
+  }
+  return sessionPlayerId;
+}
+
+/** Build a PlayerInfo from the current session. */
+export function makePlayerInfo(name: string): PlayerInfo {
+  return { id: getSessionPlayerId(), name };
+}
+
+// ---------------------------------------------------------------------------
+// React hook
+// ---------------------------------------------------------------------------
+
+export interface UseLobbyResult {
+  state: LobbyState;
+  playerName: string;
+  setPlayerName: (name: string) => void;
+  confirmName: () => void;
+  createRoom: () => void;
+  joinRoom: (roomId: RoomId) => void;
+  leaveRoom: () => void;
+  startGame: () => void;
+  openJoinDialog: () => void;
+  closeJoinDialog: () => void;
+  clearError: () => void;
+}
+
+export function useLobby(serverUrl?: string): UseLobbyResult {
+  const url = serverUrl ?? getDefaultServerUrl();
+  const socketRef = useRef<ClientSocket | null>(null);
+
+  const [playerName, setPlayerNameRaw] = useState(loadPlayerName);
+  const [state, setState] = useState<LobbyState>({
+    view: loadPlayerName() ? "menu" : "name-input",
+    room: null,
+    error: null,
+    connectionState: "disconnected",
+  });
+
+  // Keep a ref so callbacks can read latest state without re-subscribing
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const nameRef = useRef(playerName);
+  nameRef.current = playerName;
+
+  // ---- Socket lifecycle ----
+  useEffect(() => {
+    const socket = new ClientSocket();
+    socketRef.current = socket;
+
+    socket.onConnection((connState) => {
+      setState((prev) => ({ ...prev, connectionState: connState }));
+      if (connState === "disconnected" && stateRef.current.view === "waiting") {
+        setState((prev) => ({
+          ...prev,
+          view: "menu",
+          room: null,
+          error: "Disconnected from server",
+        }));
+      }
+    });
+
+    socket.on("roomCreated", (msg) => {
+      setState((prev) => ({ ...prev, view: "waiting", room: msg.room, error: null }));
+    });
+
+    socket.on("roomUpdated", (msg) => {
+      setState((prev) => ({ ...prev, room: msg.room }));
+    });
+
+    socket.on("playerJoined", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        // Avoid duplicates
+        if (prev.room.players.some((p) => p.id === msg.player.id)) return prev;
+        return {
+          ...prev,
+          room: { ...prev.room, players: [...prev.room.players, msg.player] },
+        };
+      });
+    });
+
+    socket.on("playerLeft", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          room: {
+            ...prev.room,
+            players: prev.room.players.filter((p) => p.id !== msg.playerId),
+          },
+        };
+      });
+    });
+
+    socket.on("error", (msg) => {
+      const errorText = formatError(msg.code, msg.message);
+      setState((prev) => {
+        // If joining failed, go back to join dialog
+        if (prev.view === "joining") {
+          return { ...prev, view: "joining", error: errorText };
+        }
+        return { ...prev, error: errorText };
+      });
+    });
+
+    socket.on("disconnected", () => {
+      setState((prev) => ({
+        ...prev,
+        view: "menu",
+        room: null,
+        error: "Server disconnected",
+      }));
+    });
+
+    socket.connect(url);
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [url]);
+
+  // ---- Actions ----
+
+  const setPlayerName = useCallback((name: string) => {
+    setPlayerNameRaw(name);
+  }, []);
+
+  const confirmName = useCallback(() => {
+    const trimmed = nameRef.current.trim().slice(0, 20);
+    if (!trimmed) return;
+    savePlayerName(trimmed);
+    setPlayerNameRaw(trimmed);
+    setState((prev) => ({ ...prev, view: "menu", error: null }));
+  }, []);
+
+  const createRoom = useCallback(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+    const player = makePlayerInfo(nameRef.current);
+    socket.send({
+      type: "createRoom",
+      config: { name: `${nameRef.current}'s Room`, maxPlayers: 4 },
+      player,
+    });
+  }, []);
+
+  const joinRoom = useCallback((roomId: RoomId) => {
+    const socket = socketRef.current;
+    if (!socket) return;
+    const player = makePlayerInfo(nameRef.current);
+    setState((prev) => ({ ...prev, view: "joining", error: null }));
+    socket.send({ type: "joinRoom", roomId, player });
+  }, []);
+
+  const leaveRoom = useCallback(() => {
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    socket.send({ type: "leaveRoom", roomId: room.id });
+    setState((prev) => ({ ...prev, view: "menu", room: null, error: null }));
+  }, []);
+
+  const startGame = useCallback(() => {
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    socket.send({ type: "startGame", roomId: room.id });
+  }, []);
+
+  const openJoinDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, view: "joining", error: null }));
+  }, []);
+
+  const closeJoinDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, view: "menu", error: null }));
+  }, []);
+
+  const clearError = useCallback(() => {
+    setState((prev) => ({ ...prev, error: null }));
+  }, []);
+
+  return {
+    state,
+    playerName,
+    setPlayerName,
+    confirmName,
+    createRoom,
+    joinRoom,
+    leaveRoom,
+    startGame,
+    openJoinDialog,
+    closeJoinDialog,
+    clearError,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function formatError(code: ErrorCode, message: string): string {
+  const labels: Record<ErrorCode, string> = {
+    ROOM_NOT_FOUND: "Room not found",
+    ROOM_FULL: "Room is full",
+    GAME_IN_PROGRESS: "Game already in progress",
+    NOT_HOST: "Only the host can do that",
+    NOT_IN_ROOM: "Not in a room",
+    INVALID_MESSAGE: "Invalid request",
+    INTERNAL_ERROR: "Server error",
+  };
+  return labels[code] ?? message;
+}

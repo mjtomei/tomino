@@ -1,21 +1,66 @@
+import { useLobby, makePlayerInfo } from "./net/lobby-client";
+import { PlayerNameInput } from "./ui/PlayerNameInput";
+import { Lobby } from "./ui/Lobby";
+import { JoinDialog } from "./ui/JoinDialog";
+import { WaitingRoom } from "./ui/WaitingRoom";
+
 function App() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        fontFamily: "system-ui, sans-serif",
-        backgroundColor: "#1a1a2e",
-        color: "#e0e0e0",
-      }}
-    >
-      <h1 style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>Tetris</h1>
-      <p style={{ color: "#888" }}>Game coming soon...</p>
-    </div>
-  );
+  const lobby = useLobby();
+
+  switch (lobby.state.view) {
+    case "name-input":
+      return (
+        <PlayerNameInput
+          initialName={lobby.playerName}
+          onConfirm={(name) => {
+            lobby.setPlayerName(name);
+            lobby.confirmName();
+          }}
+        />
+      );
+
+    case "menu":
+      return (
+        <Lobby
+          playerName={lobby.playerName}
+          connectionState={lobby.state.connectionState}
+          error={lobby.state.error}
+          onCreateRoom={lobby.createRoom}
+          onJoinRoom={lobby.openJoinDialog}
+          onClearError={lobby.clearError}
+        />
+      );
+
+    case "joining":
+      return (
+        <>
+          <Lobby
+            playerName={lobby.playerName}
+            connectionState={lobby.state.connectionState}
+            error={null}
+            onCreateRoom={lobby.createRoom}
+            onJoinRoom={lobby.openJoinDialog}
+            onClearError={lobby.clearError}
+          />
+          <JoinDialog
+            error={lobby.state.error}
+            onJoin={lobby.joinRoom}
+            onCancel={lobby.closeJoinDialog}
+          />
+        </>
+      );
+
+    case "waiting":
+      if (!lobby.state.room) return null;
+      return (
+        <WaitingRoom
+          room={lobby.state.room}
+          currentPlayerId={makePlayerInfo(lobby.playerName).id}
+          onLeave={lobby.leaveRoom}
+          onStart={lobby.startGame}
+        />
+      );
+  }
 }
 
 export default App;

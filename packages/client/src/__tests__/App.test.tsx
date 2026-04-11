@@ -1,24 +1,23 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import App from "../App";
 
-/**
- * Example test demonstrating patterns for React component testing.
- *
- * Future tests in this package should follow this structure:
- * - Render components with React Testing Library
- * - Query by accessible roles/text, not implementation details
- * - Use @testing-library/user-event for interactions
- */
-
 describe("App", () => {
-  it("renders the game title", () => {
-    render(<App />);
-    expect(screen.getByText("Tetris")).toBeInTheDocument();
+  beforeEach(() => {
+    localStorage.clear();
   });
 
-  it("renders the placeholder message", () => {
+  it("shows name input when no name is stored", () => {
     render(<App />);
-    expect(screen.getByText("Game coming soon...")).toBeInTheDocument();
+    expect(screen.getByLabelText("Enter your name")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
+  });
+
+  it("shows lobby menu when name is already stored", () => {
+    localStorage.setItem("tetris-player-name", "Alice");
+    render(<App />);
+    expect(screen.getByText("Welcome, Alice")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create Room" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Join Room" })).toBeInTheDocument();
   });
 });
