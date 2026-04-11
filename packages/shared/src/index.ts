@@ -83,6 +83,18 @@ export { PureRandomRandomizer } from "./engine/randomizer-pure.js";
 export type { HoldState, HoldResult } from "./engine/hold.js";
 export { createHoldState, holdPiece, resetHoldFlag } from "./engine/hold.js";
 
+export type {
+  LineClearCount,
+  TSpinType,
+  ScoringState,
+  ScoringSystem,
+} from "./engine/scoring.js";
+
+export { createScoringState, detectTSpin } from "./engine/scoring.js";
+export { GuidelineScoring } from "./engine/scoring-guideline.js";
+export { NESScoring } from "./engine/scoring-nes.js";
+export { guidelineDropInterval, nesDropInterval } from "./engine/gravity.js";
+
 export type { Cell, Grid } from "./engine/board.js";
 
 export type { RotationDirection, RotateResult } from "./engine/movement.js";
