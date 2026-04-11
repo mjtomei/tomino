@@ -10,18 +10,23 @@ import {
   DEFAULT_HANDICAP_SETTINGS,
   type HandicapSettingsValues,
 } from "../ui/HandicapSettings";
+import type { GameSessionData } from "./game-client";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export type LobbyView = "name-input" | "menu" | "joining" | "waiting";
+export type LobbyView = "name-input" | "menu" | "joining" | "waiting" | "countdown" | "playing";
 
 export interface LobbyState {
   view: LobbyView;
   room: RoomState | null;
   error: string | null;
   connectionState: "disconnected" | "connecting" | "connected";
+  /** Current countdown value (3, 2, 1, 0). Null when not in countdown. */
+  countdownValue: number | null;
+  /** Game session data, set when gameStarted is received. */
+  gameSession: GameSessionData | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -97,6 +102,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     room: null,
     error: null,
     connectionState: "disconnected",
+    countdownValue: null,
+    gameSession: null,
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
@@ -118,13 +125,18 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
 
     socket.onConnection((connState) => {
       setState((prev) => ({ ...prev, connectionState: connState }));
-      if (connState === "disconnected" && stateRef.current.view === "waiting") {
-        setState((prev) => ({
-          ...prev,
-          view: "menu",
-          room: null,
-          error: "Disconnected from server",
-        }));
+      if (connState === "disconnected") {
+        const view = stateRef.current.view;
+        if (view === "waiting" || view === "countdown" || view === "playing") {
+          setState((prev) => ({
+            ...prev,
+            view: "menu",
+            room: null,
+            error: "Disconnected from server",
+            countdownValue: null,
+            gameSession: null,
+          }));
+        }
       }
     });
 
@@ -174,12 +186,39 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       });
     });
 
+    socket.on("countdown", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return { ...prev, view: "countdown", countdownValue: msg.count };
+      });
+    });
+
+    socket.on("gameStarted", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          view: "playing",
+          countdownValue: null,
+          gameSession: {
+            seed: msg.seed,
+            playerIndexes: msg.playerIndexes,
+            initialStates: msg.initialStates,
+          },
+        };
+      });
+    });
+
     socket.on("error", (msg) => {
       const errorText = formatError(msg.code, msg.message);
       setState((prev) => {
         // If joining failed, go back to join dialog
         if (prev.view === "joining") {
           return { ...prev, view: "joining", error: errorText };
+        }
+        // If game was cancelled during countdown, return to waiting
+        if (prev.view === "countdown") {
+          return { ...prev, view: "waiting", countdownValue: null, error: errorText };
         }
         return { ...prev, error: errorText };
       });
@@ -191,6 +230,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         view: "menu",
         room: null,
         error: "Server disconnected",
+        countdownValue: null,
+        gameSession: null,
       }));
     });
 

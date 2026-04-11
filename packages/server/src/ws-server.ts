@@ -1,12 +1,26 @@
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server as HttpServer } from "node:http";
-import { randomUUID } from "node:crypto";
+import type { PlayerId, ServerMessage } from "@tetris/shared";
+import { parseC2SMessage, serializeMessage } from "@tetris/shared";
+import { RoomStore } from "./room-store.js";
+import {
+  handleCreateRoom,
+  handleJoinRoom,
+  handleLeaveRoom,
+  handleStartGame,
+  handleDisconnect,
+  type HandlerContext,
+} from "./handlers/lobby-handlers.js";
+import { handleGameDisconnect } from "./handlers/game-handlers.js";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const PONG_TIMEOUT_MS = 10_000;
 
 interface ClientInfo {
-  id: string;
+  /** Server-assigned connection ID (used internally). */
+  connectionId: string;
+  /** Player ID reported by the client (set on first createRoom/joinRoom). */
+  playerId: PlayerId | null;
   ws: WebSocket;
   isAlive: boolean;
   pongTimer: ReturnType<typeof setTimeout> | null;
@@ -15,21 +29,29 @@ interface ClientInfo {
 export interface TetrisWebSocketServer {
   /** Number of currently connected clients */
   clientCount: number;
+  /** The shared room store */
+  readonly roomStore: RoomStore;
+  /** Look up the WebSocket for a player. */
+  getSocketForPlayer(playerId: PlayerId): WebSocket | undefined;
   /** Gracefully shut down the server, closing all connections */
   close(): void;
 }
+
+let connectionCounter = 0;
 
 export function createWebSocketServer(
   httpServer: HttpServer,
 ): TetrisWebSocketServer {
   const wss = new WebSocketServer({ server: httpServer });
   const clients = new Map<string, ClientInfo>();
+  /** Reverse lookup: player ID → connection ID */
+  const playerConnections = new Map<PlayerId, string>();
+  const store = new RoomStore();
 
   const heartbeatInterval = setInterval(() => {
     for (const client of clients.values()) {
       if (!client.isAlive) {
-        // Previous ping was never answered — terminate
-        console.log(`Client ${client.id}: heartbeat timeout, terminating`);
+        console.log(`Client ${client.connectionId}: heartbeat timeout, terminating`);
         client.ws.terminate();
         continue;
       }
@@ -37,21 +59,89 @@ export function createWebSocketServer(
       client.isAlive = false;
       client.ws.ping();
 
-      // Set a pong deadline
       client.pongTimer = setTimeout(() => {
         if (!client.isAlive) {
-          console.log(`Client ${client.id}: pong timeout, terminating`);
+          console.log(`Client ${client.connectionId}: pong timeout, terminating`);
           client.ws.terminate();
         }
       }, PONG_TIMEOUT_MS);
     }
   }, HEARTBEAT_INTERVAL_MS);
 
+  function getSocketForPlayer(playerId: PlayerId): WebSocket | undefined {
+    const connId = playerConnections.get(playerId);
+    if (!connId) return undefined;
+    return clients.get(connId)?.ws;
+  }
+
+  function sendTo(playerId: PlayerId, msg: ServerMessage): void {
+    const ws = getSocketForPlayer(playerId);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(serializeMessage(msg));
+    }
+  }
+
+  function broadcastToRoom(roomId: string, msg: ServerMessage): void {
+    const room = store.getRoom(roomId);
+    if (!room) return;
+    const serialized = serializeMessage(msg);
+    for (const player of room.players) {
+      const ws = getSocketForPlayer(player.id);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(serialized);
+      }
+    }
+  }
+
+  function broadcastToRoomExcept(
+    roomId: string,
+    msg: ServerMessage,
+    excludePlayerId: PlayerId,
+  ): void {
+    const room = store.getRoom(roomId);
+    if (!room) return;
+    const serialized = serializeMessage(msg);
+    for (const player of room.players) {
+      if (player.id === excludePlayerId) continue;
+      const ws = getSocketForPlayer(player.id);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(serialized);
+      }
+    }
+  }
+
+  function makeContext(client: ClientInfo): HandlerContext | null {
+    if (!client.playerId) return null;
+    const playerId = client.playerId;
+    return {
+      playerId,
+      send: (msg) => sendTo(playerId, msg),
+      broadcastToRoom,
+      broadcastToRoomExcept,
+    };
+  }
+
+  /** Register the player ID from a createRoom or joinRoom message. */
+  function registerPlayer(client: ClientInfo, playerId: PlayerId): void {
+    // If this connection was already associated with a different player, clean up
+    if (client.playerId && client.playerId !== playerId) {
+      playerConnections.delete(client.playerId);
+    }
+    client.playerId = playerId;
+    playerConnections.set(playerId, client.connectionId);
+  }
+
   wss.on("connection", (ws) => {
-    const id = randomUUID();
-    const client: ClientInfo = { id, ws, isAlive: true, pongTimer: null };
-    clients.set(id, client);
-    console.log(`Client ${id}: connected (total: ${clients.size})`);
+    const connectionId = `conn-${++connectionCounter}`;
+    const client: ClientInfo = {
+      connectionId,
+      playerId: null,
+      ws,
+      isAlive: true,
+      pongTimer: null,
+    };
+    clients.set(connectionId, client);
+    console.log(`Client ${connectionId}: connected (total: ${clients.size})`);
 
     ws.on("pong", () => {
       client.isAlive = true;
@@ -62,30 +152,76 @@ export function createWebSocketServer(
     });
 
     ws.on("message", (data) => {
-      let parsed: unknown;
-      try {
-        const text =
-          typeof data === "string" ? data : (data as Buffer).toString("utf-8");
-        parsed = JSON.parse(text);
-      } catch {
-        console.warn(`Client ${id}: malformed message (not valid JSON)`);
+      const text =
+        typeof data === "string" ? data : (data as Buffer).toString("utf-8");
+      const msg = parseC2SMessage(text);
+      if (!msg) {
+        console.warn(`Client ${connectionId}: malformed message`);
         return;
       }
-      // Protocol handling will be added in a future PR.
-      // For now, just log that we received a valid message.
-      console.log(`Client ${id}: message received`, parsed);
+
+      // Handle ping directly (no player ID needed)
+      if (msg.type === "ping") {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(serializeMessage({ type: "pong", timestamp: msg.timestamp }));
+        }
+        return;
+      }
+
+      // Register player ID from messages that carry it
+      if (msg.type === "createRoom" || msg.type === "joinRoom") {
+        registerPlayer(client, msg.player.id);
+      }
+
+      // All other messages require a player ID
+      if (!client.playerId) {
+        console.warn(`Client ${connectionId}: message before registration: ${msg.type}`);
+        return;
+      }
+
+      const ctx = makeContext(client)!;
+
+      switch (msg.type) {
+        case "createRoom":
+          handleCreateRoom(msg, ctx, store);
+          break;
+        case "joinRoom":
+          handleJoinRoom(msg, ctx, store);
+          break;
+        case "leaveRoom":
+          handleLeaveRoom(msg, ctx, store);
+          break;
+        case "startGame":
+          handleStartGame(msg, ctx, store);
+          break;
+        case "playerInput":
+          // Game input handling will be added in a future PR
+          break;
+      }
     });
 
-    ws.on("close", (code, reason) => {
+    function handleClientDisconnect(client: ClientInfo): void {
+      if (client.playerId) {
+        const roomId = store.getRoomIdForPlayer(client.playerId);
+        if (roomId) {
+          handleGameDisconnect(client.playerId, roomId, { broadcastToRoom });
+        }
+        handleDisconnect(client.playerId, { broadcastToRoom }, store);
+        playerConnections.delete(client.playerId);
+      }
       cleanup(client);
+    }
+
+    ws.on("close", (code, reason) => {
+      handleClientDisconnect(client);
       console.log(
-        `Client ${id}: disconnected (code=${code}, reason=${reason.toString("utf-8") || "none"}, remaining: ${clients.size})`,
+        `Client ${connectionId}: disconnected (code=${code}, reason=${reason.toString("utf-8") || "none"}, remaining: ${clients.size})`,
       );
     });
 
     ws.on("error", (err) => {
-      console.error(`Client ${id}: error`, err.message);
-      cleanup(client);
+      console.error(`Client ${connectionId}: error`, err.message);
+      handleClientDisconnect(client);
     });
   });
 
@@ -94,7 +230,7 @@ export function createWebSocketServer(
       clearTimeout(client.pongTimer);
       client.pongTimer = null;
     }
-    clients.delete(client.id);
+    clients.delete(client.connectionId);
   }
 
   function close() {
@@ -106,6 +242,7 @@ export function createWebSocketServer(
       client.ws.close(1001, "Server shutting down");
     }
     clients.clear();
+    playerConnections.clear();
     wss.close();
   }
 
@@ -113,6 +250,8 @@ export function createWebSocketServer(
     get clientCount() {
       return clients.size;
     },
+    roomStore: store,
+    getSocketForPlayer,
     close,
   };
 }

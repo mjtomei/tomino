@@ -305,14 +305,18 @@ describe("lobby handlers", () => {
       return roomId;
     }
 
-    it("starts the game and broadcasts gameStarted", () => {
+    it("starts the game countdown and sets status to playing", () => {
       const roomId = setupRoom(store);
       const ctx = createMockContext("host");
 
       handleStartGame({ type: "startGame", roomId }, ctx, store);
 
-      expect(ctx.broadcasts).toHaveLength(1);
-      expect(ctx.broadcasts[0].msg.type).toBe("gameStarted");
+      // First broadcast is the countdown (count=3), not gameStarted directly
+      expect(ctx.broadcasts.length).toBeGreaterThanOrEqual(1);
+      expect(ctx.broadcasts[0].msg.type).toBe("countdown");
+      if (ctx.broadcasts[0].msg.type === "countdown") {
+        expect(ctx.broadcasts[0].msg.count).toBe(3);
+      }
       expect(store.getRoom(roomId)!.status).toBe("playing");
     });
 

@@ -20,6 +20,7 @@ import type {
   ServerMessage,
 } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
+import { startGameCountdown } from "./game-handlers.js";
 
 /** Context provided to each handler by the WebSocket layer. */
 export interface HandlerContext {
@@ -218,14 +219,9 @@ export function handleStartGame(
 
   store.setStatus(msg.roomId, "playing");
 
-  // Broadcast game started — initial game states will be populated by the
-  // game session manager in a future PR. For now, send empty initial states.
-  const initialStates: Record<string, GameStateSnapshot> = {};
-
-  ctx.broadcastToRoom(msg.roomId, {
-    type: "gameStarted",
-    roomId: msg.roomId,
-    initialStates,
+  // Start the countdown → gameStarted flow via the game session manager.
+  startGameCountdown(msg.roomId, store, {
+    broadcastToRoom: ctx.broadcastToRoom,
   });
 }
 

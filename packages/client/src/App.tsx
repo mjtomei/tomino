@@ -5,6 +5,7 @@ import { Lobby } from "./ui/Lobby";
 import { JoinDialog } from "./ui/JoinDialog";
 import { WaitingRoom } from "./ui/WaitingRoom";
 import { StatsScreen } from "./ui/StatsScreen";
+import { Countdown } from "./ui/Countdown";
 
 function App() {
   const lobby = useLobby();
@@ -74,7 +75,55 @@ function App() {
           onStart={lobby.startGame}
         />
       );
+
+    case "countdown":
+      return (
+        <Countdown count={lobby.state.countdownValue ?? 3} />
+      );
+
+    case "playing": {
+      const session = lobby.state.gameSession;
+      const currentPlayerId = makePlayerInfo(lobby.playerName).id;
+      const playerIndex = session?.playerIndexes[currentPlayerId] ?? 0;
+      return (
+        <div style={playingStyles.container}>
+          <h1 style={playingStyles.title}>Game Active</h1>
+          <p style={playingStyles.info}>
+            Player #{playerIndex + 1} — Seed: {session?.seed}
+          </p>
+          <p style={playingStyles.subtitle}>
+            Game board will be implemented in a future PR.
+          </p>
+        </div>
+      );
+    }
   }
 }
+
+const playingStyles = {
+  container: {
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
+    fontFamily: "system-ui, sans-serif",
+    backgroundColor: "#1a1a2e",
+    color: "#e0e0e0",
+  },
+  title: {
+    fontSize: "2.5rem",
+    marginBottom: "1rem",
+  },
+  info: {
+    fontSize: "1.2rem",
+    color: "#aaa",
+    marginBottom: "0.5rem",
+  },
+  subtitle: {
+    fontSize: "1rem",
+    color: "#666",
+  },
+};
 
 export default App;

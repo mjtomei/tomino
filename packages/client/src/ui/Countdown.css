@@ -1,0 +1,10 @@
+@keyframes countdown-pulse {
+  0% {
+    transform: scale(1.4);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
