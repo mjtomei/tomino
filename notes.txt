@@ -1,0 +1,4 @@
+- multiplayer version of tetris with adaptive garbage sending
+  - adapts based on skill level to handicap more skilled player and even out win rates
+- supports online play
+
