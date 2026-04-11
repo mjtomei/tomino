@@ -1,0 +1,186 @@
+/**
+ * Lobby message handlers.
+ *
+ * Each handler receives a parsed client message and a context object that
+ * provides the player identity and functions to send messages back.
+ */
+
+import type {
+  C2S_CreateRoom,
+  C2S_JoinRoom,
+  C2S_LeaveRoom,
+  C2S_StartGame,
+  ErrorCode,
+  ServerMessage,
+} from "@tetris/shared";
+import type { PlayerId } from "@tetris/shared";
+import type { RoomStore } from "../room-store.js";
+
+/** Context provided to each handler by the WebSocket layer. */
+export interface HandlerContext {
+  /** The player ID of the sender. */
+  playerId: PlayerId;
+  /** Send a message to the sender. */
+  send: (msg: ServerMessage) => void;
+  /** Send a message to every player in a room. */
+  broadcastToRoom: (roomId: string, msg: ServerMessage) => void;
+  /** Send a message to every player in a room except one. */
+  broadcastToRoomExcept: (
+    roomId: string,
+    msg: ServerMessage,
+    excludePlayerId: PlayerId,
+  ) => void;
+}
+
+function sendError(ctx: HandlerContext, code: ErrorCode, message: string) {
+  ctx.send({ type: "error", code, message });
+}
+
+export function handleCreateRoom(
+  msg: C2S_CreateRoom,
+  ctx: HandlerContext,
+  store: RoomStore,
+): void {
+  // Check if player is already in a room
+  if (store.getRoomForPlayer(ctx.playerId)) {
+    sendError(ctx, "INVALID_MESSAGE", "Already in a room");
+    return;
+  }
+
+  const room = store.createRoom(msg.config, {
+    id: ctx.playerId,
+    name: msg.player.name,
+  });
+
+  ctx.send({ type: "roomCreated", room });
+}
+
+export function handleJoinRoom(
+  msg: C2S_JoinRoom,
+  ctx: HandlerContext,
+  store: RoomStore,
+): void {
+  const result = store.addPlayer(msg.roomId, {
+    id: ctx.playerId,
+    name: msg.player.name,
+  });
+
+  if ("error" in result) {
+    const code =
+      result.code === "ALREADY_IN_ROOM"
+        ? ("INVALID_MESSAGE" as ErrorCode)
+        : (result.code as ErrorCode);
+    sendError(ctx, code, result.error);
+    return;
+  }
+
+  const room = result.ok;
+
+  // Send full room state to the joining player
+  ctx.send({ type: "roomUpdated", room });
+
+  // Notify other players in the room
+  ctx.broadcastToRoomExcept(room.id, {
+    type: "playerJoined",
+    roomId: room.id,
+    player: { id: ctx.playerId, name: msg.player.name },
+  }, ctx.playerId);
+}
+
+export function handleLeaveRoom(
+  msg: C2S_LeaveRoom,
+  ctx: HandlerContext,
+  store: RoomStore,
+): void {
+  const result = store.removePlayer(ctx.playerId);
+  if (!result) {
+    sendError(ctx, "NOT_IN_ROOM", "Not in a room");
+    return;
+  }
+
+  // Notify remaining players
+  if (result.room) {
+    ctx.broadcastToRoom(result.roomId, {
+      type: "playerLeft",
+      roomId: result.roomId,
+      playerId: ctx.playerId,
+    });
+
+    // If host changed, send updated room state
+    if (result.hostChanged) {
+      ctx.broadcastToRoom(result.roomId, {
+        type: "roomUpdated",
+        room: result.room,
+      });
+    }
+  }
+}
+
+export function handleStartGame(
+  msg: C2S_StartGame,
+  ctx: HandlerContext,
+  store: RoomStore,
+): void {
+  const room = store.getRoom(msg.roomId);
+  if (!room) {
+    sendError(ctx, "ROOM_NOT_FOUND", "Room not found");
+    return;
+  }
+
+  if (room.hostId !== ctx.playerId) {
+    sendError(ctx, "NOT_HOST", "Only the host can start the game");
+    return;
+  }
+
+  if (room.status !== "waiting") {
+    sendError(ctx, "GAME_IN_PROGRESS", "Game is already in progress");
+    return;
+  }
+
+  if (room.players.length < 2) {
+    sendError(
+      ctx,
+      "INVALID_MESSAGE",
+      "Need at least 2 players to start",
+    );
+    return;
+  }
+
+  store.setStatus(msg.roomId, "playing");
+
+  // Broadcast game started — initial game states will be populated by the
+  // game session manager in a future PR. For now, send empty initial states.
+  const initialStates: Record<string, import("@tetris/shared").GameStateSnapshot> = {};
+
+  ctx.broadcastToRoom(msg.roomId, {
+    type: "gameStarted",
+    roomId: msg.roomId,
+    initialStates,
+  });
+}
+
+/**
+ * Handle player disconnect — clean up their room membership.
+ * Called by the WebSocket layer when a connection drops.
+ */
+export function handleDisconnect(
+  playerId: PlayerId,
+  ctx: Pick<HandlerContext, "broadcastToRoom">,
+  store: RoomStore,
+): void {
+  const result = store.removePlayer(playerId);
+  if (!result || !result.room) return;
+
+  ctx.broadcastToRoom(result.roomId, {
+    type: "playerLeft",
+    roomId: result.roomId,
+    playerId,
+  });
+
+  if (result.hostChanged) {
+    ctx.broadcastToRoom(result.roomId, {
+      type: "roomUpdated",
+      room: result.room,
+    });
+  }
+}
