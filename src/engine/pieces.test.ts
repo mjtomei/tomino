@@ -6,19 +6,6 @@ import { NRSRotation } from './rotation-nrs.js';
 
 const ALL_STATES = [RotationState.SPAWN, RotationState.R, RotationState.TWO, RotationState.L];
 
-// Helper: convert cell offsets to a visual grid string for debugging
-function shapeToGrid(cells: [number, number][]): string {
-  const maxRow = Math.max(...cells.map(c => c[0]));
-  const maxCol = Math.max(...cells.map(c => c[1]));
-  const grid: string[][] = Array.from({ length: maxRow + 1 }, () =>
-    Array.from({ length: maxCol + 1 }, () => '.')
-  );
-  for (const [r, c] of cells) {
-    grid[r][c] = 'X';
-  }
-  return grid.map(row => row.join('')).join('\n');
-}
-
 describe('SRSRotation', () => {
   const srs = new SRSRotation();
 
@@ -194,6 +181,17 @@ describe('SRSRotation', () => {
       const iKicks = srs.getKickOffsets(PieceType.I, from, to);
       const tKicks = srs.getKickOffsets(PieceType.T, from, to);
       expect(iKicks).not.toEqual(tKicks);
+    });
+
+    it('I-piece 0→R kicks match SRS standard values', () => {
+      // Reference: SRS standard I-piece kick data (positive x = right, positive y = up)
+      const kicks = srs.getKickOffsets(PieceType.I, RotationState.SPAWN, RotationState.R);
+      expect(kicks).toEqual([[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]]);
+    });
+
+    it('I-piece R→0 kicks are inverse of 0→R', () => {
+      const kicks = srs.getKickOffsets(PieceType.I, RotationState.R, RotationState.SPAWN);
+      expect(kicks).toEqual([[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]]);
     });
   });
 
