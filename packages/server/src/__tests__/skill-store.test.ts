@@ -221,6 +221,15 @@ describe("JsonSkillStore", () => {
     });
   });
 
+  describe("corrupted JSON file", () => {
+    it("throws a descriptive error on invalid JSON", async () => {
+      const { writeFile: wf } = await import("node:fs/promises");
+      await wf(filePath, "not valid json{{{", "utf-8");
+
+      await expect(store.getPlayer("alice")).rejects.toThrow(SyntaxError);
+    });
+  });
+
   describe("atomic write", () => {
     it("writes valid JSON that can be re-read", async () => {
       const player = makePlayer();
