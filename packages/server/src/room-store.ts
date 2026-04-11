@@ -11,6 +11,7 @@ import type {
   RoomId,
   RoomState,
   RoomStatus,
+  HandicapSettings,
 } from "@tetris/shared";
 import { generateRoomCode, createRoomState } from "./room.js";
 import type { RoomConfig } from "@tetris/shared";
@@ -137,6 +138,26 @@ export class RoomStore {
     const room = this.rooms.get(roomId);
     if (!room) return false;
     room.status = status;
+    return true;
+  }
+
+  /** Update handicap settings and rating visibility for a room. Returns false if room not found. */
+  setHandicapSettings(roomId: RoomId, settings: HandicapSettings, ratingVisible: boolean): boolean {
+    const room = this.rooms.get(roomId);
+    if (!room) return false;
+    room.handicapSettings = settings;
+    room.ratingVisible = ratingVisible;
+    return true;
+  }
+
+  /** Set a player's rating in the room. Returns false if room not found. */
+  setPlayerRating(roomId: RoomId, playerId: PlayerId, rating: number): boolean {
+    const room = this.rooms.get(roomId);
+    if (!room) return false;
+    if (!room.playerRatings) {
+      room.playerRatings = {};
+    }
+    room.playerRatings[playerId] = rating;
     return true;
   }
 

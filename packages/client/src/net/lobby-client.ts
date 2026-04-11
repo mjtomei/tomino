@@ -6,6 +6,10 @@ import type {
   ErrorCode,
 } from "@tetris/shared";
 import { ClientSocket } from "./client-socket";
+import {
+  DEFAULT_HANDICAP_SETTINGS,
+  type HandicapSettingsValues,
+} from "../ui/HandicapSettings";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -79,6 +83,8 @@ export interface UseLobbyResult {
   openJoinDialog: () => void;
   closeJoinDialog: () => void;
   clearError: () => void;
+  handicapSettings: HandicapSettingsValues;
+  updateHandicapSettings: (settings: HandicapSettingsValues) => void;
 }
 
 export function useLobby(serverUrl?: string): UseLobbyResult {
@@ -93,11 +99,17 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     connectionState: "disconnected",
   });
 
+  const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
+    () => ({ ...DEFAULT_HANDICAP_SETTINGS }),
+  );
+
   // Keep a ref so callbacks can read latest state without re-subscribing
   const stateRef = useRef(state);
   stateRef.current = state;
   const nameRef = useRef(playerName);
   nameRef.current = playerName;
+  const handicapRef = useRef(handicapSettings);
+  handicapRef.current = handicapSettings;
 
   // ---- Socket lifecycle ----
   useEffect(() => {
@@ -128,6 +140,13 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         }
         return { ...prev, room: msg.room };
       });
+      // Sync handicap settings from room state (for non-host players)
+      if (msg.room.handicapSettings) {
+        setHandicapSettings({
+          ...msg.room.handicapSettings,
+          ratingVisible: msg.room.ratingVisible ?? true,
+        });
+      }
     });
 
     socket.on("playerJoined", (msg) => {
@@ -222,13 +241,33 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     if (!socket || !room) return;
     socket.send({ type: "leaveRoom", roomId: room.id });
     setState((prev) => ({ ...prev, view: "menu", room: null, error: null }));
+    setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
   }, []);
 
   const startGame = useCallback(() => {
     const socket = socketRef.current;
     const room = stateRef.current.room;
     if (!socket || !room) return;
-    socket.send({ type: "startGame", roomId: room.id });
+    const { ratingVisible: _, ...hSettings } = handicapRef.current;
+    socket.send({
+      type: "startGame",
+      roomId: room.id,
+      handicapSettings: hSettings,
+    });
+  }, []);
+
+  const updateHandicapSettings = useCallback((settings: HandicapSettingsValues) => {
+    setHandicapSettings(settings);
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    const { ratingVisible, ...hSettings } = settings;
+    socket.send({
+      type: "updateRoomSettings",
+      roomId: room.id,
+      handicapSettings: hSettings,
+      ratingVisible,
+    });
   }, []);
 
   const openJoinDialog = useCallback(() => {
@@ -255,6 +294,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     openJoinDialog,
     closeJoinDialog,
     clearError,
+    handicapSettings,
+    updateHandicapSettings,
   };
 }
 

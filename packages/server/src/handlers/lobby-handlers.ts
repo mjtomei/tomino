@@ -10,8 +10,12 @@ import type {
   C2S_JoinRoom,
   C2S_LeaveRoom,
   C2S_StartGame,
+  C2S_UpdateRoomSettings,
   ErrorCode,
   GameStateSnapshot,
+  HandicapIntensity,
+  HandicapMode,
+  HandicapSettings,
   PlayerId,
   ServerMessage,
 } from "@tetris/shared";
@@ -117,6 +121,62 @@ export function handleLeaveRoom(
   }
 }
 
+const VALID_INTENSITIES: ReadonlySet<string> = new Set<HandicapIntensity>(["off", "light", "standard", "heavy"]);
+const VALID_MODES: ReadonlySet<string> = new Set<HandicapMode>(["boost", "symmetric"]);
+
+function isValidHandicapSettings(s: unknown): s is HandicapSettings {
+  if (typeof s !== "object" || s === null) return false;
+  const obj = s as Record<string, unknown>;
+  return (
+    VALID_INTENSITIES.has(obj.intensity as string) &&
+    VALID_MODES.has(obj.mode as string) &&
+    typeof obj.targetingBiasStrength === "number" &&
+    obj.targetingBiasStrength >= 0 &&
+    obj.targetingBiasStrength <= 1 &&
+    (obj.delayEnabled === undefined || typeof obj.delayEnabled === "boolean") &&
+    (obj.messinessEnabled === undefined || typeof obj.messinessEnabled === "boolean")
+  );
+}
+
+export function handleUpdateRoomSettings(
+  msg: C2S_UpdateRoomSettings,
+  ctx: HandlerContext,
+  store: RoomStore,
+): void {
+  const room = store.getRoom(msg.roomId);
+  if (!room) {
+    sendError(ctx, "ROOM_NOT_FOUND", "Room not found");
+    return;
+  }
+
+  if (room.hostId !== ctx.playerId) {
+    sendError(ctx, "NOT_HOST", "Only the host can change settings");
+    return;
+  }
+
+  if (room.status !== "waiting") {
+    sendError(ctx, "GAME_IN_PROGRESS", "Cannot change settings during a game");
+    return;
+  }
+
+  if (!isValidHandicapSettings(msg.handicapSettings)) {
+    sendError(ctx, "INVALID_MESSAGE", "Invalid handicap settings");
+    return;
+  }
+
+  if (typeof msg.ratingVisible !== "boolean") {
+    sendError(ctx, "INVALID_MESSAGE", "ratingVisible must be a boolean");
+    return;
+  }
+
+  store.setHandicapSettings(msg.roomId, msg.handicapSettings, msg.ratingVisible);
+
+  ctx.broadcastToRoom(msg.roomId, {
+    type: "roomUpdated",
+    room: store.getRoom(msg.roomId)!,
+  });
+}
+
 export function handleStartGame(
   msg: C2S_StartGame,
   ctx: HandlerContext,
@@ -145,6 +205,15 @@ export function handleStartGame(
       "Need at least 2 players to start",
     );
     return;
+  }
+
+  // Store final handicap settings snapshot if provided
+  if (msg.handicapSettings) {
+    if (!isValidHandicapSettings(msg.handicapSettings)) {
+      sendError(ctx, "INVALID_MESSAGE", "Invalid handicap settings");
+      return;
+    }
+    store.setHandicapSettings(msg.roomId, msg.handicapSettings, room.ratingVisible ?? true);
   }
 
   store.setStatus(msg.roomId, "playing");

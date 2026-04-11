@@ -16,6 +16,8 @@ import type {
   RoomState,
 } from "./types.js";
 
+import type { HandicapSettings } from "./handicap-types.js";
+
 // ---------------------------------------------------------------------------
 // Client → Server (C2S)
 // ---------------------------------------------------------------------------
@@ -40,6 +42,15 @@ export interface C2S_LeaveRoom {
 export interface C2S_StartGame {
   type: "startGame";
   roomId: RoomId;
+  /** Final handicap settings snapshot for the game. */
+  handicapSettings?: HandicapSettings;
+}
+
+export interface C2S_UpdateRoomSettings {
+  type: "updateRoomSettings";
+  roomId: RoomId;
+  handicapSettings: HandicapSettings;
+  ratingVisible: boolean;
 }
 
 export interface C2S_PlayerInput {
@@ -60,6 +71,7 @@ export type ClientMessage =
   | C2S_JoinRoom
   | C2S_LeaveRoom
   | C2S_StartGame
+  | C2S_UpdateRoomSettings
   | C2S_PlayerInput
   | C2S_Ping;
 
@@ -70,6 +82,7 @@ export const CLIENT_MESSAGE_TYPES: readonly ClientMessageType[] = [
   "joinRoom",
   "leaveRoom",
   "startGame",
+  "updateRoomSettings",
   "playerInput",
   "ping",
 ] as const;
