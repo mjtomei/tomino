@@ -1,4 +1,4 @@
-import type { GameModeConfig, RuleSet } from "./types.js";
+import type { GameMode, GameModeConfig, RuleSet } from "./types.js";
 
 // ---------------------------------------------------------------------------
 // Rule set presets
@@ -103,7 +103,7 @@ export const zenMode: GameModeConfig = {
 };
 
 /** All game mode configs, keyed by mode name. */
-export const gameModes: Record<string, GameModeConfig> = {
+export const gameModes: Record<GameMode, GameModeConfig> = {
   marathon: marathonMode,
   sprint: sprintMode,
   ultra: ultraMode,
