@@ -30,8 +30,6 @@ export type {
   HandicapSettings,
 } from "./handicap-types.js";
 
-export type { C2S_UpdateRoomSettings } from "./protocol.js";
-
 export { modifierKey } from "./handicap-types.js";
 
 export type {

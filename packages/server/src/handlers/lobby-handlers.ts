@@ -15,6 +15,7 @@ import type {
   GameStateSnapshot,
   HandicapIntensity,
   HandicapMode,
+  HandicapSettings,
   PlayerId,
   ServerMessage,
 } from "@tetris/shared";
@@ -123,7 +124,7 @@ export function handleLeaveRoom(
 const VALID_INTENSITIES: ReadonlySet<string> = new Set<HandicapIntensity>(["off", "light", "standard", "heavy"]);
 const VALID_MODES: ReadonlySet<string> = new Set<HandicapMode>(["boost", "symmetric"]);
 
-function isValidHandicapSettings(s: unknown): s is import("@tetris/shared").HandicapSettings {
+function isValidHandicapSettings(s: unknown): s is HandicapSettings {
   if (typeof s !== "object" || s === null) return false;
   const obj = s as Record<string, unknown>;
   return (
