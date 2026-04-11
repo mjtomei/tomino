@@ -13,8 +13,7 @@ function App() {
         <PlayerNameInput
           initialName={lobby.playerName}
           onConfirm={(name) => {
-            lobby.setPlayerName(name);
-            lobby.confirmName();
+            lobby.confirmName(name);
           }}
         />
       );

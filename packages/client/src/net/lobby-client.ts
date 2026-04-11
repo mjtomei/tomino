@@ -71,7 +71,7 @@ export interface UseLobbyResult {
   state: LobbyState;
   playerName: string;
   setPlayerName: (name: string) => void;
-  confirmName: () => void;
+  confirmName: (name?: string) => void;
   createRoom: () => void;
   joinRoom: (roomId: RoomId) => void;
   leaveRoom: () => void;
@@ -189,8 +189,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     setPlayerNameRaw(name);
   }, []);
 
-  const confirmName = useCallback(() => {
-    const trimmed = nameRef.current.trim().slice(0, 20);
+  const confirmName = useCallback((nameOverride?: string) => {
+    const trimmed = (nameOverride ?? nameRef.current).trim().slice(0, 20);
     if (!trimmed) return;
     savePlayerName(trimmed);
     setPlayerNameRaw(trimmed);
