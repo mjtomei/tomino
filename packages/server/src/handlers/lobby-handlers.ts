@@ -11,9 +11,10 @@ import type {
   C2S_LeaveRoom,
   C2S_StartGame,
   ErrorCode,
+  GameStateSnapshot,
+  PlayerId,
   ServerMessage,
 } from "@tetris/shared";
-import type { PlayerId } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 
 /** Context provided to each handler by the WebSocket layer. */
@@ -150,7 +151,7 @@ export function handleStartGame(
 
   // Broadcast game started — initial game states will be populated by the
   // game session manager in a future PR. For now, send empty initial states.
-  const initialStates: Record<string, import("@tetris/shared").GameStateSnapshot> = {};
+  const initialStates: Record<string, GameStateSnapshot> = {};
 
   ctx.broadcastToRoom(msg.roomId, {
     type: "gameStarted",
