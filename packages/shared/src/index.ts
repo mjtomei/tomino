@@ -82,3 +82,16 @@ export { PureRandomRandomizer } from "./engine/randomizer-pure.js";
 
 export type { HoldState, HoldResult } from "./engine/hold.js";
 export { createHoldState, holdPiece, resetHoldFlag } from "./engine/hold.js";
+
+export type { Cell, Grid } from "./engine/board.js";
+
+export {
+  BOARD_HEIGHT,
+  BOARD_WIDTH,
+  BUFFER_HEIGHT,
+  VISIBLE_HEIGHT,
+  clearLines,
+  createGrid,
+  findCompletedRows,
+  placePiece,
+} from "./engine/board.js";
