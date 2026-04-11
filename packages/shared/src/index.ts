@@ -110,3 +110,13 @@ export {
   findCompletedRows,
   placePiece,
 } from "./engine/board.js";
+
+export type {
+  GameStatus,
+  EndReason,
+  ActivePiece,
+  GameState,
+  EngineOptions,
+} from "./engine/engine.js";
+
+export { TetrisEngine } from "./engine/engine.js";
