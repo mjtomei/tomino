@@ -1,3 +1,5 @@
+import "./Countdown.css";
+
 interface CountdownProps {
   count: number;
 }

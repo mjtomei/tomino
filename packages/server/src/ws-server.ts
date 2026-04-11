@@ -200,9 +200,8 @@ export function createWebSocketServer(
       }
     });
 
-    ws.on("close", (code, reason) => {
+    function handleClientDisconnect(client: ClientInfo): void {
       if (client.playerId) {
-        // Check if player was in a room with an active game session
         const roomId = store.getRoomIdForPlayer(client.playerId);
         if (roomId) {
           handleGameDisconnect(client.playerId, roomId, { broadcastToRoom });
@@ -211,6 +210,10 @@ export function createWebSocketServer(
         playerConnections.delete(client.playerId);
       }
       cleanup(client);
+    }
+
+    ws.on("close", (code, reason) => {
+      handleClientDisconnect(client);
       console.log(
         `Client ${connectionId}: disconnected (code=${code}, reason=${reason.toString("utf-8") || "none"}, remaining: ${clients.size})`,
       );
@@ -218,15 +221,7 @@ export function createWebSocketServer(
 
     ws.on("error", (err) => {
       console.error(`Client ${connectionId}: error`, err.message);
-      if (client.playerId) {
-        const roomId = store.getRoomIdForPlayer(client.playerId);
-        if (roomId) {
-          handleGameDisconnect(client.playerId, roomId, { broadcastToRoom });
-        }
-        handleDisconnect(client.playerId, { broadcastToRoom }, store);
-        playerConnections.delete(client.playerId);
-      }
-      cleanup(client);
+      handleClientDisconnect(client);
     });
   });
 
