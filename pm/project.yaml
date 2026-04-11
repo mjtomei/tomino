@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-e38d93c
+  active_pr: pr-a367deb
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -66,7 +66,7 @@ prs:
   plan: plan-48e829d
   title: RuleSet types, presets, and game mode definitions
   branch: pm/pr-a367deb-ruleset-types-presets-and-game-mode-definitions
-  status: pending
+  status: merged
   depends_on:
   - pr-a1cfec0
   - pr-e38d93c
@@ -82,20 +82,21 @@ prs:
 
 
     Files: `src/engine/types.ts`, `src/engine/rulesets.ts`, `src/engine/rulesets.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/13
+  gh_pr_number: 13
   created_at: '2026-04-11T20:46:48.057172+00:00'
-  updated_at: '2026-04-11T22:02:36.048509+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:00:03.915697+00:00'
+  started_at: '2026-04-11T22:51:33.752115+00:00'
+  reviewed_at: '2026-04-11T22:57:17.276019+00:00'
+  merged_at: '2026-04-11T23:00:03.915697+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-a367deb-ruleset-types-presets-and-game-mode--34643ef9
 - id: pr-1d0b36c
   plan: plan-48e829d
   title: Piece definitions for SRS and NRS rotation systems
   branch: pm/pr-1d0b36c-piece-definitions-for-srs-and-nrs-rotation-systems
-  status: pending
+  status: closed
   depends_on:
   - pr-e38d93c
   description: 'Define all 7 Tetris pieces with rotation states for both rotation
@@ -119,7 +120,7 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/1
   gh_pr_number: 1
   created_at: '2026-04-11T20:46:48.057187+00:00'
-  updated_at: '2026-04-11T22:34:41.421397+00:00'
+  updated_at: '2026-04-11T22:37:59.755449+00:00'
   started_at: '2026-04-11T21:12:31.483113+00:00'
   reviewed_at: '2026-04-11T21:17:58.575511+00:00'
   merged_at: null
@@ -136,7 +137,7 @@ prs:
   branch: pm/pr-698f2b5-board-model-and-line-clearing
   status: pending
   depends_on:
-  - pr-1d0b36c
+  - pr-48ed9f4
   description: 'Implement the board as a 10x40 2D grid (rows 0-19 buffer zone, 20-39
     visible). Support placing a piece (writing its cells to the grid), checking for
     completed lines, clearing completed lines and shifting rows down. Pure logic,
@@ -153,7 +154,7 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057194+00:00'
-  updated_at: '2026-04-11T22:02:17.882817+00:00'
+  updated_at: '2026-04-11T22:43:36.610063+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
@@ -205,7 +206,7 @@ prs:
   branch: pm/pr-3c6d5aa-randomizer-variants-7-bag-and-pure-random
   status: pending
   depends_on:
-  - pr-1d0b36c
+  - pr-48ed9f4
   description: 'Implement the `Randomizer` interface with two implementations. **SevenBagRandomizer**:
     shuffles all 7 pieces, deals them, refills when empty. **PureRandomRandomizer**:
     uniform random piece selection (classic style, allows repeats). Both maintain
@@ -226,7 +227,7 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057207+00:00'
-  updated_at: '2026-04-11T22:02:21.200424+00:00'
+  updated_at: '2026-04-11T22:43:37.566759+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
@@ -493,7 +494,7 @@ prs:
   plan: plan-c686698
   title: WebSocket server setup
   branch: pm/pr-7d32c30-websocket-server-setup
-  status: pending
+  status: merged
   depends_on:
   - pr-a1cfec0
   description: 'Create a Node.js + Express server with WebSocket support (ws library).
@@ -509,20 +510,21 @@ prs:
 
     Files: `server/index.ts`, `server/ws-server.ts`, `package.json` (new deps: ws,
     express, @types/ws, @types/express), `tsconfig.server.json`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/6
+  gh_pr_number: 6
   created_at: '2026-04-11T21:27:51.614766+00:00'
-  updated_at: '2026-04-11T22:00:06.646138+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T22:46:50.767737+00:00'
+  started_at: '2026-04-11T22:40:25.940390+00:00'
+  reviewed_at: '2026-04-11T22:44:47.447514+00:00'
+  merged_at: '2026-04-11T22:46:50.767737+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-7d32c30-websocket-server-setup-1be04358
 - id: pr-b393198
   plan: plan-c686698
   title: Network protocol and shared types
   branch: pm/pr-b393198-network-protocol-and-shared-types
-  status: pending
+  status: merged
   depends_on:
   - pr-a1cfec0
   description: 'Define the full set of client-to-server and server-to-client message
@@ -538,20 +540,21 @@ prs:
 
     Files: `shared/protocol.ts`, `shared/messages.ts`, `shared/types.ts`, `tsconfig.json`
     (path aliases for shared/)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/7
+  gh_pr_number: 7
   created_at: '2026-04-11T21:27:51.614785+00:00'
-  updated_at: '2026-04-11T22:00:07.212481+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T22:56:41.527118+00:00'
+  started_at: '2026-04-11T22:40:29.568608+00:00'
+  reviewed_at: '2026-04-11T22:47:00.287465+00:00'
+  merged_at: '2026-04-11T22:56:41.527118+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-b393198-network-protocol-and-shared-types-1be04358
 - id: pr-0b382c5
   plan: plan-c686698
   title: Room and lobby server logic
   branch: pm/pr-0b382c5-room-and-lobby-server-logic
-  status: pending
+  status: in_progress
   depends_on:
   - pr-7d32c30
   - pr-b393198
@@ -566,20 +569,21 @@ prs:
 
 
     Files: `server/room.ts`, `server/room-store.ts`, `server/handlers/lobby-handlers.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/15
+  gh_pr_number: 15
   created_at: '2026-04-11T21:27:51.614793+00:00'
-  updated_at: '2026-04-11T21:27:51.614793+00:00'
-  started_at: null
+  updated_at: '2026-04-11T22:56:44.600696+00:00'
+  started_at: '2026-04-11T22:56:44.600696+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-0b382c5-room-and-lobby-server-logic-67f84d9f
 - id: pr-ea6f093
   plan: plan-c686698
   title: Lobby UI
   branch: pm/pr-ea6f093-lobby-ui
-  status: pending
+  status: in_progress
   depends_on:
   - pr-b393198
   description: 'React components for the multiplayer lobby: main menu with "Create
@@ -596,15 +600,16 @@ prs:
 
     Files: `src/ui/Lobby.tsx`, `src/ui/WaitingRoom.tsx`, `src/ui/JoinDialog.tsx`,
     `src/ui/PlayerNameInput.tsx`, `src/net/client-socket.ts`, `src/net/lobby-client.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/16
+  gh_pr_number: 16
   created_at: '2026-04-11T21:27:51.614799+00:00'
-  updated_at: '2026-04-11T21:27:51.614799+00:00'
-  started_at: null
+  updated_at: '2026-04-11T22:56:48.947626+00:00'
+  started_at: '2026-04-11T22:56:48.947626+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-ea6f093-lobby-ui-67f84d9f
 - id: pr-3faa55d
   plan: plan-c686698
   title: Game start synchronization
@@ -1021,7 +1026,7 @@ prs:
   plan: plan-45cb304
   title: Skill rating types and interfaces
   branch: pm/pr-c7b0d7c-skill-rating-types-and-interfaces
-  status: pending
+  status: merged
   depends_on:
   - pr-a1cfec0
   description: 'Define shared TypeScript types for the skill system: `PlayerProfile`
@@ -1040,20 +1045,21 @@ prs:
 
 
     Files: `shared/skill-types.ts`, `shared/handicap-types.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/8
+  gh_pr_number: 8
   created_at: '2026-04-11T21:50:04.211722+00:00'
-  updated_at: '2026-04-11T22:00:08.135059+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T22:47:51.691343+00:00'
+  started_at: '2026-04-11T22:40:33.742704+00:00'
+  reviewed_at: '2026-04-11T22:44:49.659483+00:00'
+  merged_at: '2026-04-11T22:47:51.691343+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-c7b0d7c-skill-rating-types-and-interfaces-1be04358
 - id: pr-4601342
   plan: plan-45cb304
   title: Skill rating storage layer
   branch: pm/pr-4601342-skill-rating-storage-layer
-  status: pending
+  status: merged
   depends_on:
   - pr-c7b0d7c
   description: 'Implement server-side persistence for player skill ratings. MVP uses
@@ -1069,20 +1075,21 @@ prs:
 
 
     Files: `server/skill-store.ts`, `server/skill-store.test.ts`, `data/.gitkeep`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/10
+  gh_pr_number: 10
   created_at: '2026-04-11T21:50:04.211740+00:00'
-  updated_at: '2026-04-11T21:50:04.211740+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T22:55:44.035575+00:00'
+  started_at: '2026-04-11T22:47:54.706929+00:00'
+  reviewed_at: '2026-04-11T22:51:36.254027+00:00'
+  merged_at: '2026-04-11T22:55:44.035575+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-4601342-skill-rating-storage-layer-1445effc
 - id: pr-ebfaa61
   plan: plan-45cb304
   title: Glicko-2 rating algorithm
   branch: pm/pr-ebfaa61-glicko-2-rating-algorithm
-  status: pending
+  status: merged
   depends_on:
   - pr-c7b0d7c
   description: 'Implement a simplified Glicko-2 rating calculation as a pure function
@@ -1099,20 +1106,21 @@ prs:
 
 
     Files: `server/rating-algorithm.ts`, `server/rating-algorithm.test.ts`, `server/rating-config.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/11
+  gh_pr_number: 11
   created_at: '2026-04-11T21:50:04.211748+00:00'
-  updated_at: '2026-04-11T21:50:04.211748+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T22:55:20.625935+00:00'
+  started_at: '2026-04-11T22:48:01.250158+00:00'
+  reviewed_at: '2026-04-11T22:52:37.695046+00:00'
+  merged_at: '2026-04-11T22:55:20.625935+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-ebfaa61-glicko-2-rating-algorithm-1445effc
 - id: pr-998f69e
   plan: plan-45cb304
   title: Handicap calculation from skill gap
   branch: pm/pr-998f69e-handicap-calculation-from-skill-gap
-  status: pending
+  status: merged
   depends_on:
   - pr-c7b0d7c
   description: 'Given two players'' ratings, compute `HandicapModifiers` for a directed
@@ -1137,15 +1145,16 @@ prs:
 
     Files: `server/handicap-calculator.ts`, `server/handicap-calculator.test.ts`,
     `server/handicap-config.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/12
+  gh_pr_number: 12
   created_at: '2026-04-11T21:50:04.211754+00:00'
-  updated_at: '2026-04-11T21:50:04.211754+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T22:54:37.572898+00:00'
+  started_at: '2026-04-11T22:48:06.329655+00:00'
+  reviewed_at: '2026-04-11T22:52:39.938347+00:00'
+  merged_at: '2026-04-11T22:54:37.572898+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-998f69e-handicap-calculation-from-skill-gap-1445effc
 - id: pr-73cfbb0
   plan: plan-45cb304
   title: Performance metrics collector
@@ -1360,7 +1369,7 @@ prs:
   plan: plan-45cb304
   title: Stats screen with match history and skill progression
   branch: pm/pr-90a1525-stats-screen-with-match-history-and-skill-progress
-  status: pending
+  status: in_progress
   depends_on:
   - pr-4601342
   - pr-a1cfec0
@@ -1380,15 +1389,16 @@ prs:
 
     Files: `src/ui/StatsScreen.tsx`, `src/ui/StatsScreen.css`, `src/ui/Sparkline.tsx`,
     `server/routes/stats-routes.ts`, `src/ui/App.tsx` (add stats route)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/14
+  gh_pr_number: 14
   created_at: '2026-04-11T21:50:04.211786+00:00'
-  updated_at: '2026-04-11T21:51:56.642372+00:00'
-  started_at: null
+  updated_at: '2026-04-11T22:55:47.161868+00:00'
+  started_at: '2026-04-11T22:55:47.161868+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-90a1525-stats-screen-with-match-history-and--4c2bf3df
 - id: pr-fb5033a
   plan: plan-45cb304
   title: Post-game results integration with ratings
@@ -1501,19 +1511,58 @@ prs:
   plan: null
   title: Testing infrastructure — Vitest setup with shared/client/server configs
   branch: pm/pr-e38d93c-testing-infrastructure-vitest-setup-with-shared-cl
-  status: pending
+  status: merged
   depends_on:
   - pr-a1cfec0
   description: Set up Vitest across the monorepo with per-package configs. Establishes
     testing patterns for the shared game logic (unit tests for rotation, scoring,
     board state), server logic (WebSocket handlers, room management), and client components
     (React Testing Library). All subsequent game logic PRs should ship with tests.
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/9
+  gh_pr_number: 9
+  created_at: '2026-04-11T22:02:31.247218+00:00'
+  updated_at: '2026-04-11T22:51:30.569535+00:00'
+  started_at: '2026-04-11T22:40:37.782892+00:00'
+  reviewed_at: '2026-04-11T22:47:56.578092+00:00'
+  merged_at: '2026-04-11T22:51:30.569535+00:00'
+  notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-e38d93c-testing-infrastructure-vitest-setup--1be04358
+- id: pr-48ed9f4
+  plan: plan-48e829d
+  title: Piece definitions for SRS and NRS rotation systems
+  branch: pm/pr-48ed9f4-piece-definitions-for-srs-and-nrs-rotation-systems
+  status: pending
+  depends_on:
+  - pr-e38d93c
+  description: 'Define all 7 Tetris pieces with rotation states for both rotation
+    systems. **SRS**: 4 rotation states per piece, wall kick offset tables (JLSTZ
+    shared table, I-piece separate table, O-piece no kicks). **NRS**: 2 rotation states
+    for I/S/Z pieces, 4 for J/L/T, no wall kicks, right-handed bias. Implement the
+    `RotationSystem` interface with `SRSRotation` and `NRSRotation` implementations
+    that return rotation states and kick offsets for a given piece and rotation transition.
+    **Human testing not needed** — purely data and logic verified by unit tests.
+
+
+    Tests: Unit tests for: SRS — each piece has 4 states, correct shapes, kick tables
+    have correct entries, I-piece uses own table. NRS — I/S/Z have 2 states, J/L/T
+    have 4, no kick offsets returned, O has 1 state. Both systems implement the same
+    interface.
+
+
+    Files: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`,
+    `src/engine/rotation.ts`, `src/engine/pieces.test.ts`'
   agent_machine: null
   gh_pr: null
   gh_pr_number: null
-  created_at: '2026-04-11T22:02:31.247218+00:00'
-  updated_at: '2026-04-11T22:02:31.247218+00:00'
+  created_at: '2026-04-11T22:43:21.911875+00:00'
+  updated_at: '2026-04-11T22:43:39.424174+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-22a8852
+    text: Build piece definitions in packages/shared, not packages/client. The server
+      needs these for server-authoritative game state in Plan 2.
+    created_at: '2026-04-11T22:43:39Z'
+    last_edited: '2026-04-11T22:43:39Z'
