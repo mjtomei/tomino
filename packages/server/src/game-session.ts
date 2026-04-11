@@ -145,19 +145,23 @@ export class GameSession {
         COUNTDOWN_INTERVAL_MS,
       );
     } else {
-      // Countdown finished (sent count=0 "Go!") — now send gameStarted
-      this.countdownTimer = null;
-      this._state = "playing";
+      // Countdown finished (sent count=0 "Go!") — delay gameStarted so
+      // clients have time to display the "Go!" overlay before transitioning.
+      this.countdownTimer = setTimeout(() => {
+        if (this._state !== "countdown") return;
+        this.countdownTimer = null;
+        this._state = "playing";
 
-      this.broadcastToRoom(this.roomId, {
-        type: "gameStarted",
-        roomId: this.roomId,
-        initialStates: this.initialStates,
-        seed: this.seed,
-        playerIndexes: this.playerIndexes,
-      });
+        this.broadcastToRoom(this.roomId, {
+          type: "gameStarted",
+          roomId: this.roomId,
+          initialStates: this.initialStates,
+          seed: this.seed,
+          playerIndexes: this.playerIndexes,
+        });
 
-      this.onGameStarted?.();
+        this.onGameStarted?.();
+      }, COUNTDOWN_INTERVAL_MS);
     }
   }
 }

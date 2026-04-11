@@ -60,7 +60,7 @@ describe("game-handlers", () => {
       const spy = createBroadcastSpy();
 
       startGameCountdown(roomId, store, { broadcastToRoom: spy.broadcastToRoom });
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(4000);
 
       const types = spy.messages.map((m) => m.msg.type);
       expect(types).toEqual([
@@ -114,8 +114,8 @@ describe("game-handlers", () => {
 
       startGameCountdown(roomId, store, { broadcastToRoom: spy.broadcastToRoom });
 
-      // Complete countdown
-      vi.advanceTimersByTime(3000);
+      // Complete countdown + gameStarted delay
+      vi.advanceTimersByTime(4000);
       const session = getGameSession(roomId);
       expect(session?.state).toBe("playing");
 

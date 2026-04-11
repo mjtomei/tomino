@@ -115,8 +115,8 @@ describe("GameSession", () => {
 
       session.startCountdown();
 
-      // Advance through all countdown ticks: 3, 2, 1, 0
-      vi.advanceTimersByTime(3000);
+      // Advance through all countdown ticks (3, 2, 1, 0) + delay before gameStarted
+      vi.advanceTimersByTime(4000);
 
       const gameStarted = spy.messages.find((m) => m.msg.type === "gameStarted");
       expect(gameStarted).toBeDefined();
@@ -162,12 +162,16 @@ describe("GameSession", () => {
         expect(spy.messages[2].msg.count).toBe(1);
       }
 
-      // After 3s: countdown 0 (Go!) + gameStarted (sent synchronously after count=0)
+      // After 3s: countdown 0 (Go!)
       vi.advanceTimersByTime(1000);
-      expect(spy.messages).toHaveLength(5);
+      expect(spy.messages).toHaveLength(4);
       if (spy.messages[3].msg.type === "countdown") {
         expect(spy.messages[3].msg.count).toBe(0);
       }
+
+      // After 4s: gameStarted (delayed so "Go!" is visible)
+      vi.advanceTimersByTime(1000);
+      expect(spy.messages).toHaveLength(5);
       expect(spy.messages[4].msg.type).toBe("gameStarted");
     });
 
@@ -198,7 +202,7 @@ describe("GameSession", () => {
       session.startCountdown();
       expect(session.state).toBe("countdown");
 
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(4000);
       expect(session.state).toBe("playing");
     });
 
@@ -215,7 +219,7 @@ describe("GameSession", () => {
       session.startCountdown();
       expect(onGameStarted).not.toHaveBeenCalled();
 
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(4000);
       expect(onGameStarted).toHaveBeenCalledTimes(1);
     });
 
@@ -228,7 +232,7 @@ describe("GameSession", () => {
       });
 
       session.startCountdown();
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(4000);
 
       const countAfter = spy.messages.length;
       vi.advanceTimersByTime(5000);
@@ -250,7 +254,7 @@ describe("GameSession", () => {
       });
 
       session.startCountdown();
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(4000);
 
       const gameStarted = spy.messages.find((m) => m.msg.type === "gameStarted");
       expect(gameStarted).toBeDefined();
@@ -268,7 +272,7 @@ describe("GameSession", () => {
       });
 
       session.startCountdown();
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(4000);
 
       const gameStarted = spy.messages.find((m) => m.msg.type === "gameStarted");
       if (gameStarted?.msg.type === "gameStarted") {
