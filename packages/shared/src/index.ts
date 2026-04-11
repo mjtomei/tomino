@@ -85,6 +85,9 @@ export { createHoldState, holdPiece, resetHoldFlag } from "./engine/hold.js";
 
 export type { Cell, Grid } from "./engine/board.js";
 
+export type { RotationDirection, RotateResult } from "./engine/movement.js";
+export { collides, tryMove, tryRotate, hardDrop } from "./engine/movement.js";
+
 export {
   BOARD_HEIGHT,
   BOARD_WIDTH,
