@@ -142,7 +142,7 @@ All modes are available under every rule set:
 - **description**: Define all 7 Tetris pieces with rotation states for both rotation systems. **SRS**: 4 rotation states per piece, wall kick offset tables (JLSTZ shared table, I-piece separate table, O-piece no kicks). **NRS**: 2 rotation states for I/S/Z pieces, 4 for J/L/T, no wall kicks, right-handed bias. Implement the `RotationSystem` interface with `SRSRotation` and `NRSRotation` implementations that return rotation states and kick offsets for a given piece and rotation transition. **Human testing not needed** — purely data and logic verified by unit tests.
 - **tests**: Unit tests for: SRS — each piece has 4 states, correct shapes, kick tables have correct entries, I-piece uses own table. NRS — I/S/Z have 2 states, J/L/T have 4, no kick offsets returned, O has 1 state. Both systems implement the same interface.
 - **files**: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`, `src/engine/rotation.ts`, `src/engine/pieces.test.ts`
-- **depends_on**: RuleSet types presets and game mode definitions
+- **depends_on**:
 
 ---
 

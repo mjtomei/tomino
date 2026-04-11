@@ -1,13 +1,26 @@
 project:
   name: tetris
-  repo: /home/matt/claude-work/tetris
+  repo: https://github.com/mjtomei/tetris.git
   base_branch: master
-  backend: local
-  active_pr: pr-1d0b36c
+  backend: github
+  active_pr: pr-e38d93c
+  repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
+  skip_qa: true
+  hide_merged: false
 plans:
 - id: plan-48e829d
   name: plans/01-core-tetris.md
   file: plans/plan-48e829d.md
+  status: draft
+  parent: null
+- id: plan-c686698
+  name: plans/02-multiplayer.md
+  file: plans/plan-c686698.md
+  status: draft
+  parent: null
+- id: plan-45cb304
+  name: plans/03-adaptive-balancing.md
+  file: plans/plan-45cb304.md
   status: draft
   parent: null
 prs:
@@ -15,7 +28,7 @@ prs:
   plan: plan-48e829d
   title: Project scaffolding with Vite + React + TypeScript
   branch: pm/pr-a1cfec0-project-scaffolding-with-vite-react-typescript
-  status: pending
+  status: merged
   depends_on: []
   description: 'Initialize the project with Vite, React, TypeScript, and basic dev
     tooling (ESLint, Prettier). Set up the directory structure: `src/engine/`, `src/ui/`,
@@ -29,15 +42,26 @@ prs:
 
     Files: `package.json`, `tsconfig.json`, `vite.config.ts`, `.eslintrc.cjs`, `.prettierrc`,
     `index.html`, `src/main.tsx`, `src/App.tsx`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/2
+  gh_pr_number: 2
   created_at: '2026-04-11T20:46:48.057154+00:00'
-  updated_at: '2026-04-11T20:46:48.057154+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
-  notes: []
+  updated_at: '2026-04-11T22:16:27.040063+00:00'
+  started_at: '2026-04-11T21:12:39.691266+00:00'
+  reviewed_at: '2026-04-11T21:15:27.779114+00:00'
+  merged_at: '2026-04-11T22:16:27.040063+00:00'
+  notes:
+  - id: note-55bda97
+    text: 'This PR should set up the project as a monorepo/workspace (npm or pnpm
+      workspaces) with three packages: packages/client (Vite + React app), packages/server
+      (Node.js), and packages/shared (shared TypeScript types and game logic). Set
+      up TypeScript project references between them so all three plans can build on
+      a clean shared foundation. Plan 2 (multiplayer) needs the server package for
+      WebSocket server and shared package for network protocol types. Plan 3 (adaptive
+      balancing) needs shared types for skill ratings.'
+    created_at: '2026-04-11T21:59:44Z'
+    last_edited: '2026-04-11T21:59:44Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-a1cfec0-project-scaffolding-with-vite-react--48258f7f
 - id: pr-a367deb
   plan: plan-48e829d
   title: RuleSet types, presets, and game mode definitions
@@ -45,6 +69,7 @@ prs:
   status: pending
   depends_on:
   - pr-a1cfec0
+  - pr-e38d93c
   description: 'Define the `RuleSet` interface, `GameMode` enum, and preset factory
     functions (`classicRuleSet()`, `modernRuleSet()`). Define the `GameMode` type
     with start/end conditions for Marathon, Sprint, Ultra, and Zen. Include a `customRuleSet()`
@@ -61,7 +86,7 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057172+00:00'
-  updated_at: '2026-04-11T20:46:48.057172+00:00'
+  updated_at: '2026-04-11T22:02:36.048509+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
@@ -70,8 +95,9 @@ prs:
   plan: plan-48e829d
   title: Piece definitions for SRS and NRS rotation systems
   branch: pm/pr-1d0b36c-piece-definitions-for-srs-and-nrs-rotation-systems
-  status: pending
-  depends_on: []
+  status: closed
+  depends_on:
+  - pr-e38d93c
   description: 'Define all 7 Tetris pieces with rotation states for both rotation
     systems. **SRS**: 4 rotation states per piece, wall kick offset tables (JLSTZ
     shared table, I-piece separate table, O-piece no kicks). **NRS**: 2 rotation states
@@ -89,15 +115,21 @@ prs:
 
     Files: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`,
     `src/engine/rotation.ts`, `src/engine/pieces.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/1
+  gh_pr_number: 1
   created_at: '2026-04-11T20:46:48.057187+00:00'
-  updated_at: '2026-04-11T20:46:48.057187+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-11T22:37:59.755449+00:00'
+  started_at: '2026-04-11T21:12:31.483113+00:00'
+  reviewed_at: '2026-04-11T21:17:58.575511+00:00'
   merged_at: null
-  notes: []
+  notes:
+  - id: note-31ffd44
+    text: Build piece definitions in packages/shared, not packages/client. The server
+      needs these for server-authoritative game state in Plan 2.
+    created_at: '2026-04-11T22:02:17Z'
+    last_edited: '2026-04-11T22:02:17Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-1d0b36c-piece-definitions-for-srs-and-nrs-ro-48258f7f
 - id: pr-698f2b5
   plan: plan-48e829d
   title: Board model and line clearing
@@ -121,11 +153,16 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057194+00:00'
-  updated_at: '2026-04-11T20:46:48.057194+00:00'
+  updated_at: '2026-04-11T22:02:17.882817+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-e8949f4
+    text: Build board model in packages/shared, not packages/client. The server needs
+      this for server-authoritative game state in Plan 2.
+    created_at: '2026-04-11T22:02:17Z'
+    last_edited: '2026-04-11T22:02:17Z'
 - id: pr-ac2a70b
   plan: plan-48e829d
   title: Piece movement, rotation, and wall kicks
@@ -152,11 +189,16 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057199+00:00'
-  updated_at: '2026-04-11T20:46:48.057199+00:00'
+  updated_at: '2026-04-11T22:02:19.274821+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-581e2fb
+    text: Build movement/rotation/wall kick logic in packages/shared, not packages/client.
+      The server needs this for server-authoritative game state in Plan 2.
+    created_at: '2026-04-11T22:02:19Z'
+    last_edited: '2026-04-11T22:02:19Z'
 - id: pr-3c6d5aa
   plan: plan-48e829d
   title: Randomizer variants — 7-bag and pure random
@@ -184,11 +226,17 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057207+00:00'
-  updated_at: '2026-04-11T20:46:48.057207+00:00'
+  updated_at: '2026-04-11T22:02:21.200424+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-ccd71c0
+    text: Build randomizer variants in packages/shared, not packages/client. The server
+      needs deterministic randomizers for server-authoritative game state in Plan
+      2.
+    created_at: '2026-04-11T22:02:21Z'
+    last_edited: '2026-04-11T22:02:21Z'
 - id: pr-6060eaf
   plan: plan-48e829d
   title: Scoring systems — Guideline and NES
@@ -219,17 +267,23 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057213+00:00'
-  updated_at: '2026-04-11T20:46:48.057213+00:00'
+  updated_at: '2026-04-11T22:02:20.261836+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-6880f47
+    text: Build scoring systems in packages/shared, not packages/client. The server
+      needs this for authoritative scoring in Plan 2.
+    created_at: '2026-04-11T22:02:20Z'
+    last_edited: '2026-04-11T22:02:20Z'
 - id: pr-0d483af
   plan: plan-48e829d
   title: TetrisEngine — game loop and state machine
   branch: pm/pr-0d483af-tetrisengine-game-loop-and-state-machine
   status: pending
   depends_on:
+  - pr-ac2a70b
   - pr-3c6d5aa
   - pr-6060eaf
   description: 'Implement the core `TetrisEngine` class that takes a `RuleSet` and
@@ -258,11 +312,16 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057223+00:00'
-  updated_at: '2026-04-11T20:46:48.057223+00:00'
+  updated_at: '2026-04-11T22:02:22.599968+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-886ac56
+    text: Build TetrisEngine in packages/shared, not packages/client. Plan 2 runs
+      the engine on both client (prediction) and server (authority).
+    created_at: '2026-04-11T22:02:22Z'
+    last_edited: '2026-04-11T22:02:22Z'
 - id: pr-c08aefa
   plan: plan-48e829d
   title: Canvas renderer for game board
@@ -426,6 +485,1034 @@ prs:
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057251+00:00'
   updated_at: '2026-04-11T20:47:54.510674+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-7d32c30
+  plan: plan-c686698
+  title: WebSocket server setup
+  branch: pm/pr-7d32c30-websocket-server-setup
+  status: pending
+  depends_on:
+  - pr-a1cfec0
+  description: 'Create a Node.js + Express server with WebSocket support (ws library).
+    Set up the server entry point, connection/disconnection lifecycle, heartbeat/ping-pong
+    for connection health, and dev tooling (ts-node or tsx for running the server
+    in dev). Add a `server/` directory at the project root. **Human testing needed**:
+    verify WebSocket connections work in browser dev tools.
+
+
+    Tests: Connection lifecycle (connect, disconnect, heartbeat timeout), multiple
+    simultaneous connections, malformed message handling
+
+
+    Files: `server/index.ts`, `server/ws-server.ts`, `package.json` (new deps: ws,
+    express, @types/ws, @types/express), `tsconfig.server.json`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614766+00:00'
+  updated_at: '2026-04-11T22:00:06.646138+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-b393198
+  plan: plan-c686698
+  title: Network protocol and shared types
+  branch: pm/pr-b393198-network-protocol-and-shared-types
+  status: pending
+  depends_on:
+  - pr-a1cfec0
+  description: 'Define the full set of client-to-server and server-to-client message
+    types as shared TypeScript interfaces. Includes: lobby messages (create/join/leave
+    room, room state updates, player list), game messages (input, state snapshot,
+    game start/end), garbage messages (send/receive garbage, garbage queue updates),
+    and system messages (ping/pong, error, disconnect). Create a `shared/` directory
+    for code used by both client and server.
+
+
+    Tests: Message type validation/parsing helpers, round-trip serialization tests
+
+
+    Files: `shared/protocol.ts`, `shared/messages.ts`, `shared/types.ts`, `tsconfig.json`
+    (path aliases for shared/)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614785+00:00'
+  updated_at: '2026-04-11T22:00:07.212481+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-0b382c5
+  plan: plan-c686698
+  title: Room and lobby server logic
+  branch: pm/pr-0b382c5-room-and-lobby-server-logic
+  status: pending
+  depends_on:
+  - pr-7d32c30
+  - pr-b393198
+  description: 'Implement server-side room management: create room (generates a short
+    room code), join room by code, leave room, list players in room, room capacity
+    limits, host designation. Rooms have lifecycle states: waiting, countdown, in-game,
+    finished. Include a simple in-memory room store.
+
+
+    Tests: Create/join/leave rooms, room code generation uniqueness, capacity enforcement,
+    host transfer on host disconnect, room cleanup when empty
+
+
+    Files: `server/room.ts`, `server/room-store.ts`, `server/handlers/lobby-handlers.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614793+00:00'
+  updated_at: '2026-04-11T21:27:51.614793+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-ea6f093
+  plan: plan-c686698
+  title: Lobby UI
+  branch: pm/pr-ea6f093-lobby-ui
+  status: pending
+  depends_on:
+  - pr-b393198
+  description: 'React components for the multiplayer lobby: main menu with "Create
+    Room" and "Join Room" buttons, room code input dialog, waiting room showing player
+    list and ready status, player name input (stored in localStorage). Wire up WebSocket
+    connection to the lobby server. **Human testing needed**: verify full lobby flow
+    in browser — create room, copy code, join from another tab, see player list update
+    in real time.
+
+
+    Tests: Component render tests for lobby views, WebSocket message handling for
+    room state updates, player name persistence
+
+
+    Files: `src/ui/Lobby.tsx`, `src/ui/WaitingRoom.tsx`, `src/ui/JoinDialog.tsx`,
+    `src/ui/PlayerNameInput.tsx`, `src/net/client-socket.ts`, `src/net/lobby-client.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614799+00:00'
+  updated_at: '2026-04-11T21:27:51.614799+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3faa55d
+  plan: plan-c686698
+  title: Game start synchronization
+  branch: pm/pr-3faa55d-game-start-synchronization
+  status: pending
+  depends_on:
+  - pr-0b382c5
+  - pr-ea6f093
+  description: 'Implement the game start flow: all players ready up in the waiting
+    room, host starts the game, server sends a countdown (3-2-1-Go) with synchronized
+    timestamps, all clients begin simultaneously. Server assigns each player a consistent
+    player ID and seed for the randomizer. **Human testing needed**: verify countdown
+    appears and games start simultaneously across tabs.
+
+
+    Tests: Countdown sequencing, all-players-ready gate, synchronized start timestamp
+    validation, player ID assignment
+
+
+    Files: `server/handlers/game-handlers.ts`, `server/game-session.ts`, `shared/protocol.ts`
+    (add game start messages), `src/ui/Countdown.tsx`, `src/net/game-client.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614804+00:00'
+  updated_at: '2026-04-11T21:27:51.614804+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-dfc0673
+  plan: plan-c686698
+  title: Server-authoritative game state
+  branch: pm/pr-dfc0673-server-authoritative-game-state
+  status: pending
+  depends_on:
+  - pr-3faa55d
+  - pr-0d483af
+  description: 'Run a TetrisEngine instance on the server for each player in a game
+    session. The server receives player inputs (move left/right, rotate, soft/hard
+    drop, hold), applies them to the authoritative engine, and broadcasts the resulting
+    state snapshots to all players. Includes server-side tick/gravity loop. State
+    snapshots are delta-compressed to reduce bandwidth.
+
+
+    Tests: Input application and state broadcast, gravity tick progression, invalid
+    input rejection, multi-player session with independent engines, delta compression
+    correctness
+
+
+    Files: `server/player-engine.ts`, `server/game-session.ts` (extend), `server/handlers/game-handlers.ts`
+    (extend), `shared/state-snapshot.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614817+00:00'
+  updated_at: '2026-04-11T21:32:54.195388+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1e00262
+  plan: plan-c686698
+  title: Client multiplayer integration and prediction
+  branch: pm/pr-1e00262-client-multiplayer-integration-and-prediction
+  status: pending
+  depends_on:
+  - pr-dfc0673
+  - pr-20fd8ff
+  description: 'Connect the client-side game to the multiplayer server. Client sends
+    inputs to server and simultaneously applies them to a local prediction engine.
+    When authoritative state arrives from server, reconcile with local prediction
+    (snap to server state, replay unacknowledged inputs). Ensure controls feel responsive
+    despite network latency. **Human testing needed**: verify game feels responsive
+    with simulated latency — inputs should not feel delayed.
+
+
+    Tests: Prediction/reconciliation logic (apply input locally, receive server state,
+    reconcile), input sequencing with sequence numbers, handling out-of-order state
+    updates
+
+
+    Files: `src/net/game-client.ts` (extend), `src/net/prediction.ts`, `src/engine/engine-proxy.ts`
+    (multiplayer-aware engine wrapper)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614824+00:00'
+  updated_at: '2026-04-11T21:32:55.152932+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-d3377ef
+  plan: plan-c686698
+  title: Garbage mechanics engine
+  branch: pm/pr-d3377ef-garbage-mechanics-engine
+  status: pending
+  depends_on:
+  - pr-6060eaf
+  - pr-b393198
+  description: 'Implement garbage calculation rules as an engine-level module: lines
+    cleared map to garbage lines sent (1→0, 2→1, 3→2, 4→4), T-spin bonuses (T-spin
+    single→2, double→4, triple→6), back-to-back bonus (+1 for consecutive Tetrises
+    or T-spins), combo table (escalating garbage for consecutive line clears). Also
+    implement garbage receiving: insert gray rows at the bottom of the board with
+    a random gap column, pushing existing rows up.
+
+
+    Tests: Garbage sent calculation for all clear types, T-spin detection and bonus,
+    back-to-back tracking, combo counter and garbage table, garbage row insertion
+    with gap, board overflow from garbage
+
+
+    Files: `src/engine/garbage.ts`, `src/engine/garbage-table.ts`, `shared/garbage-types.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614830+00:00'
+  updated_at: '2026-04-11T22:02:27.192694+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes:
+  - id: note-eb8bbd1
+    text: Build garbage mechanics in packages/shared, not packages/client. Plan 2
+      sends garbage events over the network and the server needs to validate them.
+    created_at: '2026-04-11T22:02:23Z'
+    last_edited: '2026-04-11T22:02:23Z'
+- id: pr-7a9a7e5
+  plan: plan-c686698
+  title: Garbage network integration
+  branch: pm/pr-7a9a7e5-garbage-network-integration
+  status: pending
+  depends_on:
+  - pr-dfc0673
+  - pr-d3377ef
+  description: 'Wire garbage mechanics into the multiplayer server. When a player
+    clears lines, the server calculates garbage using the garbage engine and distributes
+    it to opponents. Implement the garbage queue with a configurable delay (default
+    ~500ms) before garbage is applied. Players can cancel incoming garbage by clearing
+    lines during the delay window. Server broadcasts garbage queue state so clients
+    can display pending garbage.
+
+
+    Default targeting for this PR is even-split across all opponents. The targeting
+    strategy interface is defined here (a `resolveTargets(sender, players, context)`
+    hook point) so that the targeting strategies PR can plug in without modifying
+    the core distribution logic.
+
+
+    Tests: Garbage distribution to correct opponents, delay timer before application,
+    garbage cancellation by clearing lines, default even-split targeting for 3+ players,
+    queue state broadcast accuracy, targeting interface accepts pluggable strategy
+
+
+    Files: `server/garbage-manager.ts`, `server/game-session.ts` (extend), `shared/protocol.ts`
+    (add garbage messages), `shared/targeting-types.ts` (targeting strategy interface)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614839+00:00'
+  updated_at: '2026-04-11T21:48:21.251011+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1389028
+  plan: plan-c686698
+  title: Opponent board display
+  branch: pm/pr-1389028-opponent-board-display
+  status: pending
+  depends_on:
+  - pr-1e00262
+  - pr-c08aefa
+  description: 'Render smaller preview boards for each opponent, showing their current
+    board state in real-time. Use a simplified canvas renderer (no need for piece
+    detail, just filled/empty cells). Position opponent boards alongside the player''s
+    main board. Scale based on number of opponents. **Human testing needed**: verify
+    opponent boards render correctly and update in real-time alongside the main game.
+
+
+    Tests: Opponent board component rendering with mock state, scaling logic for different
+    player counts, state update application
+
+
+    Files: `src/ui/OpponentBoard.tsx`, `src/ui/OpponentBoardCanvas.ts`, `src/ui/GameMultiplayer.tsx`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614846+00:00'
+  updated_at: '2026-04-11T21:32:56.490256+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-d422f66
+  plan: plan-c686698
+  title: Garbage queue indicator
+  branch: pm/pr-d422f66-garbage-queue-indicator
+  status: pending
+  depends_on:
+  - pr-7a9a7e5
+  - pr-1389028
+  description: 'Display a vertical garbage meter on the left side of the player''s
+    board showing pending incoming garbage. Each pending garbage line is a red bar
+    segment. The meter animates when garbage is added or cancelled. Shows the delay
+    timer visually.
+
+
+    Tests: Meter height calculation from garbage count, animation state transitions,
+    garbage cancellation visual update
+
+
+    Files: `src/ui/GarbageMeter.tsx`, `src/ui/GarbageMeter.css`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614850+00:00'
+  updated_at: '2026-04-11T21:27:51.614850+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-bd3b549
+  plan: plan-c686698
+  title: Win/loss detection and game-over screen
+  branch: pm/pr-bd3b549-win-loss-detection-and-game-over-screen
+  status: pending
+  depends_on:
+  - pr-1389028
+  - pr-7a9a7e5
+  description: 'Detect when a player tops out (board overflow) and broadcast elimination.
+    Last player standing wins. Show results screen with placement (1st, 2nd, etc.),
+    stats summary (lines sent, lines received, pieces placed, time survived). Eliminated
+    players can continue spectating. **Human testing needed**: verify game-over triggers
+    correctly on top-out and results screen displays properly.
+
+
+    Tests: Top-out detection triggers elimination, last-player-standing win condition,
+    multi-elimination ordering, stats accumulation, spectator mode activation on elimination
+
+
+    Files: `server/game-session.ts` (extend with elimination logic), `src/ui/GameResults.tsx`,
+    `src/ui/SpectatorOverlay.tsx`, `shared/protocol.ts` (add elimination/results messages)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614855+00:00'
+  updated_at: '2026-04-11T21:27:51.614855+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-6459c34
+  plan: plan-c686698
+  title: Disconnect handling
+  branch: pm/pr-6459c34-disconnect-handling
+  status: pending
+  depends_on:
+  - pr-dfc0673
+  description: 'Handle player disconnects gracefully. On disconnect, start a reconnection
+    timer (default 15 seconds). If the player reconnects within the window, restore
+    their game state and resume. If the timer expires, the player forfeits (treated
+    as top-out). Notify other players of disconnect/reconnect status. In the lobby/waiting
+    room, disconnects immediately remove the player.
+
+
+    Tests: Reconnection within window restores state, forfeit on timeout, other players
+    notified, lobby disconnect cleanup, rapid disconnect/reconnect cycling
+
+
+    Files: `server/disconnect-handler.ts`, `server/game-session.ts` (extend), `src/net/reconnect.ts`,
+    `src/ui/DisconnectOverlay.tsx`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614860+00:00'
+  updated_at: '2026-04-11T21:27:51.614860+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3f9112e
+  plan: plan-c686698
+  title: Rematch flow
+  branch: pm/pr-3f9112e-rematch-flow
+  status: pending
+  depends_on:
+  - pr-bd3b549
+  description: 'After a game ends, players can vote to rematch. Show a "Rematch" button
+    on the results screen. When all players vote yes, automatically start a new game
+    with the same room and players. If any player declines or leaves, return remaining
+    players to the waiting room. **Human testing needed**: verify full rematch flow
+    across multiple browser tabs.
+
+
+    Tests: Rematch vote collection, unanimous yes triggers new game, decline returns
+    to waiting room, player leave during vote handling
+
+
+    Files: `server/handlers/rematch-handlers.ts`, `server/game-session.ts` (extend),
+    `src/ui/GameResults.tsx` (extend with rematch button), `shared/protocol.ts` (add
+    rematch messages)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614863+00:00'
+  updated_at: '2026-04-11T21:27:51.614863+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-03c8022
+  plan: plan-c686698
+  title: Latency display
+  branch: pm/pr-03c8022-latency-display
+  status: pending
+  depends_on:
+  - pr-1e00262
+  description: 'Measure round-trip latency using periodic ping/pong messages. Display
+    current ping in milliseconds in the game UI corner. Color-code: green (<50ms),
+    yellow (50-150ms), red (>150ms). Update every 2 seconds during gameplay.
+
+
+    Tests: Latency calculation from ping/pong timestamps, color threshold logic, display
+    update interval
+
+
+    Files: `src/net/latency.ts`, `src/ui/LatencyIndicator.tsx`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:27:51.614867+00:00'
+  updated_at: '2026-04-11T21:27:51.614867+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1bab92a
+  plan: plan-c686698
+  title: Garbage targeting strategies and attack power
+  branch: pm/pr-1bab92a-garbage-targeting-strategies-and-attack-power
+  status: pending
+  depends_on:
+  - pr-7a9a7e5
+  - pr-1389028
+  description: 'Implement configurable garbage targeting for multiplayer games. Room
+    settings define which targeting strategies are available (any combination of:
+    random, attackers, KOs, manual). Each player selects their active strategy, changeable
+    mid-game.
+
+
+    **Targeting strategies:**
+
+    - **Random** — garbage sent to a random opponent (default)
+
+    - **Attackers** — automatically targets players currently targeting you
+
+    - **KOs** — targets the player closest to topping out
+
+    - **Manual** — player clicks an opponent board to select a specific target
+
+
+    **Attack power multiplier:**
+
+    Track a per-player attack power multiplier on the server. KOs increase the multiplier
+    at thresholds (e.g. 1 KO → 1.25x, 2 → 1.5x, 4 → 1.75x, 6+ → 2x). The multiplier
+    is applied to outgoing garbage at distribution time in the garbage manager. Broadcast
+    current multiplier to clients for UI display.
+
+
+    **Game settings integration:**
+
+    Add targeting configuration to room/game settings: `enabledStrategies: TargetingStrategy[]`,
+    `defaultStrategy: TargetingStrategy`. Settings are chosen by the host in the waiting
+    room.
+
+
+    **Manual targeting UI:**
+
+    Player clicks/taps an opponent''s mini-board to select them as target. Highlight
+    the targeted opponent board with a colored border. Show a small targeting mode
+    indicator on the player''s HUD.
+
+
+    **Human testing needed**: verify strategy switching mid-game, manual target selection
+    by clicking opponent boards, and attack power scaling after KOs across multiple
+    browser tabs.
+
+
+    Tests: Each targeting strategy selects correct target(s), attack power multiplier
+    calculation at KO thresholds, multiplier applied to outgoing garbage correctly,
+    strategy switching mid-game, manual target persistence across rounds, game settings
+    validation (at least one strategy enabled), attacker strategy retaliation logic,
+    KO strategy targets lowest-health player
+
+
+    Files: `server/targeting.ts`, `server/attack-power.ts`, `server/garbage-manager.ts`
+    (extend with targeting + multiplier), `shared/targeting-types.ts`, `shared/protocol.ts`
+    (add targeting messages), `src/ui/TargetingSelector.tsx`, `src/ui/OpponentBoard.tsx`
+    (extend with target selection), `src/net/game-client.ts` (extend with targeting
+    commands)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:48:08.878486+00:00'
+  updated_at: '2026-04-11T21:48:08.878486+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-c7b0d7c
+  plan: plan-45cb304
+  title: Skill rating types and interfaces
+  branch: pm/pr-c7b0d7c-skill-rating-types-and-interfaces
+  status: pending
+  depends_on:
+  - pr-a1cfec0
+  description: 'Define shared TypeScript types for the skill system: `PlayerProfile`
+    (username, rating, rating deviation, volatility, games played), `MatchResult`
+    (winner, loser, metrics snapshot), `PerformanceMetrics` (APM, PPS, lines cleared,
+    T-spins, combos), `HandicapModifiers` (garbage multiplier, delay modifier, messiness
+    factor — per directed sender→receiver pair), `ModifierMatrix` (Map keyed by `${sender}→${receiver}`
+    to `HandicapModifiers`), `TargetingBias` (weight distribution across opponents
+    for auto-targeting), `HandicapSettings` (intensity, mode, targeting bias strength,
+    optional knob toggles), and storage interface (`SkillStore`). These are pure type
+    definitions with no runtime dependencies.
+
+
+    Tests: Type compilation checks, ensure interfaces are importable from both client
+    and server paths.
+
+
+    Files: `shared/skill-types.ts`, `shared/handicap-types.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211722+00:00'
+  updated_at: '2026-04-11T22:00:08.135059+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-4601342
+  plan: plan-45cb304
+  title: Skill rating storage layer
+  branch: pm/pr-4601342-skill-rating-storage-layer
+  status: pending
+  depends_on:
+  - pr-c7b0d7c
+  description: 'Implement server-side persistence for player skill ratings. MVP uses
+    a JSON file (`data/ratings.json`) with atomic read/write via temp-file-swap. Implements
+    the `SkillStore` interface: `getPlayer(username)`, `upsertPlayer(profile)`, `getLeaderboard()`,
+    `getMatchHistory(username, limit)`. Auto-creates the data file on first run. Includes
+    a migration path comment for future SQLite upgrade.
+
+
+    Tests: CRUD operations on player profiles, concurrent write safety (temp-file
+    swap), file creation on first access, match history append and retrieval with
+    limit, leaderboard sorting by rating.
+
+
+    Files: `server/skill-store.ts`, `server/skill-store.test.ts`, `data/.gitkeep`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211740+00:00'
+  updated_at: '2026-04-11T21:50:04.211740+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-ebfaa61
+  plan: plan-45cb304
+  title: Glicko-2 rating algorithm
+  branch: pm/pr-ebfaa61-glicko-2-rating-algorithm
+  status: pending
+  depends_on:
+  - pr-c7b0d7c
+  description: 'Implement a simplified Glicko-2 rating calculation as a pure function
+    module. Takes two `PlayerProfile`s and a match result, returns updated ratings
+    for both. Handles the calibration period (first 10 games use higher RD for faster
+    convergence). Exposes tunable constants (`INITIAL_RATING`, `INITIAL_RD`, `TAU`,
+    `CALIBRATION_GAMES`) as a config object. No side effects — pure math.
+
+
+    Tests: Rating updates for win/loss, new player calibration (high RD = big swings),
+    established player stability (low RD = small swings), symmetric updates (winner
+    gains ~= loser loses), edge cases (identical ratings, maximum skill gap, RD decay
+    over inactivity).
+
+
+    Files: `server/rating-algorithm.ts`, `server/rating-algorithm.test.ts`, `server/rating-config.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211748+00:00'
+  updated_at: '2026-04-11T21:50:04.211748+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-998f69e
+  plan: plan-45cb304
+  title: Handicap calculation from skill gap
+  branch: pm/pr-998f69e-handicap-calculation-from-skill-gap
+  status: pending
+  depends_on:
+  - pr-c7b0d7c
+  description: 'Given two players'' ratings, compute `HandicapModifiers` for a directed
+    sender→receiver pair. Default mode ("boost"): when garbage flows from a stronger
+    player to a weaker one, the receive multiplier is reduced (0.0–1.0) proportional
+    to the rating gap via a smooth sigmoid curve. When garbage flows from weaker to
+    stronger, the multiplier is always 1.0 (no boost). For 3+ player games, expose
+    a function that takes all players'' ratings and returns a full modifier matrix
+    indexed by (sender, receiver). No artificial floor — multiplier goes to 0.0 for
+    extreme gaps. Optional "symmetric" mode also reduces the stronger player''s outgoing
+    garbage. Delay and messiness modifiers computed but only applied when toggled
+    on in lobby settings. Config constants control curve steepness. Pure functions,
+    no server dependencies.
+
+
+    Tests: Equal ratings produce 1.0 for both directions, large gap produces near-zero
+    multiplier for stronger→weaker direction, weaker→stronger always 1.0 in default
+    mode, symmetric mode reduces both directions, modifier matrix correct for 3 players
+    (6 directed pairs), config overrides change curve shape, optional knobs (delay/messiness)
+    only populate when enabled.
+
+
+    Files: `server/handicap-calculator.ts`, `server/handicap-calculator.test.ts`,
+    `server/handicap-config.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211754+00:00'
+  updated_at: '2026-04-11T21:50:04.211754+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-73cfbb0
+  plan: plan-45cb304
+  title: Performance metrics collector
+  branch: pm/pr-73cfbb0-performance-metrics-collector
+  status: pending
+  depends_on:
+  - pr-c7b0d7c
+  - pr-dfc0673
+  description: 'Server-side module that tracks per-player performance metrics during
+    a live game. Hooks into the game session''s input/state stream to count actions
+    (for APM), pieces placed (for PPS), line clears, T-spins, and combos. Produces
+    a `PerformanceMetrics` snapshot when the game ends. Runs as a lightweight observer
+    on the game session — no modifications to the game engine itself.
+
+
+    Tests: APM calculation from action timestamps, PPS from piece count and duration,
+    T-spin counting, combo tracking, metrics reset between games, snapshot accuracy
+    at game end.
+
+
+    Files: `server/metrics-collector.ts`, `server/metrics-collector.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211759+00:00'
+  updated_at: '2026-04-11T21:51:55.554920+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3b2b0fc
+  plan: plan-45cb304
+  title: Balancing middleware for garbage pipeline
+  branch: pm/pr-3b2b0fc-balancing-middleware-for-garbage-pipeline
+  status: pending
+  depends_on:
+  - pr-998f69e
+  - pr-7a9a7e5
+  description: 'Implement `BalancingMiddleware` that wraps Plan 2''s garbage manager.
+    At game start, computes the full modifier matrix from all players'' ratings (one
+    entry per sender→receiver pair). When garbage is sent from player A to player
+    B, looks up the (A, B) modifier and applies: (1) multiply garbage line count by
+    the pair''s multiplier (round probabilistically — e.g., 0.3x on 4 lines = 1 line
+    80% of the time, 2 lines 20%), (2) if delay modifier is enabled, adjust the garbage
+    delay window for that pair, (3) if messiness modifier is enabled, adjust gap randomization.
+    Multiplier can go all the way to 0.0, meaning garbage from that sender is completely
+    absorbed. The middleware is injected between the garbage calculator and the network
+    distribution layer. When handicap is disabled, passes through unchanged. **INPUT_REQUIRED:
+    Human testing needed** to verify garbage feels right during actual play — automated
+    tests confirm math but not game feel.
+
+
+    Tests: Garbage passthrough when handicap disabled, per-pair modifiers applied
+    correctly (A→B differs from A→C), 0.0 multiplier blocks all garbage, probabilistic
+    rounding averages correctly over many samples, modifier matrix recomputed correctly
+    for player count, optional delay/messiness modifiers only apply when toggled on,
+    integration test with mock garbage manager.
+
+
+    Files: `server/balancing-middleware.ts`, `server/balancing-middleware.test.ts`,
+    `server/game-session.ts` (extend to inject middleware)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211764+00:00'
+  updated_at: '2026-04-11T21:51:53.211611+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-f25402c
+  plan: plan-45cb304
+  title: Skill-aware targeting bias
+  branch: pm/pr-f25402c-skill-aware-targeting-bias
+  status: pending
+  depends_on:
+  - pr-998f69e
+  - pr-1bab92a
+  description: 'Hook into Plan 2''s auto-targeting system to bias garbage distribution
+    based on skill ratings in 3+ player games. When a player hasn''t manually selected
+    a target, compute a weighted probability distribution across opponents: stronger
+    players'' garbage skews toward other strong players, weaker players'' garbage
+    skews toward their highest-rated opponent (biggest threat). The bias strength
+    is configurable (0.0 = uniform random, 1.0 = fully skill-weighted). Manual target
+    selection always overrides — if a player picks a target, their garbage goes there
+    with no bias. In 2-player games this is a no-op. Implemented as a targeting strategy
+    that Plan 2''s garbage distribution calls into. **INPUT_REQUIRED: Human testing
+    needed** in 3+ player games to verify targeting feels natural and not obviously
+    rigged.
+
+
+    Tests: 2-player game bypasses targeting bias entirely, 3-player game with equal
+    ratings produces uniform distribution, large skill gap biases toward expected
+    targets, bias strength 0.0 produces uniform, bias strength 1.0 produces deterministic
+    targeting, manual target override ignores bias completely, eliminated players
+    excluded from targeting.
+
+
+    Files: `server/targeting-bias.ts`, `server/targeting-bias.test.ts`, `server/game-session.ts`
+    (extend to wire targeting strategy)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211768+00:00'
+  updated_at: '2026-04-11T21:51:53.650514+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-c2fef7a
+  plan: plan-45cb304
+  title: Post-game rating updates
+  branch: pm/pr-c2fef7a-post-game-rating-updates
+  status: pending
+  depends_on:
+  - pr-4601342
+  - pr-ebfaa61
+  - pr-73cfbb0
+  - pr-bd3b549
+  description: 'After a multiplayer game ends (win/loss detected), the server collects
+    the final `PerformanceMetrics` for each player, runs the Glicko-2 algorithm to
+    update ratings, stores the updated profiles and match result via `SkillStore`,
+    and broadcasts updated ratings to all players in the room. Handles edge cases:
+    disconnected players count as losses, 3+ player games update ratings pairwise
+    (winner vs each loser).
+
+
+    Tests: 1v1 rating update after game end, 3+ player pairwise updates, disconnect
+    counts as loss, metrics snapshot stored with match result, rating broadcast message
+    format, no update when handicap is disabled.
+
+
+    Files: `server/post-game-handler.ts`, `server/post-game-handler.test.ts`, `server/game-session.ts`
+    (extend with post-game hook)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211773+00:00'
+  updated_at: '2026-04-11T21:51:54.621212+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-493072b
+  plan: plan-45cb304
+  title: Handicap settings in lobby UI
+  branch: pm/pr-493072b-handicap-settings-in-lobby-ui
+  status: pending
+  depends_on:
+  - pr-c7b0d7c
+  - pr-ea6f093
+  description: 'Add handicap configuration to the lobby/waiting room UI. The room
+    host can set: handicap intensity (off / light / standard / heavy — controls the
+    sigmoid curve steepness, with heavier settings reaching lower multipliers faster
+    for the same rating gap; no artificial floor on any setting), handicap mode (default
+    "boost only" vs optional "symmetric" which also nerfs the stronger player''s output),
+    targeting bias strength slider (0.0–1.0, default 0.7), optional toggles for delay
+    modifier and messiness modifier (both off by default), and rating visibility.
+    Settings are sent to the server when the game starts and stored on the room. Show
+    each player''s current rating next to their name in the player list (when visibility
+    is on). **INPUT_REQUIRED: Human testing needed** to verify lobby UI layout and
+    settings interaction across multiple browser tabs.
+
+
+    Tests: Settings component renders all intensity options, default mode is "boost
+    only", symmetric mode toggle works, delay/messiness toggles default to off, selection
+    updates room config, rating display toggle works, settings sync to server on game
+    start, non-host players see settings but can''t change them.
+
+
+    Files: `src/ui/HandicapSettings.tsx`, `src/ui/HandicapSettings.css`, `src/ui/Lobby.tsx`
+    (extend), `shared/protocol.ts` (add handicap settings messages), `server/handlers/lobby-handlers.ts`
+    (extend)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211777+00:00'
+  updated_at: '2026-04-11T21:51:55.077876+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-b34072f
+  plan: plan-45cb304
+  title: In-game handicap indicator
+  branch: pm/pr-b34072f-in-game-handicap-indicator
+  status: pending
+  depends_on:
+  - pr-493072b
+  - pr-c08aefa
+  description: 'During a multiplayer game, display a small indicator near each player''s
+    board showing the active handicap modifier for garbage they receive from each
+    opponent. For each incoming direction, show the multiplier (e.g., "0.6x" with
+    a shield icon for a protected weaker player, "1.0x" neutral for unmodified). Use
+    color coding: green tones for protection (multiplier < 1.0), neutral gray for
+    1.0x (no handicap). In 2-player games, show a single value; in 3+ player, show
+    the average or strongest modifier. The indicator updates if handicap changes mid-session
+    (shouldn''t happen normally, but defensive). In symmetric mode, the stronger player''s
+    indicator also shows their reduced outgoing multiplier. **INPUT_REQUIRED: Human
+    testing needed** to verify indicator placement doesn''t obscure gameplay and is
+    readable at a glance.'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211781+00:00'
+  updated_at: '2026-04-11T21:52:08.648114+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-90a1525
+  plan: plan-45cb304
+  title: Stats screen with match history and skill progression
+  branch: pm/pr-90a1525-stats-screen-with-match-history-and-skill-progress
+  status: pending
+  depends_on:
+  - pr-4601342
+  - pr-a1cfec0
+  description: 'Add a stats screen accessible from the main menu and post-game results.
+    Shows: player''s current rating and rank label (Beginner/Intermediate/Advanced/Expert
+    based on rating thresholds), match history table (opponent, result, rating change,
+    date — last 20 games), and a skill progression sparkline chart showing rating
+    over time. Data fetched from server via a new REST endpoint (`GET /api/stats/:username`).
+    **INPUT_REQUIRED: Human testing needed** to verify chart rendering, data display,
+    and navigation flow.
+
+
+    Tests: Stats component renders with mock data, empty state for new players, match
+    history pagination, sparkline renders correct data points, REST endpoint returns
+    correct data shape.
+
+
+    Files: `src/ui/StatsScreen.tsx`, `src/ui/StatsScreen.css`, `src/ui/Sparkline.tsx`,
+    `server/routes/stats-routes.ts`, `src/ui/App.tsx` (add stats route)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211786+00:00'
+  updated_at: '2026-04-11T21:51:56.642372+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-fb5033a
+  plan: plan-45cb304
+  title: Post-game results integration with ratings
+  branch: pm/pr-fb5033a-post-game-results-integration-with-ratings
+  status: pending
+  depends_on:
+  - pr-c2fef7a
+  - pr-90a1525
+  description: 'Extend Plan 2''s game results screen to show rating changes after
+    each match. Display each player''s old rating, new rating, and delta (with +/-
+    and color). Show a brief "New rating" animation. Include a link to the full stats
+    screen. When handicap was active, show what the modifiers were for transparency.
+    **INPUT_REQUIRED: Human testing needed** to verify rating animation, delta display,
+    and navigation to stats screen.'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211791+00:00'
+  updated_at: '2026-04-11T21:52:11.540631+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-2699742
+  plan: plan-45cb304
+  title: End-to-end balancing integration and tuning config
+  branch: pm/pr-2699742-end-to-end-balancing-integration-and-tuning-config
+  status: pending
+  depends_on:
+  - pr-3b2b0fc
+  - pr-f25402c
+  - pr-c2fef7a
+  - pr-493072b
+  description: 'Wire all balancing components together in the server startup and game
+    lifecycle. Ensure the full flow works: player joins with username → rating loaded
+    → game starts with handicap modifiers → garbage modified in-flight → game ends
+    → ratings updated → results shown. Add a `balancing-config.json` file with all
+    tunable constants (rating params, handicap curves, intensity presets) so playtesting
+    adjustments don''t require code changes. Add integration tests covering the full
+    lifecycle. **INPUT_REQUIRED: Human testing needed** — this PR requires multi-player
+    playtesting to verify the system feels fair and fun. Tuning values will likely
+    need adjustment after real play sessions.
+
+
+    Tests: Full lifecycle integration test (mock two players, play simulated games,
+    verify ratings converge), config file loading and validation, graceful fallback
+    if config file missing, handicap disabled mode bypasses all balancing logic.
+
+
+    Files: `server/balancing-init.ts`, `balancing-config.json`, `server/index.ts`
+    (extend startup), `server/integration/balancing.integration.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:50:04.211796+00:00'
+  updated_at: '2026-04-11T21:50:04.211796+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-c0cc689
+  plan: null
+  title: Integration — playable multiplayer Tetris
+  branch: pm/pr-c0cc689-integration-playable-multiplayer-tetris
+  status: pending
+  depends_on:
+  - pr-3f9112e
+  - pr-6459c34
+  - pr-03c8022
+  - pr-d422f66
+  - pr-1bab92a
+  description: 'Final integration PR for Plan 2. Ties together all multiplayer features
+    into a working end-to-end multiplayer Tetris experience: lobby, real-time gameplay,
+    garbage sending, opponent display, win/loss, rematch, disconnect handling, and
+    latency display.'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T21:59:57.456616+00:00'
+  updated_at: '2026-04-11T21:59:57.456616+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-234798c
+  plan: null
+  title: Full integration test — single-player, multiplayer, and adaptive balancing
+  branch: pm/pr-234798c-full-integration-test-single-player-multiplayer-an
+  status: pending
+  depends_on:
+  - pr-2699742
+  - pr-fb5033a
+  - pr-c0cc689
+  - pr-b34072f
+  description: 'Final integration PR across all three plans. Verifies that single-player
+    Tetris, multiplayer with garbage sending, and adaptive skill-based balancing all
+    work together end-to-end. Tests the complete flow: lobby creation, skill-based
+    handicapping, gameplay, garbage balancing, post-game rating updates, and stats
+    display.'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T22:00:02.150190+00:00'
+  updated_at: '2026-04-11T22:00:02.150190+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-e38d93c
+  plan: null
+  title: Testing infrastructure — Vitest setup with shared/client/server configs
+  branch: pm/pr-e38d93c-testing-infrastructure-vitest-setup-with-shared-cl
+  status: pending
+  depends_on:
+  - pr-a1cfec0
+  description: Set up Vitest across the monorepo with per-package configs. Establishes
+    testing patterns for the shared game logic (unit tests for rotation, scoring,
+    board state), server logic (WebSocket handlers, room management), and client components
+    (React Testing Library). All subsequent game logic PRs should ship with tests.
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T22:02:31.247218+00:00'
+  updated_at: '2026-04-11T22:02:31.247218+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
