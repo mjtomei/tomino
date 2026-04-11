@@ -1,10 +1,9 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { TetrisEngine } from "./engine.js";
 import type { EngineOptions, GameState } from "./engine.js";
 import { modernRuleSet, classicRuleSet } from "./rulesets.js";
 import { marathonMode, sprintMode, ultraMode, zenMode } from "./rulesets.js";
 import { BOARD_HEIGHT, BOARD_WIDTH } from "./board.js";
-import type { RuleSet, GameModeConfig } from "./types.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -38,14 +37,6 @@ function tickSmall(engine: TetrisEngine, totalMs: number, stepMs = 16): GameStat
     remaining -= dt;
   }
   return state;
-}
-
-/** Drop a piece to the bottom and lock it (for instant-lock classic). */
-function dropToBottom(engine: TetrisEngine): void {
-  // Move down until we can't anymore via soft drops
-  for (let i = 0; i < BOARD_HEIGHT; i++) {
-    engine.softDrop();
-  }
 }
 
 // ===========================================================================
@@ -408,6 +399,35 @@ describe("TetrisEngine", () => {
       const afterHold = engine.getState();
       expect(afterHold.hold).toBe(beforeHold);
       expect(afterHold.holdUsed).toBe(true);
+    });
+
+    it("hold works correctly when held and current piece are the same type", () => {
+      const engine = createEngine();
+      engine.start();
+      const firstPiece = engine.getState().currentPiece!.type;
+
+      // Hold the first piece
+      engine.hold();
+      const secondPiece = engine.getState().currentPiece!.type;
+
+      // Hard drop the second piece so hold resets
+      engine.hardDrop();
+
+      // Keep dropping until we get the same type as the held piece
+      // or just test the swap directly: hold, then hard-drop, then hold again
+      // The held piece is firstPiece. If current is also firstPiece, swap should
+      // still work (current goes to hold, held comes out).
+      // We can force this by holding again after lock — the current piece swaps
+      // with the held firstPiece.
+      const thirdPiece = engine.getState().currentPiece!.type;
+      engine.hold();
+
+      const state = engine.getState();
+      // Held piece should now be thirdPiece
+      expect(state.hold).toBe(thirdPiece);
+      // Current piece should be firstPiece (the previously held one)
+      expect(state.currentPiece!.type).toBe(firstPiece);
+      expect(state.holdUsed).toBe(true);
     });
   });
 

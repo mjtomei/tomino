@@ -285,6 +285,7 @@ export class TetrisEngine {
   hold(): void {
     if (this.status !== "playing" || !this.currentPiece) return;
     if (!this.ruleSet.holdEnabled) return;
+    if (this.holdState.holdUsedThisDrop) return;
 
     const result = holdPiece(
       this.currentPiece.type,
@@ -292,11 +293,6 @@ export class TetrisEngine {
       this.ruleSet.holdEnabled,
     );
     this.holdState = result.newState;
-
-    if (result.newCurrent === this.currentPiece.type) {
-      // Hold was a no-op (already used this drop)
-      return;
-    }
 
     if (result.newCurrent === null) {
       // Hold was empty — pull from randomizer
@@ -381,16 +377,11 @@ export class TetrisEngine {
         this.currentPiece.type,
         result.rotation,
       );
-      // Detect if a wall kick was used (offset != [0,0])
+      // Detect if a wall kick was used: the first kick offset is always [0,0],
+      // so if the position changed, a non-trivial kick was applied.
       this.lastRotationUsedKick =
-        result.row !== this.currentPiece.row - 0 ||
+        result.row !== this.currentPiece.row ||
         result.col !== this.currentPiece.col;
-      // More precise: check if the position changed beyond just the rotation
-      // The first kick offset is always [0,0], so if position changed, a kick was used
-      const noKickRow = this.currentPiece.row;
-      const noKickCol = this.currentPiece.col;
-      this.lastRotationUsedKick =
-        result.row !== noKickRow || result.col !== noKickCol;
 
       this.currentPiece = {
         type: this.currentPiece.type,
