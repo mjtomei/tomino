@@ -1,0 +1,432 @@
+project:
+  name: tetris
+  repo: /home/matt/claude-work/tetris
+  base_branch: master
+  backend: local
+  active_pr: pr-1d0b36c
+plans:
+- id: plan-48e829d
+  name: plans/01-core-tetris.md
+  file: plans/plan-48e829d.md
+  status: draft
+  parent: null
+prs:
+- id: pr-a1cfec0
+  plan: plan-48e829d
+  title: Project scaffolding with Vite + React + TypeScript
+  branch: pm/pr-a1cfec0-project-scaffolding-with-vite-react-typescript
+  status: pending
+  depends_on: []
+  description: 'Initialize the project with Vite, React, TypeScript, and basic dev
+    tooling (ESLint, Prettier). Set up the directory structure: `src/engine/`, `src/ui/`,
+    `src/input/`, `src/audio/`. Include a minimal "Hello World" React app that renders
+    to confirm the toolchain works. No game logic yet.
+
+
+    Tests: Vite builds successfully, dev server starts, React renders a placeholder
+    page.
+
+
+    Files: `package.json`, `tsconfig.json`, `vite.config.ts`, `.eslintrc.cjs`, `.prettierrc`,
+    `index.html`, `src/main.tsx`, `src/App.tsx`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057154+00:00'
+  updated_at: '2026-04-11T20:46:48.057154+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-a367deb
+  plan: plan-48e829d
+  title: RuleSet types, presets, and game mode definitions
+  branch: pm/pr-a367deb-ruleset-types-presets-and-game-mode-definitions
+  status: pending
+  depends_on:
+  - pr-a1cfec0
+  description: 'Define the `RuleSet` interface, `GameMode` enum, and preset factory
+    functions (`classicRuleSet()`, `modernRuleSet()`). Define the `GameMode` type
+    with start/end conditions for Marathon, Sprint, Ultra, and Zen. Include a `customRuleSet()`
+    helper that takes partial overrides on top of a base preset. All pure types and
+    data — no logic. **Human testing not needed** — type definitions and data.
+
+
+    Tests: Unit tests for: presets return valid RuleSets with all fields populated,
+    custom rule set overrides work, game mode definitions have correct conditions.
+
+
+    Files: `src/engine/types.ts`, `src/engine/rulesets.ts`, `src/engine/rulesets.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057172+00:00'
+  updated_at: '2026-04-11T20:46:48.057172+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1d0b36c
+  plan: plan-48e829d
+  title: Piece definitions for SRS and NRS rotation systems
+  branch: pm/pr-1d0b36c-piece-definitions-for-srs-and-nrs-rotation-systems
+  status: pending
+  depends_on: []
+  description: 'Define all 7 Tetris pieces with rotation states for both rotation
+    systems. **SRS**: 4 rotation states per piece, wall kick offset tables (JLSTZ
+    shared table, I-piece separate table, O-piece no kicks). **NRS**: 2 rotation states
+    for I/S/Z pieces, 4 for J/L/T, no wall kicks, right-handed bias. Implement the
+    `RotationSystem` interface with `SRSRotation` and `NRSRotation` implementations
+    that return rotation states and kick offsets for a given piece and rotation transition.
+    **Human testing not needed** — purely data and logic verified by unit tests.
+
+
+    Tests: Unit tests for: SRS — each piece has 4 states, correct shapes, kick tables
+    have correct entries, I-piece uses own table. NRS — I/S/Z have 2 states, J/L/T
+    have 4, no kick offsets returned, O has 1 state. Both systems implement the same
+    interface.
+
+
+    Files: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`,
+    `src/engine/rotation.ts`, `src/engine/pieces.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057187+00:00'
+  updated_at: '2026-04-11T20:46:48.057187+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-698f2b5
+  plan: plan-48e829d
+  title: Board model and line clearing
+  branch: pm/pr-698f2b5-board-model-and-line-clearing
+  status: pending
+  depends_on:
+  - pr-1d0b36c
+  description: 'Implement the board as a 10x40 2D grid (rows 0-19 buffer zone, 20-39
+    visible). Support placing a piece (writing its cells to the grid), checking for
+    completed lines, clearing completed lines and shifting rows down. Pure logic,
+    no rendering. **Human testing not needed** — pure logic verified by unit tests.
+
+
+    Tests: Unit tests for: empty board initialization, placing a piece on the board,
+    detecting full rows, clearing single/double/triple/tetris lines, rows above shift
+    down correctly after clear, buffer zone rows work correctly.
+
+
+    Files: `src/engine/board.ts`, `src/engine/board.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057194+00:00'
+  updated_at: '2026-04-11T20:46:48.057194+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-ac2a70b
+  plan: plan-48e829d
+  title: Piece movement, rotation, and wall kicks
+  branch: pm/pr-ac2a70b-piece-movement-rotation-and-wall-kicks
+  status: pending
+  depends_on:
+  - pr-698f2b5
+  description: 'Implement piece movement (left, right, soft drop) and rotation via
+    the `RotationSystem` interface. Movement checks collision with board walls and
+    placed cells. Rotation delegates to the active rotation system which returns kick
+    offsets to try — the movement module accepts the first non-colliding offset. Works
+    identically for SRS (with kicks) and NRS (no kicks, just base rotation). **Human
+    testing not needed** — pure logic verified by unit tests.
+
+
+    Tests: Unit tests for: moving left/right, collision with walls, collision with
+    placed pieces, soft drop. With SRS: rotation through all 4 states, wall kicks
+    trigger on obstruction, I-piece kicks, blocked when all kicks fail. With NRS:
+    2-state rotation for I/S/Z, no kicks attempted, rotation blocked on collision.
+
+
+    Files: `src/engine/movement.ts`, `src/engine/movement.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057199+00:00'
+  updated_at: '2026-04-11T20:46:48.057199+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3c6d5aa
+  plan: plan-48e829d
+  title: Randomizer variants — 7-bag and pure random
+  branch: pm/pr-3c6d5aa-randomizer-variants-7-bag-and-pure-random
+  status: pending
+  depends_on:
+  - pr-1d0b36c
+  description: 'Implement the `Randomizer` interface with two implementations. **SevenBagRandomizer**:
+    shuffles all 7 pieces, deals them, refills when empty. **PureRandomRandomizer**:
+    uniform random piece selection (classic style, allows repeats). Both maintain
+    a piece queue (depth configurable via `previewCount`). Implement hold piece logic
+    separately — swap current with held, one-hold-per-drop restriction, respects `holdEnabled`
+    from rule set. **Human testing not needed** — pure logic verified by unit tests.
+
+
+    Tests: Unit tests for: 7-bag — contains all 7, no repeats within bag, refills
+    on exhaustion. Pure random — produces valid pieces, allows repeats. Both — queue
+    stays filled to requested depth. Hold — swaps correctly, blocked when disabled,
+    cannot hold twice per drop.
+
+
+    Files: `src/engine/randomizer.ts`, `src/engine/randomizer-7bag.ts`, `src/engine/randomizer-pure.ts`,
+    `src/engine/hold.ts`, `src/engine/randomizer.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057207+00:00'
+  updated_at: '2026-04-11T20:46:48.057207+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-6060eaf
+  plan: plan-48e829d
+  title: Scoring systems — Guideline and NES
+  branch: pm/pr-6060eaf-scoring-systems-guideline-and-nes
+  status: pending
+  depends_on:
+  - pr-698f2b5
+  description: 'Implement the `ScoringSystem` interface with two implementations.
+    **GuidelineScoring**: base points × level for clears (100/300/500/800), T-spin
+    detection (3-corner rule) with mini/full bonuses, combo counter (+50 × combo),
+    back-to-back 1.5x for consecutive difficult clears, perfect clear bonuses, soft
+    drop (1/cell) and hard drop (2/cell). **NESScoring**: classic formula (40/100/300/1200
+    × (level+1)), soft drop (1/cell), no T-spins, no combos, no B2B. Each scoring
+    system includes its own gravity curve (level → drop interval mapping). **Human
+    testing not needed** — pure logic verified by unit tests.
+
+
+    Tests: Unit tests for: Guideline — points for each clear type at various levels,
+    T-spin 3-corner detection, mini vs full, combo escalation, combo reset, B2B bonus,
+    perfect clear bonus, hard/soft drop points. NES — points for each clear type at
+    various levels, soft drop points, no T-spin/combo/B2B. Gravity — guideline curve
+    values, NES curve (48 frames at L0, 1 frame at L29).
+
+
+    Files: `src/engine/scoring.ts`, `src/engine/scoring-guideline.ts`, `src/engine/scoring-nes.ts`,
+    `src/engine/gravity.ts`, `src/engine/scoring.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057213+00:00'
+  updated_at: '2026-04-11T20:46:48.057213+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-0d483af
+  plan: plan-48e829d
+  title: TetrisEngine — game loop and state machine
+  branch: pm/pr-0d483af-tetrisengine-game-loop-and-state-machine
+  status: pending
+  depends_on:
+  - pr-3c6d5aa
+  - pr-6060eaf
+  description: 'Implement the core `TetrisEngine` class that takes a `RuleSet` and
+    `GameMode` config, instantiates the appropriate rotation system, randomizer, and
+    scoring system, and ties them together with the board and movement modules. Manages
+    game states (idle, playing, paused, game over). Runs gravity ticks per the active
+    gravity curve. Lock delay behavior driven by rule set (0 = instant lock, >0 =
+    delay with configurable max resets). Hard drop availability driven by rule set.
+    Game mode controls end conditions: Marathon = top-out, Sprint = 40 lines cleared,
+    Ultra = 3min timer expires, Zen = manual quit only. Emits complete game state
+    snapshots. Zero browser dependencies. **Human testing not needed** — pure logic
+    verified by unit tests.
+
+
+    Tests: Unit tests for: engine initializes from rule set + mode, start/pause/game-over
+    transitions. With Modern rules: gravity at correct interval, lock delay with resets,
+    hard drop works, hold works, ghost position correct. With Classic rules: instant
+    lock, no hard drop action, no hold, no ghost in state. Game modes: Marathon ends
+    on top-out, Sprint ends at 40 lines (records time), Ultra ends after 3min (records
+    score), Zen has no gravity and no top-out. State snapshot contains all data needed
+    by renderer.
+
+
+    Files: `src/engine/engine.ts`, `src/engine/engine.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057223+00:00'
+  updated_at: '2026-04-11T20:46:48.057223+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-c08aefa
+  plan: plan-48e829d
+  title: Canvas renderer for game board
+  branch: pm/pr-c08aefa-canvas-renderer-for-game-board
+  status: pending
+  depends_on:
+  - pr-0d483af
+  description: 'Implement a React component with an HTML5 Canvas that renders the
+    game state: placed cells with colors, active piece, ghost piece (when present
+    in state), grid lines. Each cell is a colored rectangle with subtle borders. Renders
+    at 60fps via `requestAnimationFrame`. The renderer is rule-set-agnostic — it draws
+    whatever the state snapshot contains. If ghost is null (Classic), nothing is drawn
+    for it. Same for hold/preview. **INPUT_REQUIRED: Human testing needed** to verify
+    pieces render correctly under both Classic and Modern rule sets, ghost appears
+    only when enabled, colors look right.
+
+
+    Tests: Unit tests for: component renders canvas, render called with state, ghost
+    not drawn when null.
+
+
+    Files: `src/ui/BoardCanvas.tsx`, `src/ui/BoardCanvas.test.tsx`, `src/ui/colors.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057228+00:00'
+  updated_at: '2026-04-11T20:46:48.057228+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-c2613e4
+  plan: plan-48e829d
+  title: Input handler with DAS/ARR
+  branch: pm/pr-c2613e4-input-handler-with-das-arr
+  status: pending
+  depends_on:
+  - pr-0d483af
+  description: 'Implement keyboard input handling that maps keys to engine actions.
+    DAS and ARR values are read from the active rule set. Actions gated by rule set:
+    hard drop key ignored when `hardDropEnabled=false`, hold key ignored when `holdEnabled=false`.
+    Key mappings: left/right arrows for movement, up for CW rotation, Z for CCW, space
+    for hard drop, down for soft drop, shift for hold, escape for pause. DAS/ARR feel
+    must be snappy — ARR=0 means instant teleport on DAS charge. **INPUT_REQUIRED:
+    Human testing needed** to verify responsiveness under both Classic DAS (sluggish,
+    authentic) and Modern DAS (fast, tetr.io-like), and that disabled actions are
+    properly ignored.
+
+
+    Tests: Unit tests for: key→action mapping, DAS delay before repeat, ARR repeat
+    rate, ARR=0 instant move, hard drop key ignored when disabled, hold key ignored
+    when disabled.
+
+
+    Files: `src/input/keyboard.ts`, `src/input/keyboard.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057233+00:00'
+  updated_at: '2026-04-11T20:46:48.057233+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-e90433b
+  plan: plan-48e829d
+  title: React UI shell — score, next queue, hold, mode display
+  branch: pm/pr-e90433b-react-ui-shell-score-next-queue-hold-mode-display
+  status: pending
+  depends_on:
+  - pr-c08aefa
+  description: 'Build the React UI chrome around the canvas: score/level/lines display,
+    next piece queue (respects `previewCount` — 1 for Classic, 5 for Modern), hold
+    piece display (hidden when hold disabled), game mode-specific stats (timer for
+    Sprint/Ultra, lines remaining for Sprint), and overlays (start screen with rule
+    set + mode selector, pause, game over with final stats). Layout inspired by tetr.io.
+    The start screen shows preset buttons (Classic, Modern, Custom) and mode buttons
+    (Marathon, Sprint, Ultra, Zen). "Custom" expands a panel to tweak individual rule
+    set fields. **INPUT_REQUIRED: Human testing needed** to verify layout, rule set
+    selector works, mode selector works, custom panel usable, correct stats shown
+    per mode, overlays appear correctly.
+
+
+    Tests: Unit tests for: components render correct values, next queue respects previewCount,
+    hold hidden when disabled, mode-specific stats displayed, overlays appear on correct
+    game states, preset/mode selection updates config.
+
+
+    Files: `src/ui/GameShell.tsx`, `src/ui/ScoreDisplay.tsx`, `src/ui/NextQueue.tsx`,
+    `src/ui/HoldDisplay.tsx`, `src/ui/Overlay.tsx`, `src/ui/StartScreen.tsx`, `src/ui/CustomRuleSetPanel.tsx`,
+    `src/ui/GameShell.css`, `src/App.tsx`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057238+00:00'
+  updated_at: '2026-04-11T20:46:48.057238+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-297734e
+  plan: plan-48e829d
+  title: Sound effects with Web Audio API
+  branch: pm/pr-297734e-sound-effects-with-web-audio-api
+  status: pending
+  depends_on:
+  - pr-0d483af
+  description: 'Implement sound effects using the Web Audio API: piece move, piece
+    rotate, piece lock, line clear (single/multi/tetris), T-spin, hold, hard drop,
+    level up, game over. Generate sounds programmatically (oscillator-based) rather
+    than loading audio files. Provide a mute toggle. Sound events are driven by engine
+    state transitions — works with any rule set (T-spin sound simply never triggers
+    under Classic/NES scoring). **INPUT_REQUIRED: Human testing needed** to verify
+    sounds play at the right time, volume levels are balanced, sounds are pleasant,
+    mute works.
+
+
+    Tests: Unit tests for: audio context created, sounds trigger on correct events,
+    mute prevents playback, no errors when T-spin event absent.
+
+
+    Files: `src/audio/sounds.ts`, `src/audio/sounds.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057243+00:00'
+  updated_at: '2026-04-11T20:46:48.057243+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-20fd8ff
+  plan: plan-48e829d
+  title: Integration — playable single-player Tetris
+  branch: pm/pr-20fd8ff-integration-playable-single-player-tetris
+  status: pending
+  depends_on:
+  - pr-c08aefa
+  - pr-c2613e4
+  - pr-297734e
+  - pr-e90433b
+  - pr-a367deb
+  description: 'Wire everything together: `App.tsx` creates engine from selected rule
+    set + game mode, connects input handler, audio, renderer, and UI shell. Game loop
+    via `requestAnimationFrame`. Start screen lets user pick preset (Classic/Modern/Custom)
+    and mode (Marathon/Sprint/Ultra/Zen), then launches the game. **INPUT_REQUIRED:
+    Human testing critical** — play full games under each combination: Modern+Marathon
+    (standard experience), Classic+Marathon (NES feel — instant lock, no hold, sluggish
+    DAS), Modern+Sprint (race to 40L), Classic+Sprint, Modern+Ultra, Zen mode. Verify
+    a custom rule set (e.g., SRS rotation + NES gravity + no hold). Verify all transitions:
+    start→play→pause→resume→game over→restart with different settings.
+
+
+    Tests: Integration test: engine + input + renderer initialize without errors for
+    each preset. Smoke test switching presets and modes.
+
+
+    Files: `src/App.tsx`, `src/main.tsx`, `src/game/GameController.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T20:46:48.057251+00:00'
+  updated_at: '2026-04-11T20:47:54.510674+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
