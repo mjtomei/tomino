@@ -723,6 +723,20 @@ describe("TetrisEngine", () => {
       expect(scoring).toHaveProperty("startLevel");
     });
 
+    it("board snapshot is not mutated by subsequent ticks", () => {
+      const engine = createEngine();
+      engine.start();
+
+      const snap1 = engine.getState();
+      const boardCopy = snap1.board.map((row) => [...row]);
+
+      // Hard drop places a piece, mutating the internal grid
+      engine.hardDrop();
+
+      // The snapshot taken before the hard drop should be unchanged
+      expect(snap1.board).toEqual(boardCopy);
+    });
+
     it("endReason is present only when game is over", () => {
       const engine = createEngine();
       engine.start();

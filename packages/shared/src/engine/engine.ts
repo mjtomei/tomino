@@ -321,7 +321,7 @@ export class TetrisEngine {
 
     return {
       status: this.status,
-      board: this.grid,
+      board: this.grid.map((row) => [...row]),
       currentPiece: this.currentPiece,
       ghostRow,
       hold: this.holdState.heldPiece,
