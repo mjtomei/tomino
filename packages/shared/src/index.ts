@@ -1,10 +1,18 @@
-/**
- * @tetris/shared — shared types and game logic
- *
- * This package will contain:
- * - Game state types (board, pieces, scoring)
- * - Network protocol types (for multiplayer)
- * - Skill rating types (for adaptive balancing)
- */
+export type {
+  PlayerProfile,
+  PerformanceMetrics,
+  MatchResult,
+  SkillStore,
+} from "./skill-types.js";
 
-export {};
+export type {
+  HandicapModifiers,
+  ModifierMatrix,
+  ModifierMatrixKey,
+  TargetingBias,
+  HandicapIntensity,
+  HandicapMode,
+  HandicapSettings,
+} from "./handicap-types.js";
+
+export { modifierKey } from "./handicap-types.js";
