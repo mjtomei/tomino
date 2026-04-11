@@ -74,3 +74,11 @@ export type {
 
 export { SRSRotation } from "./engine/rotation-srs.js";
 export { NRSRotation } from "./engine/rotation-nrs.js";
+
+export type { Randomizer } from "./engine/randomizer.js";
+export { createRandomizer, seededRng } from "./engine/randomizer.js";
+export { SevenBagRandomizer } from "./engine/randomizer-7bag.js";
+export { PureRandomRandomizer } from "./engine/randomizer-pure.js";
+
+export type { HoldState, HoldResult } from "./engine/hold.js";
+export { createHoldState, holdPiece, resetHoldFlag } from "./engine/hold.js";
