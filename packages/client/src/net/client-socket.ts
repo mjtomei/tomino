@@ -36,10 +36,12 @@ export class ClientSocket {
     const ws = new WebSocket(url);
 
     ws.addEventListener("open", () => {
+      if (this.ws !== ws) return; // stale socket
       this._setState("connected");
     });
 
     ws.addEventListener("message", (event) => {
+      if (this.ws !== ws) return; // stale socket
       const raw = typeof event.data === "string" ? event.data : null;
       if (!raw) return;
 
@@ -57,6 +59,7 @@ export class ClientSocket {
     });
 
     ws.addEventListener("close", () => {
+      if (this.ws !== ws) return; // stale socket
       this._setState("disconnected");
       this.ws = null;
     });
