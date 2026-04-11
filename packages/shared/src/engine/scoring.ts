@@ -141,8 +141,7 @@ export function detectTSpin(
     return "full";
   }
 
-  // If a wall kick was used and front corners < 2, it's a mini
-  // (standard guideline: ≥3 corners but <2 front = mini)
+  // ≥3 corners occupied but <2 front corners → mini T-spin
   return "mini";
 }
 

@@ -542,7 +542,7 @@ describe("NESScoring", () => {
       expect(state.level).toBe(10);
     });
 
-    it("first level-up at 110 lines for start level 15", () => {
+    it("first level-up at 100 lines for start level 15", () => {
       // threshold = min(15*10+10, max(100, 15*10-50)) = min(160, 100) = 100
       const state = NESScoring.createState(15);
       for (let i = 0; i < 25; i++) {
