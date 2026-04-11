@@ -1,81 +1,78 @@
 import { useState } from "react";
+import { useLobby, makePlayerInfo } from "./net/lobby-client";
+import { PlayerNameInput } from "./ui/PlayerNameInput";
+import { Lobby } from "./ui/Lobby";
+import { JoinDialog } from "./ui/JoinDialog";
+import { WaitingRoom } from "./ui/WaitingRoom";
 import { StatsScreen } from "./ui/StatsScreen";
 
-type Screen = "menu" | "stats";
-
 function App() {
-  const [screen, setScreen] = useState<Screen>("menu");
-  const [username, setUsername] = useState("player1");
+  const lobby = useLobby();
+  const [showStats, setShowStats] = useState(false);
 
-  if (screen === "stats") {
+  if (showStats) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e" }}>
-        <StatsScreen username={username} onBack={() => setScreen("menu")} />
+        <StatsScreen username={lobby.playerName} onBack={() => setShowStats(false)} />
       </div>
     );
   }
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        fontFamily: "system-ui, sans-serif",
-        backgroundColor: "#1a1a2e",
-        color: "#e0e0e0",
-      }}
-    >
-      <h1 style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>Tetris</h1>
-      <p style={{ color: "#888", marginBottom: "2rem" }}>Game coming soon...</p>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.75rem",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <label htmlFor="username-input" style={{ color: "#888", fontSize: "0.9rem" }}>
-            Username:
-          </label>
-          <input
-            id="username-input"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{
-              padding: "0.4rem 0.6rem",
-              borderRadius: "4px",
-              border: "1px solid #555",
-              background: "#16213e",
-              color: "#e0e0e0",
-              fontSize: "0.9rem",
-            }}
-          />
-        </div>
-        <button
-          onClick={() => setScreen("stats")}
-          disabled={!username.trim()}
-          style={{
-            padding: "0.6rem 1.5rem",
-            borderRadius: "4px",
-            border: "1px solid #555",
-            background: "#16213e",
-            color: "#e0e0e0",
-            cursor: username.trim() ? "pointer" : "not-allowed",
-            fontSize: "1rem",
+  switch (lobby.state.view) {
+    case "name-input":
+      return (
+        <PlayerNameInput
+          initialName={lobby.playerName}
+          onConfirm={(name) => {
+            lobby.confirmName(name);
           }}
-        >
-          View Stats
-        </button>
-      </div>
-    </div>
-  );
+        />
+      );
+
+    case "menu":
+      return (
+        <Lobby
+          playerName={lobby.playerName}
+          connectionState={lobby.state.connectionState}
+          error={lobby.state.error}
+          onCreateRoom={lobby.createRoom}
+          onJoinRoom={lobby.openJoinDialog}
+          onViewStats={() => setShowStats(true)}
+          onClearError={lobby.clearError}
+        />
+      );
+
+    case "joining":
+      return (
+        <>
+          <Lobby
+            playerName={lobby.playerName}
+            connectionState={lobby.state.connectionState}
+            error={null}
+            onCreateRoom={lobby.createRoom}
+            onJoinRoom={lobby.openJoinDialog}
+            onViewStats={() => setShowStats(true)}
+            onClearError={lobby.clearError}
+          />
+          <JoinDialog
+            error={lobby.state.error}
+            onJoin={lobby.joinRoom}
+            onCancel={lobby.closeJoinDialog}
+          />
+        </>
+      );
+
+    case "waiting":
+      if (!lobby.state.room) return null;
+      return (
+        <WaitingRoom
+          room={lobby.state.room}
+          currentPlayerId={makePlayerInfo(lobby.playerName).id}
+          onLeave={lobby.leaveRoom}
+          onStart={lobby.startGame}
+        />
+      );
+  }
 }
 
 export default App;
