@@ -2,13 +2,17 @@
   "name": "tetris",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w packages/client",
     "build": "tsc -b && npm run build -w packages/client",
     "preview": "npm run preview -w packages/client",
     "dev:server": "npm run dev -w packages/server",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.16.0",
@@ -17,6 +21,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "prettier": "^3.4.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^4.1.4"
   }
 }
