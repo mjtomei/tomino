@@ -15,6 +15,8 @@ export function StatsScreen({ username, onBack }: StatsScreenProps) {
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
+    setError(null);
 
     async function fetchStats() {
       try {
