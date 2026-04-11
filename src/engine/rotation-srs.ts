@@ -102,15 +102,15 @@ const JLSTZ_KICKS: Partial<Record<KickKey, KickOffset[]>> = {
 // Reference: SRS standard (tetris.wiki/Super_Rotation_System)
 const I_KICKS: Partial<Record<KickKey, KickOffset[]>> = {
   // CW rotations
-  [kickKey(RotationState.SPAWN, RotationState.R)]:   [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
-  [kickKey(RotationState.R, RotationState.TWO)]:     [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
-  [kickKey(RotationState.TWO, RotationState.L)]:     [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
-  [kickKey(RotationState.L, RotationState.SPAWN)]:   [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+  [kickKey(RotationState.SPAWN, RotationState.R)]:   [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]],
+  [kickKey(RotationState.R, RotationState.TWO)]:     [[0, 0], [-1, 0], [2, 0], [-1, 2], [2, -1]],
+  [kickKey(RotationState.TWO, RotationState.L)]:     [[0, 0], [2, 0], [-1, 0], [2, 1], [-1, -2]],
+  [kickKey(RotationState.L, RotationState.SPAWN)]:   [[0, 0], [1, 0], [-2, 0], [1, -2], [-2, 1]],
   // CCW rotations
-  [kickKey(RotationState.SPAWN, RotationState.L)]:   [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
-  [kickKey(RotationState.L, RotationState.TWO)]:     [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
-  [kickKey(RotationState.TWO, RotationState.R)]:     [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
-  [kickKey(RotationState.R, RotationState.SPAWN)]:   [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+  [kickKey(RotationState.SPAWN, RotationState.L)]:   [[0, 0], [-1, 0], [2, 0], [-1, 2], [2, -1]],
+  [kickKey(RotationState.L, RotationState.TWO)]:     [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]],
+  [kickKey(RotationState.TWO, RotationState.R)]:     [[0, 0], [1, 0], [-2, 0], [1, -2], [-2, 1]],
+  [kickKey(RotationState.R, RotationState.SPAWN)]:   [[0, 0], [2, 0], [-1, 0], [2, 1], [-1, -2]],
 };
 
 export class SRSRotation implements RotationSystem {

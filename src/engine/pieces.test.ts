@@ -186,12 +186,12 @@ describe('SRSRotation', () => {
     it('I-piece 0→R kicks match SRS standard values', () => {
       // Reference: SRS standard I-piece kick data (positive x = right, positive y = up)
       const kicks = srs.getKickOffsets(PieceType.I, RotationState.SPAWN, RotationState.R);
-      expect(kicks).toEqual([[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]]);
+      expect(kicks).toEqual([[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]]);
     });
 
     it('I-piece R→0 kicks are inverse of 0→R', () => {
       const kicks = srs.getKickOffsets(PieceType.I, RotationState.R, RotationState.SPAWN);
-      expect(kicks).toEqual([[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]]);
+      expect(kicks).toEqual([[0, 0], [2, 0], [-1, 0], [2, 1], [-1, -2]]);
     });
   });
 
