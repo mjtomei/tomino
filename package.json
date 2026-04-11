@@ -7,6 +7,7 @@
     "dev": "npm run dev -w packages/client",
     "build": "tsc -b && npm run build -w packages/client",
     "preview": "npm run preview -w packages/client",
+    "dev:server": "npm run dev -w packages/server",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "devDependencies": {
