@@ -110,3 +110,12 @@ export {
   findCompletedRows,
   placePiece,
 } from "./engine/board.js";
+
+export type { GarbageCalcInput, GarbageCalcResult } from "./engine/garbage-types.js";
+export { GARBAGE_CELL_TYPE } from "./engine/garbage-types.js";
+export { baseGarbage, comboGarbage } from "./engine/garbage-table.js";
+export {
+  calculateGarbage,
+  insertGarbage,
+  insertGarbageBatches,
+} from "./engine/garbage.js";
