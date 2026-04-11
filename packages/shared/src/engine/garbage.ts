@@ -67,7 +67,9 @@ function createGarbageRow(gapColumn: number): (typeof GARBAGE_CELL_TYPE | null)[
  * @param batch - The garbage batch to insert (lines count + gap column).
  */
 export function insertGarbage(grid: Grid, batch: GarbageBatch): void {
-  const { lines, gapColumn } = batch;
+  const { gapColumn } = batch;
+  // Clamp to grid height to maintain the row-count invariant
+  const lines = Math.min(batch.lines, grid.length);
   if (lines <= 0) return;
 
   // Build garbage rows
