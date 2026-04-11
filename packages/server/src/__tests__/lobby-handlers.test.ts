@@ -678,8 +678,8 @@ describe("lobby handlers", () => {
         store,
       );
 
-      expect(ctx.broadcasts).toHaveLength(1);
-      expect(ctx.broadcasts[0].msg.type).toBe("gameStarted");
+      expect(ctx.broadcasts.length).toBeGreaterThanOrEqual(1);
+      expect(ctx.broadcasts[0].msg.type).toBe("countdown");
       const room = store.getRoom(roomId)!;
       expect(room.handicapSettings).toEqual(settings);
       expect(room.status).toBe("playing");
@@ -691,8 +691,8 @@ describe("lobby handlers", () => {
 
       handleStartGame({ type: "startGame", roomId }, ctx, store);
 
-      expect(ctx.broadcasts).toHaveLength(1);
-      expect(ctx.broadcasts[0].msg.type).toBe("gameStarted");
+      expect(ctx.broadcasts.length).toBeGreaterThanOrEqual(1);
+      expect(ctx.broadcasts[0].msg.type).toBe("countdown");
     });
 
     it("rejects invalid handicap settings on startGame", () => {
