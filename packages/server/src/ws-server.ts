@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server as HttpServer } from "node:http";
-import type { PlayerId, ServerMessage } from "@tetris/shared";
+import type { ErrorCode, PlayerId, ServerMessage } from "@tetris/shared";
 import { parseC2SMessage, serializeMessage } from "@tetris/shared";
 import { RoomStore } from "./room-store.js";
 import {
@@ -11,7 +11,7 @@ import {
   handleDisconnect,
   type HandlerContext,
 } from "./handlers/lobby-handlers.js";
-import { handleGameDisconnect } from "./handlers/game-handlers.js";
+import { handleGameDisconnect, handlePlayerInput } from "./handlers/game-handlers.js";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const PONG_TIMEOUT_MS = 10_000;
@@ -195,7 +195,9 @@ export function createWebSocketServer(
           handleStartGame(msg, ctx, store);
           break;
         case "playerInput":
-          // Game input handling will be added in a future PR
+          handlePlayerInput(msg, client.playerId!, (code, message) => {
+            send({ type: "error", code: code as ErrorCode, message });
+          });
           break;
       }
     });
@@ -204,7 +206,7 @@ export function createWebSocketServer(
       if (client.playerId) {
         const roomId = store.getRoomIdForPlayer(client.playerId);
         if (roomId) {
-          handleGameDisconnect(client.playerId, roomId, { broadcastToRoom });
+          handleGameDisconnect(client.playerId, roomId, { broadcastToRoom }, store);
         }
         handleDisconnect(client.playerId, { broadcastToRoom }, store);
         playerConnections.delete(client.playerId);

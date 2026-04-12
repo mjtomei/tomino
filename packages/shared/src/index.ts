@@ -132,3 +132,10 @@ export type {
 } from "./engine/engine.js";
 
 export { TetrisEngine } from "./engine/engine.js";
+
+export type { StateDelta } from "./state-snapshot.js";
+export {
+  engineStateToSnapshot,
+  computeStateDelta,
+  applyStateDelta,
+} from "./state-snapshot.js";
