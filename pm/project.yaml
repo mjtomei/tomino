@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-297734e
+  active_pr: pr-8e93a65
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -512,11 +512,18 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057251+00:00'
-  updated_at: '2026-04-11T20:47:54.510674+00:00'
+  updated_at: '2026-04-12T00:13:29.122605+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-c1f1a30
+    text: 'REVIEW: Run ''npm test'' across all packages AND ''npm run test:e2e'' to
+      verify the Playwright smoke test passes (app loads, renders, no console errors).
+      This is the first PR where the full app is playable — the E2E smoke test (pr-9fa62c0)
+      should catch integration regressions.'
+    created_at: '2026-04-12T00:13:29Z'
+    last_edited: '2026-04-12T00:13:29Z'
 - id: pr-7d32c30
   plan: plan-c686698
   title: WebSocket server setup
@@ -1589,11 +1596,18 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T21:59:57.456616+00:00'
-  updated_at: '2026-04-11T21:59:57.456616+00:00'
+  updated_at: '2026-04-12T00:13:30.807564+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-3350dbc
+    text: 'REVIEW: Run ''npm test'' across all packages AND ''npm run test:e2e'' to
+      verify Playwright E2E tests pass, including the multiplayer lobby flow and full
+      game flow tests. This validates the complete stack: React UI → WebSocket → server
+      → game state → UI updates.'
+    created_at: '2026-04-12T00:13:30Z'
+    last_edited: '2026-04-12T00:13:30Z'
 - id: pr-234798c
   plan: null
   title: Full integration test — single-player, multiplayer, and adaptive balancing
@@ -1877,7 +1891,7 @@ prs:
   plan: plan-17af8d3
   title: Playwright E2E setup and dev server orchestration
   branch: pm/pr-9fa62c0-playwright-e2e-setup-and-dev-server-orchestration
-  status: in_review
+  status: merged
   depends_on: []
   description: 'Install Playwright and configure it for the project. Set up `playwright.config.ts`
     at the repo root with a `webServer` config that starts both the Vite dev server
@@ -1896,17 +1910,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/31
   gh_pr_number: 31
   created_at: '2026-04-11T23:10:58.040063+00:00'
-  updated_at: '2026-04-12T00:10:35.128362+00:00'
+  updated_at: '2026-04-12T00:13:47.290809+00:00'
   started_at: '2026-04-12T00:02:49.018702+00:00'
   reviewed_at: '2026-04-12T00:10:35.128362+00:00'
-  merged_at: null
+  merged_at: '2026-04-12T00:13:47.290809+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-9fa62c0-playwright-e2e-setup-and-dev-server--c186ce8d
 - id: pr-8e93a65
   plan: plan-17af8d3
   title: E2E test helpers for multiplayer flows
   branch: pm/pr-8e93a65-e2e-test-helpers-for-multiplayer-flows
-  status: pending
+  status: in_progress
   depends_on:
   - pr-9fa62c0
   - pr-ea6f093
@@ -1927,15 +1941,16 @@ prs:
 
     Files: `e2e/helpers/player.ts`, `e2e/helpers/lobby.ts`, `e2e/helpers/input.ts`,
     `e2e/helpers/game-state.ts`, `e2e/helpers/index.ts`, `e2e/multiplayer-lobby.spec.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/36
+  gh_pr_number: 36
   created_at: '2026-04-11T23:10:58.040068+00:00'
-  updated_at: '2026-04-11T23:19:05.109277+00:00'
-  started_at: null
+  updated_at: '2026-04-12T00:13:50.874314+00:00'
+  started_at: '2026-04-12T00:13:50.874314+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-8e93a65-e2e-test-helpers-for-multiplayer-flo-3a38676a
 - id: pr-86780be
   plan: plan-17af8d3
   title: E2E multiplayer game flow test
