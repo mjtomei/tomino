@@ -301,7 +301,7 @@ function MultiplayerGameShell({
           {handicap && <HandicapIndicator handicap={handicap} />}
         </div>
 
-        <div className="game-board-container">
+        <div className="game-board-container" data-testid="game-board">
           {pendingGarbage && pendingGarbage.length > 0 && (
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
@@ -571,7 +571,7 @@ function SoloGameShell({
           {handicap && <HandicapIndicator handicap={handicap} />}
         </div>
 
-        <div className="game-board-container">
+        <div className="game-board-container" data-testid="game-board">
           {pendingGarbage && pendingGarbage.length > 0 && (
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}

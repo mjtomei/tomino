@@ -30,3 +30,16 @@ export async function sendKeyboardInput(
   const key = ACTION_KEY_MAP[action];
   await page.keyboard.press(key);
 }
+
+/**
+ * Hold a key down for the specified duration, then release it.
+ */
+export async function holdKey(
+  page: Page,
+  key: string,
+  durationMs: number,
+): Promise<void> {
+  await page.keyboard.down(key);
+  await page.waitForTimeout(durationMs);
+  await page.keyboard.up(key);
+}
