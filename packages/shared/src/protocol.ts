@@ -159,12 +159,18 @@ export interface S2C_GameEnd {
 export interface S2C_GarbageReceived {
   type: "garbageReceived";
   roomId: RoomId;
+  /** The player whose board the garbage is being inserted on. */
+  playerId: PlayerId;
+  /** The player whose attack produced this garbage, if known. */
+  senderId?: PlayerId;
   garbage: GarbageBatch;
 }
 
 export interface S2C_GarbageQueued {
   type: "garbageQueued";
   roomId: RoomId;
+  /** The player whose pending queue is being broadcast. */
+  playerId: PlayerId;
   /** Updated full pending garbage queue for the receiving player. */
   pendingGarbage: GarbageBatch[];
 }

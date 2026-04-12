@@ -21,6 +21,10 @@
     "./__test-utils__/board-builder.js": {
       "types": "./src/__test-utils__/board-builder.ts",
       "default": "./src/__test-utils__/board-builder.ts"
+    },
+    "./__test-utils__/assertions.js": {
+      "types": "./src/__test-utils__/assertions.ts",
+      "default": "./src/__test-utils__/assertions.ts"
     }
   },
   "scripts": {

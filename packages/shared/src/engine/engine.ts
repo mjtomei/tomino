@@ -18,6 +18,8 @@ import type { HoldState } from "./hold.js";
 import type { RuleSet, GameModeConfig, GameMode } from "./types.js";
 
 import { createGrid, placePiece, clearLines, BOARD_WIDTH } from "./board.js";
+import { insertGarbageBatches } from "./garbage.js";
+import type { GarbageBatch } from "../types.js";
 import { SRSRotation } from "./rotation-srs.js";
 import { NRSRotation } from "./rotation-nrs.js";
 import { createRandomizer, seededRng } from "./randomizer.js";
@@ -36,6 +38,17 @@ export type GameStatus = "idle" | "playing" | "paused" | "gameOver";
 
 /** Why the game ended. */
 export type EndReason = "topOut" | "goalReached" | "quit";
+
+/**
+ * Event recording a single line-clearing lock. Produced by `lockPiece` and
+ * consumed externally (e.g., by the server's garbage manager).
+ */
+export interface LineClearEvent {
+  readonly linesCleared: LineClearCount;
+  readonly tSpin: TSpinType;
+  readonly combo: number;
+  readonly b2b: number;
+}
 
 /** Active piece state tracked by the engine. */
 export interface ActivePiece {
@@ -118,6 +131,9 @@ export class TetrisEngine {
   private lockTimer = 0;
   private lockResetCount = 0;
   private isInLockDelay = false;
+
+  // -- Outbound line clear event (consumed by external garbage logic) --
+  private lastLineClearEvent: LineClearEvent | null = null;
 
   constructor(options: EngineOptions) {
     this.ruleSet = options.ruleSet;
@@ -335,6 +351,30 @@ export class TetrisEngine {
   }
 
   // -------------------------------------------------------------------------
+  // Garbage hooks
+  // -------------------------------------------------------------------------
+
+  /**
+   * Consume and return the most recent line-clear event, or null if none
+   * has occurred since the last call. Clears the event after returning.
+   */
+  consumeLineClearEvent(): LineClearEvent | null {
+    const ev = this.lastLineClearEvent;
+    this.lastLineClearEvent = null;
+    return ev;
+  }
+
+  /**
+   * Apply incoming garbage to the bottom of the board. No-op unless the
+   * game is in progress.
+   */
+  applyGarbage(batches: readonly GarbageBatch[]): void {
+    if (this.status !== "playing") return;
+    if (batches.length === 0) return;
+    insertGarbageBatches(this.grid, batches);
+  }
+
+  // -------------------------------------------------------------------------
   // Internal: movement helpers
   // -------------------------------------------------------------------------
 
@@ -531,6 +571,16 @@ export class TetrisEngine {
       tSpin,
       isPerfectClear,
     );
+
+    // Record line-clear event for external consumers (garbage manager, etc.)
+    if (linesCleared > 0) {
+      this.lastLineClearEvent = {
+        linesCleared,
+        tSpin,
+        combo: this.scoringState.combo,
+        b2b: this.scoringState.b2b,
+      };
+    }
 
     // Reset hold flag
     this.holdState = resetHoldFlag(this.holdState);
