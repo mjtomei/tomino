@@ -172,11 +172,11 @@ describe("sweepOffsetX", () => {
 describe("chromaticAlpha", () => {
   it("peaks before midpoint and decays toward zero", () => {
     const b = burst("chromatic", 1);
-    const early = chromaticAlpha(b, 100);
+    const rising = chromaticAlpha(b, 50);
     const peak = chromaticAlpha(b, 100);
     const late = chromaticAlpha(b, 450);
-    expect(peak).toBeGreaterThan(0);
-    expect(late).toBeLessThan(early);
+    expect(peak).toBeGreaterThan(rising);
+    expect(late).toBeLessThan(peak);
     expect(chromaticAlpha(b, 500)).toBeCloseTo(0, 2);
   });
 });
