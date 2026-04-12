@@ -33,6 +33,8 @@ const validC2SMessages: ClientMessage[] = [
     tick: 42,
   },
   { type: "ping", timestamp: Date.now() },
+  { type: "sendEmote", roomId: "room-1", emote: "thumbsUp" },
+  { type: "sendEmote", roomId: "room-1", emote: "fire" },
 ];
 
 const validS2CMessages: ServerMessage[] = [
@@ -115,6 +117,13 @@ const validS2CMessages: ServerMessage[] = [
     pendingGarbage: [{ lines: 4, gapColumn: 3 }],
   },
   { type: "pong", timestamp: Date.now() },
+  {
+    type: "playerEmote",
+    roomId: "room-1",
+    playerId: "p1",
+    emote: "gg",
+    timestamp: 1_700_000_000_000,
+  },
   { type: "error", code: "ROOM_NOT_FOUND", message: "Room does not exist" },
   { type: "disconnected", reason: "Server shutting down" },
 ];
