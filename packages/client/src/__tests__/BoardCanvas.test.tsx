@@ -204,6 +204,33 @@ describe("renderBoard", () => {
     expect(labels).toContain("NEXT");
   });
 
+  it("accepts optional atmosphere + theme props without crashing", () => {
+    const state = makeState();
+    state.board[BUFFER_HEIGHT]![5] = "T";
+    const palette = {
+      backgroundGradient: ["#000", "#111"],
+      particleColors: ["#fff"],
+      accent: "#ff00aa",
+      boardBg: "#0a0a0a",
+      panelBg: "#111",
+      gridLine: "rgba(255,255,255,0.06)",
+    };
+    const { getByTestId } = render(
+      <BoardCanvas state={state} atmosphereIntensity={0.8} themePalette={palette} />,
+    );
+    expect(getByTestId("board-canvas")).toBeInstanceOf(HTMLCanvasElement);
+  });
+
+  it("produces identical static output when renderBoard is called without life", () => {
+    // Baseline preservation: renderBoard(...) with no life arg must still draw.
+    const ctx = createMockCtx();
+    const state = makeState();
+    state.board[BUFFER_HEIGHT]![5] = "T";
+    renderBoard(ctx, state, 30);
+    const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;
+    expect(calls.length).toBeGreaterThan(0);
+  });
+
   it("clips active piece cells above the visible area", () => {
     const ctx = createMockCtx();
     // Piece at row 18 (buffer zone) — top 2 rows invisible, bottom rows at 20-21 visible

@@ -15,7 +15,7 @@ import { SoundManager } from "../audio/sounds.js";
 import type { SoundEvent } from "../audio/sounds.js";
 import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
-import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
+import { useAtmosphere, useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { useMusicSync } from "../audio/use-music.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
 import { ScreenEffects, type ScreenEffectsHandle } from "../atmosphere/ScreenEffects.js";
@@ -200,6 +200,7 @@ function MultiplayerGameShell({
   const firedKeysRef = useRef<Set<string>>(new Set());
   const atmosphereUpdate = useAtmosphereUpdater();
   useMusicSync(gameState.scoring.level, gameState.status);
+  const atmosphereState = useAtmosphere();
   const screenEffectsRef = useRef<ScreenEffectsHandle | null>(null);
 
   const { genreId, theme } = useTheme();
@@ -419,7 +420,12 @@ function MultiplayerGameShell({
           {pendingGarbage && pendingGarbage.length > 0 && (
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
-          <BoardCanvas state={gameState} showSidePanels={false} />
+          <BoardCanvas
+            state={gameState}
+            showSidePanels={false}
+            atmosphereIntensity={atmosphereState.intensity}
+            themePalette={theme.palette}
+          />
           <ParticleCanvas
             system={particleSystemRef.current!}
             width={BOARD_EFFECTS_WIDTH}
@@ -473,6 +479,7 @@ function SoloGameShell({
   const atmosphereUpdate = useAtmosphereUpdater();
   const atmosphereReset = useAtmosphereReset();
   useMusicSync(gameState?.scoring.level ?? 1, gameState?.status);
+  const soloAtmosphereState = useAtmosphere();
   const screenEffectsRef = useRef<ScreenEffectsHandle | null>(null);
   const { genreId: soloGenreId, theme: soloTheme } = useTheme();
   const themeRef = useRef(soloTheme);
@@ -774,7 +781,12 @@ function SoloGameShell({
           {pendingGarbage && pendingGarbage.length > 0 && (
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
-          <BoardCanvas state={gameState} showSidePanels={false} />
+          <BoardCanvas
+            state={gameState}
+            showSidePanels={false}
+            atmosphereIntensity={soloAtmosphereState.intensity}
+            themePalette={soloTheme.palette}
+          />
           <ParticleCanvas
             system={particleSystemRef.current!}
             width={BOARD_EFFECTS_WIDTH}
