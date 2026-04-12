@@ -7,6 +7,7 @@ import type {
   S2C_GameOver,
   S2C_GameEnd,
 } from "@tetris/shared";
+import { boardFromAscii } from "@tetris/shared/__test-utils__/board-builder.js";
 import {
   GameSession,
   createGameSession,
@@ -59,10 +60,41 @@ function startSession(
   return session;
 }
 
-/** Force a player to top out via rapid hard drops. */
+/**
+ * A near-topout board: 18 rows filled (leaving only 2 rows free in the
+ * visible area). A single hard drop on this board will top out for most
+ * piece types since pieces spawn in the buffer zone around row 18.
+ */
+const NEAR_TOPOUT_BOARD = boardFromAscii(`
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+XXXXXXXXX.
+`);
+
+/**
+ * Set a player's board to near-topout state using boardFromAscii, then
+ * hard drop until topped out.
+ */
 function forceTopOut(session: GameSession, playerId: PlayerId): void {
+  const engine = session.getPlayerEngine(playerId)!;
+  engine._testSetBoard(NEAR_TOPOUT_BOARD.map((row) => [...row]));
   let drops = 0;
-  while (!session.getPlayerEngine(playerId)?.isGameOver && drops < 200) {
+  while (!engine.isGameOver && drops < 50) {
     session.applyInput(playerId, "hardDrop");
     drops++;
   }
