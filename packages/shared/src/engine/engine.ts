@@ -374,6 +374,14 @@ export class TetrisEngine {
     insertGarbageBatches(this.grid, batches);
   }
 
+  /**
+   * Replace the board grid. TEST ONLY — used for setting up specific board
+   * states in tests (e.g., near-topout boards via boardFromAscii).
+   */
+  _testSetBoard(grid: Grid): void {
+    this.grid = grid;
+  }
+
   // -------------------------------------------------------------------------
   // Internal: movement helpers
   // -------------------------------------------------------------------------

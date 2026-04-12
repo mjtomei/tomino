@@ -155,4 +155,12 @@ export class PlayerEngine {
   getPendingGarbage(): readonly GarbageBatch[] {
     return this.pendingGarbage;
   }
+
+  /**
+   * Replace the board grid. TEST ONLY — for setting up specific board states
+   * (e.g., near-topout boards via boardFromAscii).
+   */
+  _testSetBoard(grid: import("@tetris/shared").Grid): void {
+    this.engine._testSetBoard(grid);
+  }
 }
