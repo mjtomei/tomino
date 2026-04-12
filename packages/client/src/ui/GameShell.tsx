@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import type { RuleSet, GameModeConfig, GameState, GameStatus } from "@tetris/shared";
+import type { RuleSet, GameModeConfig, GameState } from "@tetris/shared";
 import { TetrisEngine } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
 import { ScoreDisplay } from "./ScoreDisplay.js";

@@ -1,17 +1,10 @@
 import type { GameModeConfig, ScoringState } from "@tetris/shared";
+import { formatTime } from "./formatTime.js";
 
 export interface ScoreDisplayProps {
   scoring: Readonly<ScoringState>;
   modeConfig: GameModeConfig;
   elapsedMs: number;
-}
-
-function formatTime(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const centis = Math.floor((Math.max(0, ms) % 1000) / 10);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}.${centis.toString().padStart(2, "0")}`;
 }
 
 function StatRow({ label, value }: { label: string; value: string | number }) {
