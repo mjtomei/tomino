@@ -197,10 +197,10 @@ export class GameSession {
     const engine = this.engines.get(playerId);
     if (!engine || engine.isGameOver) return;
 
-    // Capture stats before engine deletion (disconnect-specific)
+    // Capture stats while engine still exists, then delete it
     this.capturePlayerStats(playerId);
     this.engines.delete(playerId);
-    this.eliminatePlayer(playerId);
+    this.eliminatePlayer(playerId, /* statsCaptured */ true);
   }
 
   // -------------------------------------------------------------------------
@@ -428,8 +428,8 @@ export class GameSession {
   }
 
   /** Common elimination path for both game-over and disconnect. */
-  private eliminatePlayer(playerId: PlayerId): void {
-    this.capturePlayerStats(playerId);
+  private eliminatePlayer(playerId: PlayerId, statsCaptured = false): void {
+    if (!statsCaptured) this.capturePlayerStats(playerId);
     this.eliminations.push(playerId);
     this.garbageManager?.removePlayer(playerId);
 
