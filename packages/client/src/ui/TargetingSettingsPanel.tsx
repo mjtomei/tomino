@@ -66,6 +66,7 @@ export function TargetingSettingsPanel({
       <div style={styles.section}>
         <span style={styles.label}>Default Strategy</span>
         <select
+          id="targeting-default-strategy"
           value={settings.defaultStrategy}
           onChange={(e) => handleDefaultChange(e.target.value as TargetingStrategyType)}
           disabled={disabled}
