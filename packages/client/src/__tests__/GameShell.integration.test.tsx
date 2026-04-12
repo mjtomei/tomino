@@ -99,17 +99,12 @@ describe("GameShell integration", () => {
     expect(screen.getByTestId("mode-marathon")).toHaveClass("start-btn-active");
   });
 
-  it("play again returns to start screen", () => {
-    render(<GameShell seed={1} />);
+  it("unmount after start does not throw", () => {
+    const { unmount } = render(<GameShell seed={1} />);
     fireEvent.click(screen.getByTestId("preset-modern"));
     fireEvent.click(screen.getByTestId("mode-marathon"));
     fireEvent.click(screen.getByTestId("start-play"));
     expect(screen.getByTestId("game-shell")).toBeInTheDocument();
-
-    // Trigger return to start screen by pressing Escape to pause, then quitting is complex;
-    // instead, simulate by starting a new game from a subsequent preset after it mounts.
-    // We can't easily reach game over without running the loop, so just verify game-shell renders.
-    // Then unmount to ensure cleanup does not throw.
-    cleanup();
+    expect(() => unmount()).not.toThrow();
   });
 });
