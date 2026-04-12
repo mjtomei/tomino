@@ -1,16 +1,26 @@
 /**
  * Game-specific message handlers.
  *
- * Manages the game start flow: countdown → gameStarted.
- * Integrates with lobby-handlers' handleStartGame.
+ * Manages the game start flow: countdown → gameStarted → gameplay.
+ * Handles player input during gameplay and disconnects.
  */
 
-import type { HandicapMode, HandicapModifiers, PlayerId, RoomId, ServerMessage } from "@tetris/shared";
+import type {
+  ErrorCode,
+  HandicapMode,
+  HandicapModifiers,
+  InputAction,
+  PlayerId,
+  RoomId,
+  ServerMessage,
+} from "@tetris/shared";
+import type { C2S_PlayerInput } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
   getGameSession,
   removeGameSession,
+  type GameSessionState,
 } from "../game-session.js";
 import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
 
@@ -33,6 +43,18 @@ function serializeModifierMatrix(
   }
   return result;
 }
+
+/** Valid input actions for validation. */
+const VALID_ACTIONS: ReadonlySet<string> = new Set<InputAction>([
+  "moveLeft",
+  "moveRight",
+  "rotateCW",
+  "rotateCCW",
+  "rotate180",
+  "softDrop",
+  "hardDrop",
+  "hold",
+]);
 
 /**
  * Initiate the game start countdown for a room.
@@ -68,7 +90,7 @@ export function startGameCountdown(
     handicapModifiers,
     handicapMode,
     onGameStarted: () => {
-      // Game is now running — future PRs will add tick processing here
+      // Engines and tick loop are now managed by GameSession itself
     },
     onCancelled: () => {
       // Revert room to waiting so host can retry
@@ -81,13 +103,51 @@ export function startGameCountdown(
 }
 
 /**
+ * Handle a playerInput message from a client.
+ * Validates the input and forwards it to the session's engine.
+ */
+export function handlePlayerInput(
+  msg: C2S_PlayerInput,
+  playerId: PlayerId,
+  sendError: (code: ErrorCode, message: string) => void,
+): void {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    sendError("ROOM_NOT_FOUND", "No active game session for this room");
+    return;
+  }
+
+  if (session.state !== "playing") {
+    sendError("INVALID_MESSAGE", "Game is not in progress");
+    return;
+  }
+
+  // Validate player is in the session
+  if (!session.getPlayerIds().includes(playerId)) {
+    sendError("NOT_IN_ROOM", "Player is not in this game session");
+    return;
+  }
+
+  // Validate action
+  if (!VALID_ACTIONS.has(msg.action)) {
+    sendError("INVALID_MESSAGE", `Invalid input action: ${msg.action}`);
+    return;
+  }
+
+  // Apply the input — the session handles broadcasting
+  session.applyInput(playerId, msg.action);
+}
+
+/**
  * Handle a player disconnecting during an active game session.
  * If in countdown, cancel the session.
+ * If playing, mark the player as game over.
  */
 export function handleGameDisconnect(
-  _playerId: PlayerId,
+  playerId: PlayerId,
   roomId: RoomId,
   ctx: GameHandlerContext,
+  store?: RoomStore,
 ): void {
   const session = getGameSession(roomId);
   if (!session) return;
@@ -101,6 +161,17 @@ export function handleGameDisconnect(
       code: "INTERNAL_ERROR",
       message: "Game cancelled — a player disconnected during countdown",
     });
+  } else if (session.state === "playing") {
+    // Mark disconnected player as game over
+    session.handlePlayerDisconnect(playerId);
+
+    // handlePlayerDisconnect may transition the session to "finished"
+    // (TS can't see the mutation through the method call, so re-read state)
+    if ((session.state as GameSessionState) === "finished") {
+      if (store) {
+        store.setStatus(roomId, "finished");
+      }
+      removeGameSession(roomId);
+    }
   }
-  // If game is already playing, we don't cancel (future PR will handle in-game disconnect)
 }

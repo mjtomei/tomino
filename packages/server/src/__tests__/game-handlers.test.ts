@@ -199,7 +199,7 @@ describe("game-handlers", () => {
       removeGameSession(roomId);
     });
 
-    it("does not cancel if game is already playing", () => {
+    it("handles disconnect during playing by marking player as game over", () => {
       const roomId = setupRoom();
       const spy = createBroadcastSpy();
 
@@ -210,14 +210,17 @@ describe("game-handlers", () => {
       const session = getGameSession(roomId);
       expect(session?.state).toBe("playing");
 
-      // Disconnect during playing should not cancel
+      // Disconnect during playing should mark player as game over, not cancel
       const msgCountBefore = spy.messages.length;
-      handleGameDisconnect("p2", roomId, { broadcastToRoom: spy.broadcastToRoom });
+      handleGameDisconnect("p2", roomId, { broadcastToRoom: spy.broadcastToRoom }, store);
 
-      expect(session?.state).toBe("playing"); // Not cancelled
-      // No additional error message
+      // No error message — this is handled gracefully
       const errorMsgs = spy.messages.slice(msgCountBefore).filter((m) => m.msg.type === "error");
       expect(errorMsgs).toHaveLength(0);
+
+      // A gameOver message should be broadcast for the disconnected player
+      const gameOverMsgs = spy.messages.slice(msgCountBefore).filter((m) => m.msg.type === "gameOver");
+      expect(gameOverMsgs.length).toBeGreaterThanOrEqual(1);
 
       removeGameSession(roomId);
     });
