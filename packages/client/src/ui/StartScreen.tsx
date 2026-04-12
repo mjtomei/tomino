@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { RuleSet, GameMode, GameModeConfig } from "@tetris/shared";
 import { classicRuleSet, modernRuleSet, gameModes } from "@tetris/shared";
 import { CustomRuleSetPanel } from "./CustomRuleSetPanel.js";
+import { ThemeSelector } from "./ThemeSelector.js";
 
 export interface StartScreenProps {
   onStart: (ruleSet: RuleSet, modeConfig: GameModeConfig) => void;
@@ -98,6 +99,8 @@ export function StartScreen({ onStart }: StartScreenProps) {
           ))}
         </div>
       </div>
+
+      <ThemeSelector />
 
       <button className="start-play-btn" onClick={handleStart} data-testid="start-play">
         PLAY
