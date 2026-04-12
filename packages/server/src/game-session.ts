@@ -85,8 +85,8 @@ export class GameSession {
   private readonly broadcastToRoom: GameSessionConfig["broadcastToRoom"];
   private readonly onGameStarted?: () => void;
   private readonly onCancelled?: () => void;
-  private readonly handicapModifiers?: Record<string, HandicapModifiers>;
-  private readonly handicapMode?: HandicapMode;
+  readonly handicapModifiers?: Record<string, HandicapModifiers>;
+  readonly handicapMode?: HandicapMode;
   private readonly handicapDelayEnabled: boolean;
   private readonly handicapMessinessEnabled: boolean;
   private readonly playerNames: Record<PlayerId, string>;
@@ -94,6 +94,8 @@ export class GameSession {
 
   // -- Gameplay state --
   private readonly engines = new Map<PlayerId, PlayerEngine>();
+  /** Players whose connection has dropped and who are within the reconnect window. */
+  private readonly disconnected = new Set<PlayerId>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
   private readonly targetingStrategy?: TargetingStrategy;
@@ -147,7 +149,7 @@ export class GameSession {
 
   /** Cancel the session (e.g. player disconnected during countdown). */
   cancel(): void {
-    if (this._state === "cancelled") return;
+    if (this._state === "cancelled" || this._state === "finished") return;
     this._state = "cancelled";
     if (this.countdownTimer) {
       clearTimeout(this.countdownTimer);
@@ -157,12 +159,27 @@ export class GameSession {
     this.onCancelled?.();
   }
 
+  /** Whether the given player is currently in the reconnect grace window. */
+  isDisconnected(playerId: PlayerId): boolean {
+    return this.disconnected.has(playerId);
+  }
+
+  /** Build current snapshots for every player currently tracked by the session. */
+  getCurrentSnapshots(): Record<PlayerId, GameStateSnapshot> {
+    const out: Record<PlayerId, GameStateSnapshot> = {};
+    for (const [pid, engine] of this.engines) {
+      out[pid] = engine.getSnapshot();
+    }
+    return out;
+  }
+
   /**
    * Apply a player input action. Returns the resulting snapshot if applied,
    * or undefined if the input was rejected.
    */
   applyInput(playerId: PlayerId, action: InputAction): GameStateSnapshot | undefined {
     if (this._state !== "playing") return undefined;
+    if (this.disconnected.has(playerId)) return undefined;
     const engine = this.engines.get(playerId);
     if (!engine || engine.isGameOver) return undefined;
 
@@ -183,23 +200,53 @@ export class GameSession {
   }
 
   /**
-   * Mark a player as disconnected during gameplay.
-   * Their engine is stopped and game-over is broadcast.
+   * Mark a player as disconnected during gameplay. The player's engine is
+   * frozen (skipped in the tick loop) and a `playerDisconnected` notice is
+   * broadcast. Returns true if the player was marked (false if not eligible,
+   * e.g. already disconnected or already game-over).
    */
-  handlePlayerDisconnect(playerId: PlayerId): void {
-    if (this._state !== "playing") return;
+  markDisconnected(playerId: PlayerId, timeoutMs: number): boolean {
+    if (this._state !== "playing") return false;
+    if (this.disconnected.has(playerId)) return false;
     const engine = this.engines.get(playerId);
-    if (!engine || engine.isGameOver) return;
+    if (!engine || engine.isGameOver) return false;
 
-    // We can't force game-over on the engine, but we remove it from active play
-    this.engines.delete(playerId);
-    this.garbageManager?.removePlayer(playerId);
+    this.disconnected.add(playerId);
     this.broadcastToRoom(this.roomId, {
-      type: "gameOver",
+      type: "playerDisconnected",
+      roomId: this.roomId,
+      playerId,
+      timeoutMs,
+    });
+    return true;
+  }
+
+  /**
+   * Clear the disconnected flag and notify peers. Returns true if the player
+   * was marked disconnected (and is now cleared).
+   */
+  markReconnected(playerId: PlayerId): boolean {
+    if (!this.disconnected.delete(playerId)) return false;
+    this.broadcastToRoom(this.roomId, {
+      type: "playerReconnected",
       roomId: this.roomId,
       playerId,
     });
-    this.checkForWinner(playerId);
+    return true;
+  }
+
+  /**
+   * Forfeit a disconnected player — equivalent to a top-out. Called when the
+   * reconnect window expires. Safe to call multiple times.
+   */
+  forfeitPlayer(playerId: PlayerId): void {
+    if (this._state !== "playing") return;
+    const engine = this.engines.get(playerId);
+    if (!engine) return;
+    this.disconnected.delete(playerId);
+    // Drop the engine so subsequent ticks and winner-checks treat the player as out.
+    this.engines.delete(playerId);
+    this.handlePlayerGameOver(playerId);
   }
 
   // -------------------------------------------------------------------------
@@ -317,6 +364,9 @@ export class GameSession {
 
     for (const [playerId, engine] of this.engines) {
       if (engine.isGameOver) continue;
+      // Freeze disconnected players — no gravity, no broadcasts — until they
+      // either reconnect or forfeit.
+      if (this.disconnected.has(playerId)) continue;
 
       const prevSnapshot = engine.getSnapshot();
       engine.advanceTick(deltaMs);

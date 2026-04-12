@@ -11,7 +11,11 @@ import {
   handleDisconnect,
   type HandlerContext,
 } from "./handlers/lobby-handlers.js";
-import { handleGameDisconnect, handlePlayerInput } from "./handlers/game-handlers.js";
+import {
+  handleGameDisconnect,
+  handlePlayerInput,
+  handleRejoinRoom,
+} from "./handlers/game-handlers.js";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const PONG_TIMEOUT_MS = 10_000;
@@ -169,7 +173,11 @@ export function createWebSocketServer(
       }
 
       // Register player ID from messages that carry it
-      if (msg.type === "createRoom" || msg.type === "joinRoom") {
+      if (
+        msg.type === "createRoom" ||
+        msg.type === "joinRoom" ||
+        msg.type === "rejoinRoom"
+      ) {
         registerPlayer(client, msg.player.id);
       }
 
@@ -199,17 +207,40 @@ export function createWebSocketServer(
             ctx.send({ type: "error", code, message });
           });
           break;
+        case "rejoinRoom":
+          handleRejoinRoom(msg, client.playerId!, {
+            broadcastToRoom,
+            send: ctx.send,
+          });
+          break;
       }
     });
 
     function handleClientDisconnect(client: ClientInfo): void {
       if (client.playerId) {
-        const roomId = store.getRoomIdForPlayer(client.playerId);
-        if (roomId) {
-          handleGameDisconnect(client.playerId, roomId, { broadcastToRoom }, store);
+        // If this connection has already been superseded by a newer one
+        // for the same player (e.g. the client reconnected on a fresh
+        // socket before our close event fired), do nothing player-level —
+        // the newer connection now owns the mapping.
+        const isStillActive =
+          playerConnections.get(client.playerId) === client.connectionId;
+        if (isStillActive) {
+          const roomId = store.getRoomIdForPlayer(client.playerId);
+          let pendingReconnect = false;
+          if (roomId) {
+            const result = handleGameDisconnect(
+              client.playerId,
+              roomId,
+              { broadcastToRoom },
+              store,
+            );
+            pendingReconnect = result.pendingReconnect;
+          }
+          if (!pendingReconnect) {
+            handleDisconnect(client.playerId, { broadcastToRoom }, store);
+          }
+          playerConnections.delete(client.playerId);
         }
-        handleDisconnect(client.playerId, { broadcastToRoom }, store);
-        playerConnections.delete(client.playerId);
       }
       cleanup(client);
     }
