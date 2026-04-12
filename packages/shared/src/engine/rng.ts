@@ -44,8 +44,8 @@ export function createRNG(seed: number): RNG {
 
   function nextU32(): number {
     // xoshiro128**: result = rotl(s1 * 5, 7) * 9
-    const result =
-      (((Math.imul(s1, 5) << 7) | (Math.imul(s1, 5) >>> 25)) * 9) >>> 0;
+    const r = Math.imul(s1, 5);
+    const result = (((r << 7) | (r >>> 25)) * 9) >>> 0;
 
     const t = (s1 << 9) >>> 0;
 
@@ -68,7 +68,14 @@ export function createRNG(seed: number): RNG {
 
   function nextInt(min: number, max: number): number {
     const range = max - min + 1;
-    return min + (nextU32() % range);
+    // Rejection sampling to eliminate modulo bias.
+    // threshold is the largest multiple of range that fits in 2^32.
+    const threshold = (0x100000000 - range) % range;
+    let r: number;
+    do {
+      r = nextU32();
+    } while (r < threshold);
+    return min + (r % range);
   }
 
   return { next, nextInt };
