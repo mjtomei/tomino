@@ -12,6 +12,7 @@ import { LatencyIndicator } from "./ui/LatencyIndicator";
 import { useLatency } from "./net/latency";
 import { GameMultiplayer } from "./ui/GameMultiplayer";
 import { GameResults } from "./ui/GameResults";
+import { DisconnectOverlay } from "./ui/DisconnectOverlay";
 
 function App() {
   const lobby = useLobby();
@@ -116,6 +117,11 @@ function App() {
 
     case "playing": {
       if (!lobby.state.room) return null;
+      // Determine disconnect overlay to show (self-reconnecting or peer disconnected)
+      const peerDisconnect = lobby.state.disconnectedPeers[0];
+      const peerName = peerDisconnect
+        ? lobby.state.room.players.find((p) => p.id === peerDisconnect.playerId)?.name ?? "Opponent"
+        : null;
       return (
         <>
           <GameMultiplayer
@@ -134,6 +140,20 @@ function App() {
             socket={lobby.socket}
             gameSession={session}
           />
+          {lobby.state.selfReconnecting && lobby.state.selfReconnectStartedAt != null && lobby.state.selfReconnectTimeoutMs != null && (
+            <DisconnectOverlay
+              label="Reconnecting\u2026"
+              timeoutMs={lobby.state.selfReconnectTimeoutMs}
+              startedAt={lobby.state.selfReconnectStartedAt}
+            />
+          )}
+          {peerDisconnect && peerName && (
+            <DisconnectOverlay
+              label={`${peerName} disconnected`}
+              timeoutMs={peerDisconnect.timeoutMs}
+              startedAt={peerDisconnect.startedAt}
+            />
+          )}
           <LatencyIndicator latencyMs={latencyMs} />
         </>
       );

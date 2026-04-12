@@ -13,6 +13,7 @@ import type {
   TargetingSettings,
 } from "@tetris/shared";
 import { ClientSocket } from "./client-socket";
+import { ReconnectController, DEFAULT_RECONNECT_WINDOW_MS } from "./reconnect";
 import {
   DEFAULT_HANDICAP_SETTINGS,
   type HandicapSettingsValues,
@@ -58,6 +59,13 @@ export interface PlayerAttackPower {
   koCount: number;
 }
 
+/** Tracks a peer's disconnect state for the DisconnectOverlay. */
+export interface PeerDisconnectInfo {
+  playerId: PlayerId;
+  timeoutMs: number;
+  startedAt: number;
+}
+
 export interface LobbyState {
   view: LobbyView;
   room: RoomState | null;
@@ -83,6 +91,14 @@ export interface LobbyState {
   gameEndData: GameEndData | null;
   /** Rematch vote status, set when rematch voting is in progress. */
   rematchVotes: RematchVoteData | null;
+  /** Peers currently in a reconnect grace window. */
+  disconnectedPeers: PeerDisconnectInfo[];
+  /** True when the local player is reconnecting after a network drop. */
+  selfReconnecting: boolean;
+  /** Timestamp when the local player started reconnecting. */
+  selfReconnectStartedAt: number | null;
+  /** Timeout for the local player's reconnect window (from server). */
+  selfReconnectTimeoutMs: number | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -175,6 +191,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     localElimination: null,
     gameEndData: null,
     rematchVotes: null,
+    disconnectedPeers: [],
+    selfReconnecting: false,
+    selfReconnectStartedAt: null,
+    selfReconnectTimeoutMs: null,
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
@@ -194,6 +214,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
   handicapRef.current = handicapSettings;
   const targetingRef = useRef(lobbyTargetingSettings);
   targetingRef.current = lobbyTargetingSettings;
+  const reconnectRef = useRef<ReconnectController | null>(null);
 
   // ---- Socket lifecycle ----
   useEffect(() => {
@@ -205,7 +226,49 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       setState((prev) => ({ ...prev, connectionState: connState }));
       if (connState === "disconnected") {
         const view = stateRef.current.view;
-        if (view === "waiting" || view === "countdown" || view === "playing" || view === "results") {
+        const room = stateRef.current.room;
+        if (view === "playing" && room) {
+          // Start auto-reconnect instead of resetting to menu
+          if (!reconnectRef.current) {
+            const rc = new ReconnectController({
+              socket,
+              serverUrl: url,
+              roomId: room.id as RoomId,
+              player: makePlayerInfo(nameRef.current),
+              onGaveUp: () => {
+                reconnectRef.current = null;
+                setState((prev) => ({
+                  ...prev,
+                  view: "menu",
+                  room: null,
+                  error: "Disconnected from server",
+                  countdownValue: null,
+                  gameSession: null,
+                  opponentStates: {},
+                  localPendingGarbage: [],
+                  targetingStates: {},
+                  attackPowers: {},
+                  targetingSettings: null,
+                  localElimination: null,
+                  gameEndData: null,
+                  rematchVotes: null,
+                  disconnectedPeers: [],
+                  selfReconnecting: false,
+                  selfReconnectStartedAt: null,
+                  selfReconnectTimeoutMs: null,
+                }));
+              },
+            });
+            reconnectRef.current = rc;
+            setState((prev) => ({
+              ...prev,
+              selfReconnecting: true,
+              selfReconnectStartedAt: Date.now(),
+              selfReconnectTimeoutMs: DEFAULT_RECONNECT_WINDOW_MS,
+            }));
+            rc.start();
+          }
+        } else if (view === "waiting" || view === "countdown" || view === "results") {
           setState((prev) => ({
             ...prev,
             view: "menu",
@@ -221,6 +284,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             localElimination: null,
             gameEndData: null,
             rematchVotes: null,
+            disconnectedPeers: [],
+            selfReconnecting: false,
+            selfReconnectStartedAt: null,
+            selfReconnectTimeoutMs: null,
           }));
         }
       }
@@ -251,6 +318,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             localElimination: null,
             gameEndData: null,
             rematchVotes: null,
+            disconnectedPeers: [],
+            selfReconnecting: false,
+            selfReconnectStartedAt: null,
+            selfReconnectTimeoutMs: null,
           };
         }
         return { ...prev, room: msg.room };
@@ -329,6 +400,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           localElimination: null,
           gameEndData: null,
           rematchVotes: null,
+          disconnectedPeers: [],
+          selfReconnecting: false,
+          selfReconnectStartedAt: null,
+          selfReconnectTimeoutMs: null,
         };
       });
     });
@@ -400,6 +475,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     });
 
     socket.on("gameEnd", (msg) => {
+      // Game ended — clear any reconnect state
+      reconnectRef.current?.cancel();
+      reconnectRef.current = null;
+
       setState((prev) => {
         if (!prev.room || prev.room.id !== msg.roomId) return prev;
         return {
@@ -410,6 +489,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             placements: msg.placements,
             stats: msg.stats,
           },
+          disconnectedPeers: [],
+          selfReconnecting: false,
+          selfReconnectStartedAt: null,
+          selfReconnectTimeoutMs: null,
         };
       });
     });
@@ -441,6 +524,65 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       });
     });
 
+    socket.on("playerDisconnected", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        // Only track peer disconnects (not self)
+        if (msg.playerId === getSessionPlayerId()) return prev;
+        // Avoid duplicates
+        if (prev.disconnectedPeers.some((p) => p.playerId === msg.playerId)) return prev;
+        return {
+          ...prev,
+          disconnectedPeers: [
+            ...prev.disconnectedPeers,
+            { playerId: msg.playerId, timeoutMs: msg.timeoutMs, startedAt: Date.now() },
+          ],
+        };
+      });
+    });
+
+    socket.on("playerReconnected", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          disconnectedPeers: prev.disconnectedPeers.filter((p) => p.playerId !== msg.playerId),
+        };
+      });
+    });
+
+    socket.on("gameRejoined", (msg) => {
+      // Server confirmed our rejoin — restore game state
+      reconnectRef.current?.cancel();
+      reconnectRef.current = null;
+
+      const localId = getSessionPlayerId();
+      const opponentStates: Record<PlayerId, GameStateSnapshot> = {};
+      for (const [pid, snap] of Object.entries(msg.currentStates)) {
+        if (pid !== localId) opponentStates[pid] = snap;
+      }
+
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          view: "playing",
+          gameSession: {
+            seed: msg.seed,
+            playerIndexes: msg.playerIndexes,
+            initialStates: msg.currentStates,
+            handicapModifiers: msg.handicapModifiers,
+            handicapMode: msg.handicapMode,
+          },
+          opponentStates,
+          selfReconnecting: false,
+          selfReconnectStartedAt: null,
+          selfReconnectTimeoutMs: null,
+          disconnectedPeers: [],
+        };
+      });
+    });
+
     socket.on("error", (msg) => {
       const errorText = formatError(msg.code, msg.message);
       setState((prev) => {
@@ -457,6 +599,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     });
 
     socket.on("disconnected", () => {
+      reconnectRef.current?.cancel();
+      reconnectRef.current = null;
       setState((prev) => ({
         ...prev,
         view: "menu",
@@ -472,12 +616,18 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         localElimination: null,
         gameEndData: null,
         rematchVotes: null,
+        disconnectedPeers: [],
+        selfReconnecting: false,
+        selfReconnectStartedAt: null,
+        selfReconnectTimeoutMs: null,
       }));
     });
 
     socket.connect(url);
 
     return () => {
+      reconnectRef.current?.cancel();
+      reconnectRef.current = null;
       socket.disconnect();
       socketRef.current = null;
       setSocket(null);
@@ -521,6 +671,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     const socket = socketRef.current;
     const room = stateRef.current.room;
     if (!socket || !room) return;
+    reconnectRef.current?.cancel();
+    reconnectRef.current = null;
     socket.send({ type: "leaveRoom", roomId: room.id });
     setState((prev) => ({
       ...prev,
@@ -536,6 +688,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       gameEndData: null,
       gameSession: null,
       rematchVotes: null,
+      disconnectedPeers: [],
+      selfReconnecting: false,
+      selfReconnectStartedAt: null,
+      selfReconnectTimeoutMs: null,
     }));
     setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
     setLobbyTargetingSettings({ ...DEFAULT_TARGETING_SETTINGS });
