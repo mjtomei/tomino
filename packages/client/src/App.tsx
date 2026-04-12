@@ -155,7 +155,10 @@ function App() {
             playerNames={playerNames}
             onBackToLobby={lobby.leaveRoom}
             onRequestRematch={lobby.requestRematch}
+            onViewStats={() => setShowStats(true)}
             rematchVotes={lobby.state.rematchVotes}
+            ratingChanges={lobby.state.gameEndData.ratingChanges}
+            handicapModifiers={session?.handicapModifiers}
           />
         </div>
       );

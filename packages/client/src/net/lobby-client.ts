@@ -5,6 +5,7 @@ import type {
   PlayerId,
   PlayerInfo,
   PlayerStats,
+  RatingChange,
   RoomState,
   RoomId,
   ErrorCode,
@@ -35,6 +36,8 @@ export interface GameEndData {
   winnerId: PlayerId;
   placements: Record<PlayerId, number>;
   stats: Record<PlayerId, PlayerStats>;
+  /** Rating changes per player, populated when ratingUpdate message arrives. */
+  ratingChanges?: Record<PlayerId, RatingChange>;
 }
 
 /** Tracks rematch voting status. */
@@ -419,6 +422,20 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           rematchVotes: {
             votes: msg.votes,
             totalPlayers: msg.totalPlayers,
+          },
+        };
+      });
+    });
+
+    socket.on("ratingUpdate", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        if (!prev.gameEndData) return prev;
+        return {
+          ...prev,
+          gameEndData: {
+            ...prev.gameEndData,
+            ratingChanges: msg.changes,
           },
         };
       });

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PlayerId, PlayerStats } from "@tetris/shared";
+import type { PlayerId, PlayerStats, HandicapModifiers, RatingChange } from "@tetris/shared";
 import { formatTime, placementLabel } from "./formatTime.js";
 import type { RematchVoteData } from "../net/lobby-client";
 import "./GameResults.css";
@@ -12,7 +12,43 @@ export interface GameResultsProps {
   playerNames: Record<PlayerId, string>;
   onBackToLobby: () => void;
   onRequestRematch: () => void;
+  onViewStats: () => void;
   rematchVotes: RematchVoteData | null;
+  /** Rating changes per player, arrives async after game end. */
+  ratingChanges?: Record<PlayerId, RatingChange>;
+  /** Handicap modifier matrix from the game session (key: "sender→receiver"). */
+  handicapModifiers?: Record<string, HandicapModifiers>;
+}
+
+/**
+ * Compute per-player incoming garbage multiplier (min across all opponents).
+ * Returns only entries where at least one multiplier differs from 1.0.
+ */
+function computeHandicapSummary(
+  playerNames: Record<PlayerId, string>,
+  modifiers: Record<string, HandicapModifiers>,
+): Record<PlayerId, number> | null {
+  const names = Object.entries(playerNames);
+  const summary: Record<PlayerId, number> = {};
+  let hasNonTrivial = false;
+
+  for (const [pid, name] of names) {
+    let minMult = Infinity;
+    for (const [otherPid, otherName] of names) {
+      if (otherPid === pid) continue;
+      const key = `${otherName}\u2192${name}`;
+      const mod = modifiers[key];
+      if (mod) {
+        minMult = Math.min(minMult, mod.garbageMultiplier);
+      }
+    }
+    if (isFinite(minMult)) {
+      summary[pid] = minMult;
+      if (Math.abs(minMult - 1.0) > 1e-6) hasNonTrivial = true;
+    }
+  }
+
+  return hasNonTrivial ? summary : null;
 }
 
 export function GameResults({
@@ -23,7 +59,10 @@ export function GameResults({
   playerNames,
   onBackToLobby,
   onRequestRematch,
+  onViewStats,
   rematchVotes,
+  ratingChanges,
+  handicapModifiers,
 }: GameResultsProps) {
   const [hasVoted, setHasVoted] = useState(false);
   // Sort players by placement (1st first)
@@ -33,6 +72,12 @@ export function GameResults({
 
   const localPlacement = placements[localPlayerId] ?? 0;
   const isWinner = localPlayerId === winnerId;
+
+  const hasRatings = ratingChanges !== undefined;
+
+  const handicapSummary = handicapModifiers
+    ? computeHandicapSummary(playerNames, handicapModifiers)
+    : null;
 
   return (
     <div className="game-results" data-testid="game-results">
@@ -53,11 +98,16 @@ export function GameResults({
           <span className="results-cell cell-stat">Lines</span>
           <span className="results-cell cell-stat">Score</span>
           <span className="results-cell cell-stat">Time</span>
+          {hasRatings && (
+            <span className="results-cell cell-rating">Rating</span>
+          )}
         </div>
-        {sortedPlayers.map((pid) => {
+        {sortedPlayers.map((pid, idx) => {
           const place = placements[pid]!;
           const s = stats[pid];
           const isLocal = pid === localPlayerId;
+          const rc = ratingChanges?.[pid];
+
           return (
             <div
               key={pid}
@@ -72,10 +122,51 @@ export function GameResults({
               <span className="results-cell cell-stat">{s?.linesCleared ?? 0}</span>
               <span className="results-cell cell-stat">{(s?.score ?? 0).toLocaleString()}</span>
               <span className="results-cell cell-stat">{formatTime(s?.survivalMs ?? 0)}</span>
+              {hasRatings && (
+                <span
+                  className="results-cell cell-rating rating-reveal"
+                  style={{ animationDelay: `${idx * 0.15}s` }}
+                  data-testid={`rating-${pid}`}
+                >
+                  {rc ? (
+                    <>
+                      <span className="rating-value">{Math.round(rc.after)}</span>
+                      <span
+                        className={`rating-delta ${rc.after >= rc.before ? "rating-positive" : "rating-negative"}`}
+                      >
+                        {rc.after >= rc.before ? "+" : ""}{Math.round(rc.after - rc.before)}
+                      </span>
+                    </>
+                  ) : (
+                    "..."
+                  )}
+                </span>
+              )}
             </div>
           );
         })}
       </div>
+
+      {handicapSummary && (
+        <div className="handicap-summary" data-testid="handicap-summary">
+          <div className="handicap-summary-title">Handicap Active</div>
+          <div className="handicap-summary-items">
+            {sortedPlayers.map((pid) => {
+              const mult = handicapSummary[pid];
+              if (mult === undefined) return null;
+              const isProtected = mult < 1.0 - 1e-6;
+              return (
+                <span key={pid} className="handicap-summary-item">
+                  <span className="handicap-player-name">{playerNames[pid] ?? pid}</span>
+                  <span className={`handicap-mult${isProtected ? " handicap-protected" : ""}`}>
+                    {mult.toFixed(1)}x
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="results-buttons">
         <button
@@ -91,6 +182,9 @@ export function GameResults({
         </button>
         <button className="overlay-btn" onClick={onBackToLobby} data-testid="back-to-lobby">
           BACK TO LOBBY
+        </button>
+        <button className="overlay-btn" onClick={onViewStats} data-testid="view-stats">
+          VIEW STATS
         </button>
       </div>
       {rematchVotes && (

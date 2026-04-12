@@ -21,19 +21,20 @@ const PLAYER_NAMES: Record<PlayerId, string> = {
   p3: "Charlie",
 };
 
+const DEFAULT_PROPS = {
+  placements: PLACEMENTS,
+  stats: STATS,
+  playerNames: PLAYER_NAMES,
+  onBackToLobby: () => {},
+  onRequestRematch: () => {},
+  onViewStats: () => {},
+  rematchVotes: null,
+};
+
 describe("GameResults", () => {
   it("renders placements for all players", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p2"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p2" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     expect(getByTestId("results-table")).toBeDefined();
@@ -44,16 +45,7 @@ describe("GameResults", () => {
 
   it("shows VICTORY when local player is the winner", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p1"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p1" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     const container = getByTestId("game-results");
@@ -63,16 +55,7 @@ describe("GameResults", () => {
 
   it("shows DEFEATED when local player lost", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p3"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p3" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     const container = getByTestId("game-results");
@@ -82,16 +65,7 @@ describe("GameResults", () => {
 
   it("highlights the local player row", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p2"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p2" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     const localRow = getByTestId("results-row-p2");
@@ -100,16 +74,7 @@ describe("GameResults", () => {
 
   it("displays stats values for each player", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p1"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p1" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     const p1Row = getByTestId("results-row-p1");
@@ -121,16 +86,7 @@ describe("GameResults", () => {
 
   it("sorts players by placement (1st first)", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p3"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p3" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     const table = getByTestId("results-table");
@@ -146,12 +102,8 @@ describe("GameResults", () => {
       <GameResults
         localPlayerId="p1"
         winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
+        {...DEFAULT_PROPS}
         onBackToLobby={onBack}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
       />,
     );
 
@@ -165,12 +117,8 @@ describe("GameResults", () => {
       <GameResults
         localPlayerId="p1"
         winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
+        {...DEFAULT_PROPS}
         onRequestRematch={onRematch}
-        rematchVotes={null}
       />,
     );
 
@@ -182,16 +130,7 @@ describe("GameResults", () => {
 
   it("disables rematch button after clicking", () => {
     const { getByTestId } = render(
-      <GameResults
-        localPlayerId="p1"
-        winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
-        rematchVotes={null}
-      />,
+      <GameResults localPlayerId="p1" winnerId="p1" {...DEFAULT_PROPS} />,
     );
 
     const btn = getByTestId("rematch-btn") as HTMLButtonElement;
@@ -205,16 +144,85 @@ describe("GameResults", () => {
       <GameResults
         localPlayerId="p1"
         winnerId="p1"
-        placements={PLACEMENTS}
-        stats={STATS}
-        playerNames={PLAYER_NAMES}
-        onBackToLobby={() => {}}
-        onRequestRematch={() => {}}
+        {...DEFAULT_PROPS}
         rematchVotes={{ votes: ["p1"], totalPlayers: 3 }}
       />,
     );
 
     const status = getByTestId("rematch-status");
     expect(status.textContent).toContain("1/3");
+  });
+
+  it("displays rating changes when provided", () => {
+    const ratingChanges = {
+      p1: { username: "Alice", before: 1500, after: 1530 },
+      p2: { username: "Bob", before: 1500, after: 1480 },
+      p3: { username: "Charlie", before: 1500, after: 1470 },
+    };
+    const { getByTestId } = render(
+      <GameResults
+        localPlayerId="p2"
+        winnerId="p1"
+        {...DEFAULT_PROPS}
+        ratingChanges={ratingChanges}
+      />,
+    );
+
+    // Winner should show positive delta
+    const p1Rating = getByTestId("rating-p1");
+    expect(p1Rating.textContent).toContain("1530");
+    expect(p1Rating.textContent).toContain("+30");
+
+    // Loser should show negative delta
+    const p2Rating = getByTestId("rating-p2");
+    expect(p2Rating.textContent).toContain("1480");
+    expect(p2Rating.textContent).toContain("-20");
+  });
+
+  it("does not show rating column when no ratingChanges provided", () => {
+    const { queryByTestId } = render(
+      <GameResults localPlayerId="p1" winnerId="p1" {...DEFAULT_PROPS} />,
+    );
+
+    expect(queryByTestId("rating-p1")).toBeNull();
+  });
+
+  it("shows handicap summary when modifiers are non-trivial", () => {
+    const handicapModifiers = {
+      "Alice\u2192Bob": { garbageMultiplier: 0.6, delayModifier: 1.0, messinessFactor: 0.5 },
+      "Bob\u2192Alice": { garbageMultiplier: 1.0, delayModifier: 1.0, messinessFactor: 0.5 },
+      "Alice\u2192Charlie": { garbageMultiplier: 0.8, delayModifier: 1.0, messinessFactor: 0.5 },
+      "Charlie\u2192Alice": { garbageMultiplier: 1.0, delayModifier: 1.0, messinessFactor: 0.5 },
+      "Bob\u2192Charlie": { garbageMultiplier: 0.9, delayModifier: 1.0, messinessFactor: 0.5 },
+      "Charlie\u2192Bob": { garbageMultiplier: 1.0, delayModifier: 1.0, messinessFactor: 0.5 },
+    };
+    const { getByTestId } = render(
+      <GameResults
+        localPlayerId="p1"
+        winnerId="p1"
+        {...DEFAULT_PROPS}
+        handicapModifiers={handicapModifiers}
+      />,
+    );
+
+    const summary = getByTestId("handicap-summary");
+    expect(summary.textContent).toContain("Handicap Active");
+    // Bob receives 0.6x from Alice (min incoming)
+    expect(summary.textContent).toContain("0.6x");
+  });
+
+  it("calls onViewStats when View Stats button is clicked", () => {
+    const onViewStats = vi.fn();
+    const { getByTestId } = render(
+      <GameResults
+        localPlayerId="p1"
+        winnerId="p1"
+        {...DEFAULT_PROPS}
+        onViewStats={onViewStats}
+      />,
+    );
+
+    getByTestId("view-stats").click();
+    expect(onViewStats).toHaveBeenCalledOnce();
   });
 });
