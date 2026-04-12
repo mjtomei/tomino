@@ -81,6 +81,8 @@ interface EngineState {
   lockResetCount: number;
   /** Whether the last action on the active piece was a rotation. */
   lastActionWasRotation: boolean;
+  /** Whether the last rotation used a wall kick offset (non-zero displacement). */
+  lastRotationUsedKick: boolean;
   /** Gravity accumulator: ticks since last gravity drop. */
   gravityAccum: number;
 }
@@ -110,6 +112,7 @@ function createInternalEngine(
     lockDelayTicks: -1,
     lockResetCount: 0,
     lastActionWasRotation: false,
+    lastRotationUsedKick: false,
     gravityAccum: 0,
   };
 
@@ -136,6 +139,7 @@ function createInternalEngine(
     es.lockDelayTicks = -1;
     es.lockResetCount = 0;
     es.lastActionWasRotation = false;
+    es.lastRotationUsedKick = false;
     es.gravityAccum = 0;
 
     // Check for blockout
@@ -159,7 +163,7 @@ function createInternalEngine(
     // T-spin detection
     let tSpin: TSpinType = "none";
     if (type === "T" && es.lastActionWasRotation) {
-      tSpin = detectTSpin(es.grid, row, col, es.activePieceRotation, false);
+      tSpin = detectTSpin(es.grid, row, col, es.activePieceRotation, es.lastRotationUsedKick);
     }
 
     // Line clears
@@ -282,6 +286,7 @@ function createInternalEngine(
           es.activePieceRotation, "cw", rotationSystem,
         );
         if (result) {
+          es.lastRotationUsedKick = result.row !== es.activePieceRow || result.col !== es.activePieceCol;
           es.activePieceRow = result.row;
           es.activePieceCol = result.col;
           es.activePieceRotation = result.rotation;
@@ -296,6 +301,7 @@ function createInternalEngine(
           es.activePieceRotation, "ccw", rotationSystem,
         );
         if (result) {
+          es.lastRotationUsedKick = result.row !== es.activePieceRow || result.col !== es.activePieceCol;
           es.activePieceRow = result.row;
           es.activePieceCol = result.col;
           es.activePieceRotation = result.rotation;
@@ -316,6 +322,8 @@ function createInternalEngine(
           first.rotation, "cw", rotationSystem,
         );
         if (!second) break;
+        es.lastRotationUsedKick =
+          second.row !== es.activePieceRow || second.col !== es.activePieceCol;
         es.activePieceRow = second.row;
         es.activePieceCol = second.col;
         es.activePieceRotation = second.rotation;
@@ -334,6 +342,7 @@ function createInternalEngine(
           es.lockDelayTicks = -1;
           es.lockResetCount = 0;
           es.lastActionWasRotation = false;
+          es.lastRotationUsedKick = false;
           es.gravityAccum = 0;
           const newShape = currentShape();
           if (collides(es.grid, newShape, es.activePieceRow, es.activePieceCol)) {

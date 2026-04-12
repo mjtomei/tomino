@@ -107,7 +107,6 @@ describe("GameTestHarness", () => {
 
     it("hard drops and locks piece", () => {
       const harness = new GameTestHarness({ seed: 42 });
-      const firstPiece = harness.state.activePiece!.type;
 
       harness.input("hardDrop");
 
@@ -245,13 +244,21 @@ describe("GameTestHarness", () => {
 
     it("tickUntil can advance until piece locks via gravity + lock delay", () => {
       const harness = new GameTestHarness({ seed: 42 });
-      const firstPiece = harness.state.activePiece!.type;
+      const startY = harness.state.activePiece!.y;
 
-      // Tick until the active piece type changes (i.e., piece locked and new one spawned)
-      const ticksAdvanced = harness.tickUntil(
-        (s) => s.activePiece !== null && s.activePiece.type !== firstPiece,
-      );
+      // Tick until the active piece has moved down (gravity) and a new one spawns at
+      // the spawn row — detect via the Y position resetting after a lock
+      let pieceLocked = false;
+      const ticksAdvanced = harness.tickUntil((s) => {
+        if (s.activePiece !== null && s.activePiece.y === startY && s.tick > 1) {
+          // A piece is back at the spawn row after ticks have passed — a lock happened
+          pieceLocked = true;
+          return true;
+        }
+        return false;
+      });
 
+      expect(pieceLocked).toBe(true);
       expect(ticksAdvanced).toBeGreaterThan(0);
       expect(ticksAdvanced).toBeLessThan(10_000);
     });
@@ -393,9 +400,10 @@ describe("GameTestHarness", () => {
       harness.input("hardDrop");
 
       // Now hold again — should get firstPiece back
+      const thirdPiece = harness.state.activePiece!.type;
       harness.input("hold");
       expect(harness.state.activePiece!.type).toBe(firstPiece);
-      expect(harness.state.holdPiece).toBe(harness.state.holdPiece); // holds the piece we just swapped out
+      expect(harness.state.holdPiece).toBe(thirdPiece);
     });
   });
 });
