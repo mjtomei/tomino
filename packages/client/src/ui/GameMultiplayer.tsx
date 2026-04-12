@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import type {
   GarbageBatch,
   GameStateSnapshot,
@@ -75,23 +75,32 @@ export function GameMultiplayer({
   }
 
   // -- GameClient lifecycle --
-  // Construct synchronously via useMemo so the first render has the client.
-  const gameClient = useMemo(() => {
-    if (!socket || !gameSession) return null;
-    return new GameClient({
+  // GameClient subscribes to socket events in its constructor (side effect),
+  // so we must use useEffect for correct cleanup — not useMemo.
+  const [gameClient, setGameClient] = useState<GameClient | null>(null);
+
+  useEffect(() => {
+    if (!socket || !gameSession) {
+      setGameClient(null);
+      return;
+    }
+    const client = new GameClient({
       socket,
       roomId: room.id as RoomId,
       localPlayerId: currentPlayerId,
       session: gameSession,
     });
+    setGameClient(client);
+    return () => {
+      client.dispose();
+    };
   }, [socket, gameSession, room.id, currentPlayerId]);
 
-  // Dispose on unmount or when client changes
-  useEffect(() => {
-    return () => {
-      gameClient?.dispose();
-    };
-  }, [gameClient]);
+  // Wait for GameClient to be ready before rendering (avoids flash of
+  // SoloGameShell StartScreen while the effect constructs the client).
+  if (socket && gameSession && !gameClient) {
+    return null;
+  }
 
   return (
     <div
