@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { ServerMessage, PlayerId, RoomId, GameStateSnapshot } from "@tetris/shared";
+import type { ServerMessage, PlayerId, RoomId } from "@tetris/shared";
 import { createRNG } from "@tetris/shared";
 import {
   GameSession,
   createGameSession,
   removeGameSession,
 } from "../game-session.js";
-import { makeGameState, makePiece } from "@tetris/shared/__test-utils__/factories.js";
 
 // ---------------------------------------------------------------------------
 // Helpers

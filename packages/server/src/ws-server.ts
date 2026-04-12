@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server as HttpServer } from "node:http";
-import type { ErrorCode, PlayerId, ServerMessage } from "@tetris/shared";
+import type { PlayerId, ServerMessage } from "@tetris/shared";
 import { parseC2SMessage, serializeMessage } from "@tetris/shared";
 import { RoomStore } from "./room-store.js";
 import {
@@ -196,7 +196,7 @@ export function createWebSocketServer(
           break;
         case "playerInput":
           handlePlayerInput(msg, client.playerId!, (code, message) => {
-            send({ type: "error", code: code as ErrorCode, message });
+            ctx.send({ type: "error", code, message });
           });
           break;
       }

@@ -6,6 +6,7 @@
  */
 
 import type {
+  ErrorCode,
   InputAction,
   PlayerId,
   RoomId,
@@ -72,7 +73,7 @@ export function startGameCountdown(
 export function handlePlayerInput(
   msg: C2S_PlayerInput,
   playerId: PlayerId,
-  sendError: (code: string, message: string) => void,
+  sendError: (code: ErrorCode, message: string) => void,
 ): void {
   const session = getGameSession(msg.roomId);
   if (!session) {

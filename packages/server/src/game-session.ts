@@ -72,9 +72,6 @@ export class GameSession {
 
   // -- Gameplay state --
   private readonly engines = new Map<PlayerId, PlayerEngine>();
-  // Tracks last broadcast per player — used for delta compression once the
-  // protocol supports StateDelta in S2C_GameStateSnapshot.
-  private readonly lastSentSnapshots = new Map<PlayerId, GameStateSnapshot>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
 
@@ -135,17 +132,14 @@ export class GameSession {
     const engine = this.engines.get(playerId);
     if (!engine || engine.isGameOver) return undefined;
 
-    const wasGameOver = engine.isGameOver;
     const applied = engine.applyInput(action);
     if (!applied) return undefined;
 
     const snapshot = engine.getSnapshot();
-
-    // Broadcast delta-compressed snapshot
     this.broadcastSnapshot(playerId, snapshot);
 
     // Check for game over triggered by this input (e.g., hard drop causes top-out)
-    if (!wasGameOver && engine.isGameOver) {
+    if (engine.isGameOver) {
       this.handlePlayerGameOver(playerId);
     }
 
@@ -298,8 +292,6 @@ export class GameSession {
       playerId,
       state: snapshot,
     });
-
-    this.lastSentSnapshots.set(playerId, snapshot);
   }
 
   // -------------------------------------------------------------------------
