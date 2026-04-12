@@ -4,6 +4,7 @@ interface LobbyProps {
   error: string | null;
   onCreateRoom: () => void;
   onJoinRoom: () => void;
+  onSoloPlay: () => void;
   onViewStats: () => void;
   onClearError: () => void;
 }
@@ -14,6 +15,7 @@ export function Lobby({
   error,
   onCreateRoom,
   onJoinRoom,
+  onSoloPlay,
   onViewStats,
   onClearError,
 }: LobbyProps) {
@@ -41,6 +43,12 @@ export function Lobby({
       )}
 
       <div style={styles.buttons}>
+        <button
+          onClick={onSoloPlay}
+          style={styles.buttonPrimary}
+        >
+          Solo Play
+        </button>
         <button
           onClick={onCreateRoom}
           disabled={!connected}
@@ -125,5 +133,16 @@ const styles = {
     color: "#e0e0e0",
     cursor: "pointer",
     minWidth: "160px",
+  },
+  buttonPrimary: {
+    padding: "1rem 2rem",
+    fontSize: "1.2rem",
+    borderRadius: "8px",
+    border: "none",
+    background: "linear-gradient(135deg, #4040d0, #6020a0)",
+    color: "#fff",
+    cursor: "pointer",
+    minWidth: "160px",
+    fontWeight: 700,
   },
 };
