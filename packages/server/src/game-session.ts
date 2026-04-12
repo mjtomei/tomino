@@ -162,7 +162,7 @@ export class GameSession {
       roomId: this.roomId,
       playerId,
     });
-    this.checkForWinner();
+    this.checkForWinner(playerId);
   }
 
   // -------------------------------------------------------------------------
@@ -304,10 +304,15 @@ export class GameSession {
       roomId: this.roomId,
       playerId,
     });
-    this.checkForWinner();
+    this.checkForWinner(playerId);
   }
 
-  private checkForWinner(): void {
+  /**
+   * Check whether the session should end. `lastOutPlayerId` is the player
+   * who most recently topped out or disconnected — used as the "winner" in
+   * the 0-remaining edge case (they lasted longest).
+   */
+  private checkForWinner(lastOutPlayerId?: PlayerId): void {
     const activePlayers: PlayerId[] = [];
     for (const [playerId, engine] of this.engines) {
       if (!engine.isGameOver) {
@@ -318,14 +323,21 @@ export class GameSession {
     if (activePlayers.length <= 1) {
       this.stopTickLoop();
 
+      let winnerId: PlayerId | undefined;
       if (activePlayers.length === 1) {
+        winnerId = activePlayers[0];
+      } else if (lastOutPlayerId !== undefined) {
+        // All players are out — the last one to top out lasted longest
+        winnerId = lastOutPlayerId;
+      }
+
+      if (winnerId !== undefined) {
         this.broadcastToRoom(this.roomId, {
           type: "gameEnd",
           roomId: this.roomId,
-          winnerId: activePlayers[0]!,
+          winnerId,
         });
       }
-      // All players done — transition to finished
       this._state = "finished";
     }
   }
