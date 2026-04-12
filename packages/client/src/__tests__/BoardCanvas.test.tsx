@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
 import type { GameState, ActivePiece, ScoringState } from "@tetris/shared";
 import { createGrid, BUFFER_HEIGHT } from "@tetris/shared";
-import { BoardCanvas, renderBoard } from "../ui/BoardCanvas.js";
+import { BoardCanvas, renderBoard, drawHandicapIndicator } from "../ui/BoardCanvas.js";
+import type { HandicapIndicatorData } from "../ui/BoardCanvas.js";
 
 // ---------------------------------------------------------------------------
 // Test helpers
@@ -55,6 +56,7 @@ function createMockCtx(): CanvasRenderingContext2D {
     globalAlpha: 1,
     font: "",
     textAlign: "start",
+    textBaseline: "alphabetic",
     fillRect: vi.fn(),
     strokeRect: vi.fn(),
     fillText: vi.fn(),
@@ -62,6 +64,9 @@ function createMockCtx(): CanvasRenderingContext2D {
     moveTo: vi.fn(),
     lineTo: vi.fn(),
     stroke: vi.fn(),
+    closePath: vi.fn(),
+    fill: vi.fn(),
+    measureText: vi.fn().mockReturnValue({ width: 30 }),
   } as unknown as CanvasRenderingContext2D;
 }
 
@@ -211,5 +216,83 @@ describe("renderBoard", () => {
     // Should still render without error — cells above visible area are skipped
     const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;
     expect(calls.length).toBeGreaterThan(0);
+  });
+
+  it("draws handicap indicator when provided", () => {
+    const ctx = createMockCtx();
+    const state = makeState();
+    const handicap: HandicapIndicatorData = { incomingMultiplier: 0.6 };
+
+    renderBoard(ctx, state, 30, handicap);
+
+    const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
+    const labels = textCalls.map((c: unknown[]) => c[0]);
+    expect(labels).toContain("0.6x");
+  });
+
+  it("does NOT draw handicap indicator when not provided", () => {
+    const ctx = createMockCtx();
+    const state = makeState();
+
+    renderBoard(ctx, state, 30);
+
+    const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
+    const labels = textCalls.map((c: unknown[]) => c[0]);
+    // Should not contain any multiplier text
+    expect(labels.every((l: string) => !l.includes("x") || l === "NEXT")).toBe(true);
+  });
+});
+
+describe("drawHandicapIndicator", () => {
+  it("draws shield icon for protection (multiplier < 1.0)", () => {
+    const ctx = createMockCtx();
+    const handicap: HandicapIndicatorData = { incomingMultiplier: 0.6 };
+
+    drawHandicapIndicator(ctx, handicap, 30);
+
+    // Shield uses fill() for the path
+    expect(ctx.fill).toHaveBeenCalled();
+    // Should draw text with the multiplier value
+    const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
+    expect(textCalls.some((c: unknown[]) => c[0] === "0.6x")).toBe(true);
+  });
+
+  it("does NOT draw shield for neutral multiplier (1.0)", () => {
+    const ctx = createMockCtx();
+    const handicap: HandicapIndicatorData = { incomingMultiplier: 1.0 };
+
+    drawHandicapIndicator(ctx, handicap, 30);
+
+    // No shield (no fill() call)
+    expect(ctx.fill).not.toHaveBeenCalled();
+    // Should still draw the multiplier text
+    const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
+    expect(textCalls.some((c: unknown[]) => c[0] === "1.0x")).toBe(true);
+  });
+
+  it("draws outgoing multiplier when provided", () => {
+    const ctx = createMockCtx();
+    const handicap: HandicapIndicatorData = {
+      incomingMultiplier: 0.5,
+      outgoingMultiplier: 0.8,
+    };
+
+    drawHandicapIndicator(ctx, handicap, 30);
+
+    const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
+    const labels = textCalls.map((c: unknown[]) => c[0]);
+    expect(labels).toContain("0.5x");
+    expect(labels).toContain("Out: 0.8x");
+  });
+
+  it("scales with cellSize", () => {
+    const ctx = createMockCtx();
+    const handicap: HandicapIndicatorData = { incomingMultiplier: 0.6 };
+
+    drawHandicapIndicator(ctx, handicap, 20);
+
+    // Font should be set based on cellSize
+    // cellSize * 0.4 = 8, but min is 10
+    expect(ctx.font).toMatch(/bold 10px/);
   });
 });

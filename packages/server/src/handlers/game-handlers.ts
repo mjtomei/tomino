@@ -7,22 +7,45 @@
 
 import type {
   ErrorCode,
+  HandicapMode,
+  HandicapModifiers,
   InputAction,
   PlayerId,
   RoomId,
   ServerMessage,
 } from "@tetris/shared";
-import type { C2S_PlayerInput } from "@tetris/shared";
+import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
+import type { C2S_PlayerInput, C2S_RejoinRoom, C2S_SetTargetingStrategy, C2S_SetManualTarget } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
   getGameSession,
   removeGameSession,
-  type GameSessionState,
 } from "../game-session.js";
+import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
+import {
+  disconnectRegistry,
+  DisconnectRegistry,
+} from "../disconnect-handler.js";
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
+}
+
+/** Default rating used when a player has no stored rating. */
+const DEFAULT_RATING = 1500;
+
+/**
+ * Serialize a ModifierMatrix (Map) to a plain Record for JSON transport.
+ */
+function serializeModifierMatrix(
+  matrix: Map<string, HandicapModifiers>,
+): Record<string, HandicapModifiers> {
+  const result: Record<string, HandicapModifiers> = {};
+  for (const [key, value] of matrix) {
+    result[key] = value;
+  }
+  return result;
 }
 
 /** Valid input actions for validation. */
@@ -49,10 +72,32 @@ export function startGameCountdown(
   const room = store.getRoom(roomId);
   if (!room) return;
 
+  // Compute handicap modifier matrix if handicap is enabled
+  let handicapModifiers: Record<string, HandicapModifiers> | undefined;
+  let handicapMode: HandicapMode | undefined;
+  const settings = room.handicapSettings;
+
+  if (settings && settings.intensity !== "off") {
+    const playerRatings: PlayerRating[] = room.players.map((p) => ({
+      username: p.name,
+      rating: room.playerRatings?.[p.id] ?? DEFAULT_RATING,
+    }));
+    const matrix = computeModifierMatrix(playerRatings, settings);
+    handicapModifiers = serializeModifierMatrix(matrix);
+    handicapMode = settings.mode;
+  }
+
   const session = createGameSession({
     roomId,
     players: room.players,
     broadcastToRoom: ctx.broadcastToRoom,
+    handicapModifiers,
+    handicapMode,
+    handicapDelayEnabled: settings?.delayEnabled ?? false,
+    handicapMessinessEnabled: settings?.messinessEnabled ?? false,
+    targetingSettings: room.targetingSettings,
+    playerRatings: room.playerRatings,
+    targetingBiasStrength: settings?.targetingBiasStrength,
     onGameStarted: () => {
       // Engines and tick loop are now managed by GameSession itself
     },
@@ -103,39 +148,169 @@ export function handlePlayerInput(
 }
 
 /**
+ * Handle a setTargetingStrategy message from a client.
+ */
+export function handleSetTargetingStrategy(
+  msg: C2S_SetTargetingStrategy,
+  playerId: PlayerId,
+  sendError: (code: ErrorCode, message: string) => void,
+): void {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    sendError("ROOM_NOT_FOUND", "No active game session for this room");
+    return;
+  }
+
+  if (session.state !== "playing") {
+    sendError("INVALID_MESSAGE", "Game is not in progress");
+    return;
+  }
+
+  if (!session.getPlayerIds().includes(playerId)) {
+    sendError("NOT_IN_ROOM", "Player is not in this game session");
+    return;
+  }
+
+  if (!ALL_TARGETING_STRATEGIES.includes(msg.strategy)) {
+    sendError("INVALID_MESSAGE", `Invalid targeting strategy: ${msg.strategy}`);
+    return;
+  }
+
+  const ok = session.setPlayerStrategy(playerId, msg.strategy);
+  if (!ok) {
+    sendError("INVALID_MESSAGE", "Strategy not enabled for this game");
+  }
+}
+
+/**
+ * Handle a setManualTarget message from a client.
+ */
+export function handleSetManualTarget(
+  msg: C2S_SetManualTarget,
+  playerId: PlayerId,
+  sendError: (code: ErrorCode, message: string) => void,
+): void {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    sendError("ROOM_NOT_FOUND", "No active game session for this room");
+    return;
+  }
+
+  if (session.state !== "playing") {
+    sendError("INVALID_MESSAGE", "Game is not in progress");
+    return;
+  }
+
+  if (!session.getPlayerIds().includes(playerId)) {
+    sendError("NOT_IN_ROOM", "Player is not in this game session");
+    return;
+  }
+
+  const ok = session.setManualTarget(playerId, msg.targetPlayerId);
+  if (!ok) {
+    sendError("INVALID_MESSAGE", "Invalid target player");
+  }
+}
+
+/**
  * Handle a player disconnecting during an active game session.
- * If in countdown, cancel the session.
- * If playing, mark the player as game over.
+ *
+ * - countdown → cancel the session
+ * - playing → start a reconnect grace window; on timeout the player forfeits
  */
 export function handleGameDisconnect(
   playerId: PlayerId,
   roomId: RoomId,
   ctx: GameHandlerContext,
   store?: RoomStore,
-): void {
+  registry: DisconnectRegistry = disconnectRegistry,
+): { pendingReconnect: boolean } {
   const session = getGameSession(roomId);
-  if (!session) return;
+  if (!session) return { pendingReconnect: false };
 
   if (session.state === "countdown") {
-    // Cancel the game — can't start with missing players
     session.cancel();
-
     ctx.broadcastToRoom(roomId, {
       type: "error",
       code: "INTERNAL_ERROR",
       message: "Game cancelled — a player disconnected during countdown",
     });
-  } else if (session.state === "playing") {
-    // Mark disconnected player as game over
-    session.handlePlayerDisconnect(playerId);
-
-    // handlePlayerDisconnect may transition the session to "finished"
-    // (TS can't see the mutation through the method call, so re-read state)
-    if ((session.state as GameSessionState) === "finished") {
-      if (store) {
-        store.setStatus(roomId, "finished");
-      }
-      removeGameSession(roomId);
-    }
+    return { pendingReconnect: false };
   }
+
+  if (session.state !== "playing") return { pendingReconnect: false };
+
+  const marked = session.markDisconnected(playerId, registry.timeoutMs);
+  if (!marked) return { pendingReconnect: false };
+
+  registry.register(roomId, playerId, () => {
+    const s = getGameSession(roomId);
+    if (!s) return;
+    s.forfeitPlayer(playerId);
+    if (s.state === "finished") {
+      if (store) store.setStatus(roomId, "finished");
+      removeGameSession(roomId);
+      registry.clearRoom(roomId);
+    }
+  });
+
+  return { pendingReconnect: true };
+}
+
+/**
+ * Handle a player reconnecting within the grace window. Clears the pending
+ * forfeit, broadcasts `playerReconnected`, and sends the reconnecting player
+ * a full `gameRejoined` payload so they can rehydrate their client state.
+ *
+ * Returns true on successful rejoin, false if the rejoin was rejected (no
+ * session, not eligible, etc.).
+ */
+export function handleRejoinRoom(
+  msg: C2S_RejoinRoom,
+  playerId: PlayerId,
+  ctx: GameHandlerContext & { send: (m: ServerMessage) => void },
+  registry: DisconnectRegistry = disconnectRegistry,
+): boolean {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    ctx.send({
+      type: "error",
+      code: "ROOM_NOT_FOUND",
+      message: "No active game session for this room",
+    });
+    return false;
+  }
+
+  if (session.state !== "playing") {
+    ctx.send({
+      type: "error",
+      code: "GAME_IN_PROGRESS",
+      message: "Session is not in a rejoinable state",
+    });
+    return false;
+  }
+
+  if (!session.isDisconnected(playerId)) {
+    ctx.send({
+      type: "error",
+      code: "NOT_IN_ROOM",
+      message: "Player is not pending reconnect",
+    });
+    return false;
+  }
+
+  registry.clear(msg.roomId, playerId);
+  session.markReconnected(playerId);
+
+  ctx.send({
+    type: "gameRejoined",
+    roomId: msg.roomId,
+    seed: session.seed,
+    playerIndexes: session.playerIndexes,
+    currentStates: session.getCurrentSnapshots(),
+    handicapModifiers: session.handicapModifiers,
+    handicapMode: session.handicapMode,
+  });
+
+  return true;
 }
