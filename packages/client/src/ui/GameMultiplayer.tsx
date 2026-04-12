@@ -6,10 +6,11 @@ import type {
   TargetingStrategyType,
   TargetingSettings,
 } from "@tetris/shared";
+import type { EliminationData, PlayerTargetingState, PlayerAttackPower } from "../net/lobby-client.js";
 import { GameShell } from "./GameShell.js";
 import { OpponentBoard, opponentCellSize } from "./OpponentBoard.js";
+import { SpectatorOverlay } from "./SpectatorOverlay.js";
 import { TargetingSelector } from "./TargetingSelector.js";
-import type { PlayerTargetingState, PlayerAttackPower } from "../net/lobby-client.js";
 
 export interface GameMultiplayerProps {
   room: RoomState;
@@ -18,6 +19,7 @@ export interface GameMultiplayerProps {
   opponentSnapshots: Record<PlayerId, GameStateSnapshot>;
   /** Pending garbage for the local player. */
   localPendingGarbage?: GarbageBatch[];
+  localElimination: EliminationData | null;
   targetingStates?: Record<PlayerId, PlayerTargetingState>;
   attackPowers?: Record<PlayerId, PlayerAttackPower>;
   targetingSettings?: TargetingSettings | null;
@@ -31,6 +33,7 @@ export function GameMultiplayer({
   seed,
   opponentSnapshots,
   localPendingGarbage,
+  localElimination,
   targetingStates,
   attackPowers,
   targetingSettings,
@@ -63,6 +66,9 @@ export function GameMultiplayer({
     >
       <div style={{ flex: "1 1 auto", position: "relative" }}>
         <GameShell seed={seed} pendingGarbage={localPendingGarbage} />
+        {localElimination && (
+          <SpectatorOverlay placement={localElimination.placement} />
+        )}
         {targetingSettings && (
           <div style={selectorStyle}>
             <TargetingSelector
