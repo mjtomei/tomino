@@ -20,6 +20,12 @@ import {
   detectReactions,
   type OpponentReaction,
 } from "../atmosphere/opponent-reactions.js";
+import {
+  averageDirection,
+  computeOpponentDirection,
+} from "../atmosphere/multiplayer-effects.js";
+import type { MultiplayerSignals } from "../atmosphere/types.js";
+import type { MultiplayerAtmosphereHook } from "./GameShell.js";
 import { EmotePicker } from "./EmotePicker.js";
 import type { GameSessionData } from "../net/game-client.js";
 import type { ClientSocket } from "../net/client-socket.js";
@@ -124,6 +130,88 @@ export function GameMultiplayer({
     }
   }, [opponentSnapshots]);
 
+  // -- Multiplayer atmosphere signals --
+  // Track cumulative garbage flow and eliminations from props. Monotonic
+  // counters so the atmosphere engine can edge-detect deltas.
+  const mpTrackRef = useRef({
+    garbageReceivedTotal: 0,
+    garbageSent: 0,
+    eliminations: 0,
+    prevLocalPending: 0,
+    prevOppPending: 0,
+  });
+  const mpSignalsRef = useRef<MultiplayerSignals | undefined>(undefined);
+  {
+    const track = mpTrackRef.current;
+    let localPending = 0;
+    if (localPendingGarbage) {
+      for (const b of localPendingGarbage) localPending += b.lines;
+    }
+    if (localPending > track.prevLocalPending) {
+      track.garbageReceivedTotal += localPending - track.prevLocalPending;
+    }
+    track.prevLocalPending = localPending;
+
+    let oppPending = 0;
+    let eliminatedCount = 0;
+    for (const p of opponents) {
+      const snap = opponentSnapshots[p.id];
+      if (!snap) continue;
+      for (const b of snap.pendingGarbage) oppPending += b.lines;
+      if (snap.isGameOver) eliminatedCount += 1;
+    }
+    if (oppPending > track.prevOppPending) {
+      track.garbageSent += oppPending - track.prevOppPending;
+    }
+    track.prevOppPending = oppPending;
+    track.eliminations = eliminatedCount;
+
+    mpSignalsRef.current = {
+      opponentCount: opponents.length - eliminatedCount,
+      eliminations: track.eliminations,
+      garbageSent: track.garbageSent,
+      garbageReceivedTotal: track.garbageReceivedTotal,
+    };
+  }
+
+  // Build direction context from live layout. Use refs so the callback
+  // captured by GameShell always sees the latest opponents/targeting.
+  const layoutRef = useRef({ opponents, attackersSet, myManualTarget });
+  layoutRef.current = { opponents, attackersSet, myManualTarget };
+  const mpAtmosphereRef = useRef<MultiplayerAtmosphereHook | null>(null);
+  if (mpAtmosphereRef.current === null) {
+    mpAtmosphereRef.current = {
+      getSignals: () => mpSignalsRef.current,
+      getContext: () => {
+        const { opponents: ops, attackersSet: atkSet, myManualTarget: tgt } =
+          layoutRef.current;
+        const total = ops.length;
+        const attackerSlots: number[] = [];
+        ops.forEach((p, i) => {
+          if (atkSet.has(p.id)) attackerSlots.push(i);
+        });
+        const incomingDir =
+          attackerSlots.length > 0
+            ? averageDirection(attackerSlots, total)
+            : averageDirection(
+                ops.map((_, i) => i),
+                total,
+              );
+        const targetSlot = tgt ? ops.findIndex((p) => p.id === tgt) : -1;
+        const outgoingDir =
+          targetSlot >= 0
+            ? computeOpponentDirection(targetSlot, total)
+            : incomingDir;
+        return {
+          center: { x: 150, y: 300 },
+          spawnRadius: 400,
+          incomingDir,
+          outgoingDir,
+        };
+      },
+    };
+  }
+
   // -- GameClient lifecycle --
   // GameClient subscribes to socket events in its constructor (side effect),
   // so we must use useEffect for correct cleanup — not useMemo.
@@ -163,6 +251,7 @@ export function GameMultiplayer({
           pendingGarbage={localPendingGarbage}
           handicap={handicap}
           gameClient={gameClient ?? undefined}
+          multiplayerAtmosphere={mpAtmosphereRef.current ?? undefined}
         />
         {localElimination && (
           <SpectatorOverlay placement={localElimination.placement} />

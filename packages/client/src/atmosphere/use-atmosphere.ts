@@ -25,7 +25,7 @@ import { INITIAL_ATMOSPHERE_STATE } from "./types.js";
 
 interface AtmosphereContextValue {
   state: AtmosphereState;
-  update: (signals: GameSignals) => void;
+  update: (signals: GameSignals) => AtmosphereState;
   reset: () => void;
   signalsRef: { current: GameSignals | null };
 }
@@ -62,7 +62,7 @@ export function AtmosphereProvider({ children }: AtmosphereProviderProps) {
   const [state, setState] = useState<AtmosphereState>(INITIAL_ATMOSPHERE_STATE);
   const signalsRef = useRef<GameSignals | null>(null);
 
-  const update = useCallback((signals: GameSignals) => {
+  const update = useCallback((signals: GameSignals): AtmosphereState => {
     const engine = engineRef.current!;
     const prev = engine.getState();
     const next = engine.update(signals);
@@ -81,6 +81,7 @@ export function AtmosphereProvider({ children }: AtmosphereProviderProps) {
     if (changed) {
       setState(next);
     }
+    return next;
   }, []);
 
   const reset = useCallback(() => {
@@ -118,7 +119,9 @@ export function useAtmosphere(): AtmosphereState {
   return ctx.state;
 }
 
-export function useAtmosphereUpdater(): (signals: GameSignals) => void {
+export function useAtmosphereUpdater(): (
+  signals: GameSignals,
+) => AtmosphereState {
   const ctx = useContext(AtmosphereContext);
   if (!ctx) {
     throw new Error(

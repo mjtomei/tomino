@@ -40,7 +40,9 @@ export type AtmosphereEventType =
   | "tSpin"
   | "tetris"
   | "levelUp"
-  | "garbageReceived";
+  | "garbageReceived"
+  | "garbageSent"
+  | "opponentEliminated";
 
 export interface AtmosphereEvent {
   type: AtmosphereEventType;
