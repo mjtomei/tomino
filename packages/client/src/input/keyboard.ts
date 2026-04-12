@@ -215,7 +215,7 @@ export class KeyboardHandler {
       // If released direction was active, switch to the other held direction or clear
       if (this.das.direction === dasAction) {
         if (this.directionOrder.length > 0) {
-          const newDir = this.directionOrder[this.directionOrder.length - 1];
+          const newDir = this.directionOrder[this.directionOrder.length - 1]!;
           this.das.direction = newDir;
           this.das.elapsed = 0;
           this.das.charged = false;

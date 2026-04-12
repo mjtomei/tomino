@@ -170,9 +170,12 @@ describe("GameSession", () => {
       }
 
       // After 4s: gameStarted (delayed so "Go!" is visible)
+      // Plus 2 targetingUpdated messages (one per player)
       vi.advanceTimersByTime(1000);
-      expect(spy.messages).toHaveLength(5);
+      expect(spy.messages).toHaveLength(7);
       expect(spy.messages[4].msg.type).toBe("gameStarted");
+      expect(spy.messages[5].msg.type).toBe("targetingUpdated");
+      expect(spy.messages[6].msg.type).toBe("targetingUpdated");
     });
 
     it("sends countdown messages to the correct room", () => {

@@ -16,14 +16,20 @@ import type {
   RoomId,
   RuleSet,
   ServerMessage,
-  TargetingStrategy,
+  TargetingSettings,
+  TargetingStrategyType,
+  TargetingContext,
 } from "@tetris/shared";
 import {
+  DEFAULT_TARGETING_SETTINGS,
   modernRuleSet,
 } from "@tetris/shared";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "./player-engine.js";
 import { GarbageManager } from "./garbage-manager.js";
 import { BalancingMiddleware } from "./balancing-middleware.js";
+import { AttackPowerTracker } from "./attack-power.js";
+import { getStrategy } from "./targeting.js";
+import { createSkillBiasStrategy, type TargetingBiasConfig } from "./targeting-bias.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -48,10 +54,16 @@ export interface GameSessionConfig {
   handicapMessinessEnabled?: boolean;
   /** Optional rule set override (defaults to modernRuleSet). */
   ruleSet?: RuleSet;
-  /** Optional targeting strategy override for garbage distribution. */
-  targetingStrategy?: TargetingStrategy;
+  /** Optional targeting strategy override for garbage distribution (legacy). */
+  targetingStrategy?: import("@tetris/shared").TargetingStrategy;
   /** Optional garbage delay override in milliseconds. */
   garbageDelayMs?: number;
+  /** Targeting settings from room configuration. */
+  targetingSettings?: TargetingSettings;
+  /** Player skill ratings keyed by PlayerId. Used for targeting bias in 3+ player games. */
+  playerRatings?: Record<PlayerId, number>;
+  /** Skill-aware targeting bias strength (0.0 = uniform, 1.0 = fully skill-weighted). Default 0 (off). */
+  targetingBiasStrength?: number;
 }
 
 export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished";
@@ -63,6 +75,24 @@ export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished
 function generateSeed(): number {
   // 32-bit integer seed
   return Math.floor(Math.random() * 0x7fffffff);
+}
+
+/**
+ * Compute the "board height" for a snapshot — distance from the bottom to the
+ * topmost non-empty row. Used by KOs targeting strategy to find the player
+ * closest to topping out.
+ */
+function computeBoardHeight(snapshot: GameStateSnapshot): number {
+  const board = snapshot.board;
+  for (let r = 0; r < board.length; r++) {
+    const row = board[r]!;
+    for (let c = 0; c < row.length; c++) {
+      if (row[c] !== null) {
+        return board.length - r;
+      }
+    }
+  }
+  return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -86,20 +116,36 @@ export class GameSession {
   private readonly broadcastToRoom: GameSessionConfig["broadcastToRoom"];
   private readonly onGameStarted?: () => void;
   private readonly onCancelled?: () => void;
-  private readonly handicapModifiers?: Record<string, HandicapModifiers>;
-  private readonly handicapMode?: HandicapMode;
+  readonly handicapModifiers?: Record<string, HandicapModifiers>;
+  readonly handicapMode?: HandicapMode;
   private readonly handicapDelayEnabled: boolean;
   private readonly handicapMessinessEnabled: boolean;
   private readonly playerNames: Record<PlayerId, string>;
   private readonly ruleSet: RuleSet;
+  private readonly targetingSettings: TargetingSettings;
 
   // -- Gameplay state --
   private readonly engines = new Map<PlayerId, PlayerEngine>();
+  /** Players whose connection has dropped and who are within the reconnect window. */
+  private readonly disconnected = new Set<PlayerId>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
-  private readonly targetingStrategy?: TargetingStrategy;
+  private readonly legacyTargetingStrategy?: import("@tetris/shared").TargetingStrategy;
   private readonly garbageDelayMs?: number;
+  private readonly playerRatings?: Record<PlayerId, number>;
+  private readonly targetingBiasStrength: number;
   private garbageManager: GarbageManager | BalancingMiddleware | null = null;
+
+  // -- Targeting state --
+  private readonly playerStrategies = new Map<PlayerId, TargetingStrategyType>();
+  private readonly manualTargets = new Map<PlayerId, PlayerId>();
+  private attackPower: AttackPowerTracker | null = null;
+  /** Tracks who last sent garbage to each player, for KO attribution. */
+  private readonly lastGarbageSender = new Map<PlayerId, PlayerId>();
+  /** Skill-aware targeting bias config (null when no ratings available or 2-player). */
+  private skillBiasConfig: TargetingBiasConfig | null = null;
+  /** Cached skill-bias strategy (rebuilt when config changes, e.g. player eliminated). */
+  private skillBiasStrategy: import("@tetris/shared").TargetingStrategy | null = null;
 
   // -- Stats & elimination tracking --
   private gameStartTime: number = 0;
@@ -120,8 +166,11 @@ export class GameSession {
       config.players.map((p) => [p.id, p.name]),
     );
     this.ruleSet = config.ruleSet ?? modernRuleSet();
-    this.targetingStrategy = config.targetingStrategy;
+    this.legacyTargetingStrategy = config.targetingStrategy;
     this.garbageDelayMs = config.garbageDelayMs;
+    this.targetingSettings = config.targetingSettings ?? DEFAULT_TARGETING_SETTINGS;
+    this.playerRatings = config.playerRatings;
+    this.targetingBiasStrength = config.targetingBiasStrength ?? 0;
 
     // Assign player indexes (0-based, room order)
     this.playerIndexes = {};
@@ -153,7 +202,7 @@ export class GameSession {
 
   /** Cancel the session (e.g. player disconnected during countdown). */
   cancel(): void {
-    if (this._state === "cancelled") return;
+    if (this._state === "cancelled" || this._state === "finished") return;
     this._state = "cancelled";
     if (this.countdownTimer) {
       clearTimeout(this.countdownTimer);
@@ -163,12 +212,27 @@ export class GameSession {
     this.onCancelled?.();
   }
 
+  /** Whether the given player is currently in the reconnect grace window. */
+  isDisconnected(playerId: PlayerId): boolean {
+    return this.disconnected.has(playerId);
+  }
+
+  /** Build current snapshots for every player currently tracked by the session. */
+  getCurrentSnapshots(): Record<PlayerId, GameStateSnapshot> {
+    const out: Record<PlayerId, GameStateSnapshot> = {};
+    for (const [pid, engine] of this.engines) {
+      out[pid] = engine.getSnapshot();
+    }
+    return out;
+  }
+
   /**
    * Apply a player input action. Returns the resulting snapshot if applied,
    * or undefined if the input was rejected.
    */
   applyInput(playerId: PlayerId, action: InputAction): GameStateSnapshot | undefined {
     if (this._state !== "playing") return undefined;
+    if (this.disconnected.has(playerId)) return undefined;
     const engine = this.engines.get(playerId);
     if (!engine || engine.isGameOver) return undefined;
 
@@ -189,13 +253,108 @@ export class GameSession {
   }
 
   /**
-   * Mark a player as disconnected during gameplay.
-   * Their engine is stopped and game-over is broadcast.
+   * Change a player's active targeting strategy.
    */
-  handlePlayerDisconnect(playerId: PlayerId): void {
+  setPlayerStrategy(playerId: PlayerId, strategy: TargetingStrategyType): boolean {
+    if (this._state !== "playing") return false;
+    if (!this.engines.has(playerId)) return false;
+    if (!this.targetingSettings.enabledStrategies.includes(strategy)) return false;
+
+    this.playerStrategies.set(playerId, strategy);
+
+    // If switching away from manual, clear manual target
+    if (strategy !== "manual") {
+      this.manualTargets.delete(playerId);
+    }
+
+    this.broadcastToRoom(this.roomId, {
+      type: "targetingUpdated",
+      roomId: this.roomId,
+      playerId,
+      strategy,
+      targetPlayerId: this.manualTargets.get(playerId),
+    });
+
+    return true;
+  }
+
+  /**
+   * Set a player's manual target.
+   */
+  setManualTarget(playerId: PlayerId, targetPlayerId: PlayerId): boolean {
+    if (this._state !== "playing") return false;
+    if (!this.engines.has(playerId)) return false;
+    if (targetPlayerId === playerId) return false; // can't target self
+    // Manual targeting requires the "manual" strategy to be enabled
+    if (!this.targetingSettings.enabledStrategies.includes("manual")) return false;
+
+    // Target must be alive
+    const targetEngine = this.engines.get(targetPlayerId);
+    if (!targetEngine || targetEngine.isGameOver) return false;
+
+    this.manualTargets.set(playerId, targetPlayerId);
+
+    // Auto-switch to manual strategy if not already
+    if (this.playerStrategies.get(playerId) !== "manual") {
+      this.playerStrategies.set(playerId, "manual");
+    }
+
+    this.broadcastToRoom(this.roomId, {
+      type: "targetingUpdated",
+      roomId: this.roomId,
+      playerId,
+      strategy: this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy,
+      targetPlayerId,
+    });
+
+    return true;
+  }
+
+  /**
+   * Mark a player as disconnected during gameplay. The player's engine is
+   * frozen (skipped in the tick loop) and a `playerDisconnected` notice is
+   * broadcast. Returns true if the player was marked (false if not eligible,
+   * e.g. already disconnected or already game-over).
+   */
+  markDisconnected(playerId: PlayerId, timeoutMs: number): boolean {
+    if (this._state !== "playing") return false;
+    if (this.disconnected.has(playerId)) return false;
+    const engine = this.engines.get(playerId);
+    if (!engine || engine.isGameOver) return false;
+
+    this.disconnected.add(playerId);
+    this.broadcastToRoom(this.roomId, {
+      type: "playerDisconnected",
+      roomId: this.roomId,
+      playerId,
+      timeoutMs,
+    });
+    return true;
+  }
+
+  /**
+   * Clear the disconnected flag and notify peers. Returns true if the player
+   * was marked disconnected (and is now cleared).
+   */
+  markReconnected(playerId: PlayerId): boolean {
+    if (!this.disconnected.delete(playerId)) return false;
+    this.broadcastToRoom(this.roomId, {
+      type: "playerReconnected",
+      roomId: this.roomId,
+      playerId,
+    });
+    return true;
+  }
+
+  /**
+   * Forfeit a disconnected player — equivalent to a top-out. Called when the
+   * reconnect window expires. Safe to call multiple times.
+   */
+  forfeitPlayer(playerId: PlayerId): void {
     if (this._state !== "playing") return;
     const engine = this.engines.get(playerId);
     if (!engine || engine.isGameOver) return;
+    this.disconnected.delete(playerId);
 
     // Capture stats while engine still exists, then delete it
     this.capturePlayerStats(playerId);
@@ -247,7 +406,19 @@ export class GameSession {
           playerIndexes: this.playerIndexes,
           handicapModifiers: this.handicapModifiers,
           handicapMode: this.handicapMode,
+          targetingSettings: this.targetingSettings,
         });
+
+        // Broadcast initial targeting state for each player
+        for (const pid of this.getPlayerIds()) {
+          const strategy = this.playerStrategies.get(pid) ?? this.targetingSettings.defaultStrategy;
+          this.broadcastToRoom(this.roomId, {
+            type: "targetingUpdated",
+            roomId: this.roomId,
+            playerId: pid,
+            strategy,
+          });
+        }
 
         // Start the server tick loop
         this.startTickLoop();
@@ -263,6 +434,24 @@ export class GameSession {
 
   private initializeEngines(): void {
     const playerIds = Object.keys(this.playerIndexes);
+
+    // Initialize per-player targeting state
+    for (const pid of playerIds) {
+      this.playerStrategies.set(pid, this.targetingSettings.defaultStrategy);
+    }
+
+    // Initialize attack power tracker
+    this.attackPower = new AttackPowerTracker(playerIds);
+
+    // Initialize skill-aware targeting bias (only for 3+ players with ratings)
+    if (this.playerRatings && playerIds.length >= 3 && this.targetingBiasStrength > 0) {
+      this.skillBiasConfig = {
+        ratings: { ...this.playerRatings },
+        biasStrength: Math.max(0, Math.min(1, this.targetingBiasStrength)),
+      };
+      this.skillBiasStrategy = createSkillBiasStrategy(this.skillBiasConfig);
+    }
+
     this.gameStartTime = Date.now();
     for (const playerId of playerIds) {
       const engine = new PlayerEngine({
@@ -288,8 +477,8 @@ export class GameSession {
       ...(this.handicapModifiers !== undefined
         ? { modifiers: this.handicapModifiers }
         : {}),
-      ...(this.targetingStrategy !== undefined
-        ? { targetingStrategy: this.targetingStrategy }
+      ...(this.legacyTargetingStrategy !== undefined
+        ? { targetingStrategy: this.legacyTargetingStrategy }
         : {}),
       ...(this.garbageDelayMs !== undefined
         ? { delayMs: this.garbageDelayMs }
@@ -327,6 +516,9 @@ export class GameSession {
 
     for (const [playerId, engine] of this.engines) {
       if (engine.isGameOver) continue;
+      // Freeze disconnected players — no gravity, no broadcasts — until they
+      // either reconnect or forfeit.
+      if (this.disconnected.has(playerId)) continue;
 
       const prevSnapshot = engine.getSnapshot();
       engine.advanceTick(deltaMs);
@@ -358,12 +550,43 @@ export class GameSession {
     // 1. Any line clears from the player's latest action? → enqueue garbage.
     const event = engine.consumeLineClearEvent();
     if (event) {
+      // Build targeting context with per-player strategy dispatch
+      const senderStrategy = this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy;
+      const baseStrategy = this.legacyTargetingStrategy ?? getStrategy(senderStrategy);
+      // Apply skill-aware targeting bias for non-manual strategies in 3+ player games
+      const strategy = (senderStrategy !== "manual" && this.skillBiasStrategy)
+        ? this.skillBiasStrategy
+        : baseStrategy;
+      const targetingContext = this.buildTargetingContext(playerId);
+
+      // Apply attack power multiplier
+      const attackMultiplier = this.attackPower?.getMultiplier(playerId) ?? 1.0;
+
+      // Set the strategy on the garbage manager for this specific call
+      gm.setTargetingStrategy({
+        resolveTargets: (sender, players, ctx) => {
+          // Merge our extended context into the call
+          const extendedCtx: TargetingContext = {
+            ...ctx,
+            ...targetingContext,
+            // Apply attack power to the lines being sent
+            linesToSend: Math.floor(ctx.linesToSend * attackMultiplier),
+          };
+          return strategy.resolveTargets(sender, players, extendedCtx);
+        },
+      });
+
       const outcome = gm.onLinesCleared(playerId, event);
       if (outcome.residualSent > 0) {
         const stats = this.playerStats.get(playerId);
         if (stats) stats.linesSent += outcome.residualSent;
       }
+
+      // Track last garbage sender for KO attribution
       for (const receiverId of outcome.affectedReceivers) {
+        if (receiverId !== playerId) {
+          this.lastGarbageSender.set(receiverId, playerId);
+        }
         this.syncPendingGarbage(receiverId);
       }
     }
@@ -386,6 +609,44 @@ export class GameSession {
       }
       this.syncPendingGarbage(playerId);
     }
+  }
+
+  /**
+   * Build the extended targeting context for a sender's strategy.
+   */
+  private buildTargetingContext(
+    senderId: PlayerId,
+  ): Partial<TargetingContext> {
+    // Board heights for KOs strategy
+    const boardHeights: Record<PlayerId, number> = {};
+    for (const [pid, engine] of this.engines) {
+      if (!engine.isGameOver) {
+        boardHeights[pid] = computeBoardHeight(engine.getSnapshot());
+      }
+    }
+
+    // Attacker graph: who stably targets whom
+    const attackerGraph: Record<PlayerId, PlayerId | null> = {};
+    for (const [pid, strat] of this.playerStrategies) {
+      const engine = this.engines.get(pid);
+      if (!engine || engine.isGameOver) continue;
+
+      if (strat === "manual") {
+        attackerGraph[pid] = this.manualTargets.get(pid) ?? null;
+      } else if (strat === "attackers") {
+        // Attackers strategy targets whoever targets them — this is resolved
+        // dynamically by the strategy itself, so mark as null in the graph
+        attackerGraph[pid] = null;
+      } else {
+        attackerGraph[pid] = null;
+      }
+    }
+
+    return {
+      boardHeights,
+      attackerGraph,
+      manualTarget: this.manualTargets.get(senderId) ?? null,
+    };
   }
 
   private syncPendingGarbage(playerId: PlayerId): void {
@@ -420,7 +681,7 @@ export class GameSession {
   }
 
   // -------------------------------------------------------------------------
-  // Game over / winner detection
+  // Game over / winner detection / KO attribution
   // -------------------------------------------------------------------------
 
   private handlePlayerGameOver(playerId: PlayerId): void {
@@ -432,6 +693,12 @@ export class GameSession {
     if (!statsCaptured) this.capturePlayerStats(playerId);
     this.eliminations.push(playerId);
     this.garbageManager?.removePlayer(playerId);
+    this.attackPower?.removePlayer(playerId);
+    if (this.skillBiasConfig) {
+      delete this.skillBiasConfig.ratings[playerId];
+      this.skillBiasStrategy = createSkillBiasStrategy(this.skillBiasConfig);
+    }
+    this.cleanupTargetingForRemovedPlayer(playerId);
 
     const totalPlayers = Object.keys(this.playerIndexes).length;
     const placement = totalPlayers - this.eliminations.indexOf(playerId);
@@ -442,7 +709,58 @@ export class GameSession {
       playerId,
       placement,
     });
+
+    this.attributeKO(playerId);
     this.checkForWinner(playerId);
+  }
+
+  /**
+   * Attribute a KO to the player who last sent garbage to the eliminated player.
+   */
+  private attributeKO(eliminatedPlayerId: PlayerId): void {
+    if (!this.attackPower) return;
+
+    const killer = this.lastGarbageSender.get(eliminatedPlayerId);
+    if (!killer) return;
+
+    const result = this.attackPower.recordKO(killer);
+    if (result) {
+      this.broadcastToRoom(this.roomId, {
+        type: "attackPowerUpdated",
+        roomId: this.roomId,
+        playerId: killer,
+        multiplier: result.multiplier,
+        koCount: result.koCount,
+      });
+    }
+  }
+
+  /**
+   * Clean up targeting state when a player is removed.
+   * Players with manual target pointing at the removed player get reset.
+   */
+  private cleanupTargetingForRemovedPlayer(removedId: PlayerId): void {
+    this.playerStrategies.delete(removedId);
+    this.manualTargets.delete(removedId);
+    this.lastGarbageSender.delete(removedId);
+
+    // Players manually targeting the removed player fall back to random
+    for (const [pid, target] of this.manualTargets) {
+      if (target === removedId) {
+        this.manualTargets.delete(pid);
+        // Switch to random if currently on manual
+        const currentStrategy = this.playerStrategies.get(pid);
+        if (currentStrategy === "manual") {
+          this.playerStrategies.set(pid, "random");
+          this.broadcastToRoom(this.roomId, {
+            type: "targetingUpdated",
+            roomId: this.roomId,
+            playerId: pid,
+            strategy: "random",
+          });
+        }
+      }
+    }
   }
 
   /**

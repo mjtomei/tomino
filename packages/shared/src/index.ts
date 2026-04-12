@@ -17,8 +17,14 @@ export type {
   TargetAllocation,
   TargetingContext,
   TargetingStrategy,
+  TargetingStrategyType,
+  TargetingSettings,
 } from "./targeting-types.js";
-export { evenSplitStrategy } from "./targeting-types.js";
+export {
+  ALL_TARGETING_STRATEGIES,
+  DEFAULT_TARGETING_SETTINGS,
+  evenSplitStrategy,
+} from "./targeting-types.js";
 
 export type {
   PlayerProfile,

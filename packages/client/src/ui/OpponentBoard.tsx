@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback } from "react";
-import type { GameStateSnapshot } from "@tetris/shared";
+import type { GameStateSnapshot, PlayerId } from "@tetris/shared";
 import {
   renderOpponentBoard,
   opponentCanvasWidth,
@@ -15,11 +15,26 @@ export function opponentCellSize(opponentCount: number): number {
 
 export interface OpponentBoardProps {
   playerName: string;
+  playerId?: PlayerId;
   snapshot: GameStateSnapshot | null;
   cellSize: number;
+  /** Whether this opponent is the current manual target. */
+  isTargeted?: boolean;
+  /** Whether this opponent is targeting the local player. */
+  isAttackingYou?: boolean;
+  /** Called when the player clicks this board (for manual targeting). */
+  onSelect?: (playerId: PlayerId) => void;
 }
 
-export function OpponentBoard({ playerName, snapshot, cellSize }: OpponentBoardProps) {
+export function OpponentBoard({
+  playerName,
+  playerId,
+  snapshot,
+  cellSize,
+  isTargeted,
+  isAttackingYou,
+  onSelect,
+}: OpponentBoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const snapshotRef = useRef(snapshot);
@@ -48,10 +63,24 @@ export function OpponentBoard({ playerName, snapshot, cellSize }: OpponentBoardP
   const h = opponentCanvasHeight(cellSize);
   const isGameOver = snapshot?.isGameOver ?? false;
 
+  const handleClick = () => {
+    if (playerId && onSelect && !isGameOver) {
+      onSelect(playerId);
+    }
+  };
+
+  let borderColor = "rgba(255,255,255,0.15)";
+  if (isTargeted) {
+    borderColor = "#e74c3c"; // red for targeted
+  } else if (isAttackingYou) {
+    borderColor = "#e2b714"; // yellow for attackers
+  }
+
   return (
     <div
       data-testid="opponent-board"
       data-player-id={playerName}
+      onClick={handleClick}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -60,6 +89,7 @@ export function OpponentBoard({ playerName, snapshot, cellSize }: OpponentBoardP
         color: "#ccc",
         fontSize: "0.75rem",
         fontFamily: "sans-serif",
+        cursor: onSelect && !isGameOver ? "pointer" : "default",
       }}
     >
       <div
@@ -73,14 +103,20 @@ export function OpponentBoard({ playerName, snapshot, cellSize }: OpponentBoardP
         }}
       >
         {playerName}
-        {isGameOver ? " ✗" : ""}
+        {isGameOver ? " \u2717" : ""}
+        {isTargeted && !isGameOver ? " \u25C9" : ""}
       </div>
       <canvas
         ref={canvasRef}
         width={w}
         height={h}
         data-testid="opponent-canvas"
-        style={{ display: "block", border: "1px solid rgba(255,255,255,0.15)" }}
+        style={{
+          display: "block",
+          border: `2px solid ${borderColor}`,
+          borderRadius: isTargeted ? "3px" : undefined,
+          transition: "border-color 0.15s ease",
+        }}
       />
     </div>
   );

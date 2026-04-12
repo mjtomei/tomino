@@ -17,6 +17,7 @@ import type {
 } from "./types.js";
 
 import type { HandicapSettings, HandicapMode, HandicapModifiers } from "./handicap-types.js";
+import type { TargetingSettings, TargetingStrategyType } from "./targeting-types.js";
 
 // ---------------------------------------------------------------------------
 // Client → Server (C2S)
@@ -51,6 +52,7 @@ export interface C2S_UpdateRoomSettings {
   roomId: RoomId;
   handicapSettings: HandicapSettings;
   ratingVisible: boolean;
+  targetingSettings?: TargetingSettings;
 }
 
 export interface C2S_PlayerInput {
@@ -66,6 +68,24 @@ export interface C2S_Ping {
   timestamp: number;
 }
 
+export interface C2S_RejoinRoom {
+  type: "rejoinRoom";
+  roomId: RoomId;
+  player: PlayerInfo;
+}
+
+export interface C2S_SetTargetingStrategy {
+  type: "setTargetingStrategy";
+  roomId: RoomId;
+  strategy: TargetingStrategyType;
+}
+
+export interface C2S_SetManualTarget {
+  type: "setManualTarget";
+  roomId: RoomId;
+  targetPlayerId: PlayerId;
+}
+
 export type ClientMessage =
   | C2S_CreateRoom
   | C2S_JoinRoom
@@ -73,7 +93,10 @@ export type ClientMessage =
   | C2S_StartGame
   | C2S_UpdateRoomSettings
   | C2S_PlayerInput
-  | C2S_Ping;
+  | C2S_Ping
+  | C2S_RejoinRoom
+  | C2S_SetTargetingStrategy
+  | C2S_SetManualTarget;
 
 export type ClientMessageType = ClientMessage["type"];
 
@@ -85,6 +108,9 @@ export const CLIENT_MESSAGE_TYPES: readonly ClientMessageType[] = [
   "updateRoomSettings",
   "playerInput",
   "ping",
+  "rejoinRoom",
+  "setTargetingStrategy",
+  "setManualTarget",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -133,6 +159,8 @@ export interface S2C_GameStarted {
   handicapModifiers?: Record<string, HandicapModifiers>;
   /** Handicap mode so clients know whether to show outgoing multipliers. */
   handicapMode?: HandicapMode;
+  /** Targeting settings for this game (enabled strategies, default). */
+  targetingSettings?: TargetingSettings;
 }
 
 export interface S2C_GameStateSnapshot {
@@ -202,6 +230,23 @@ export interface S2C_Pong {
   timestamp: number;
 }
 
+export interface S2C_TargetingUpdated {
+  type: "targetingUpdated";
+  roomId: RoomId;
+  playerId: PlayerId;
+  strategy: TargetingStrategyType;
+  /** The manual target, if strategy is "manual". */
+  targetPlayerId?: PlayerId;
+}
+
+export interface S2C_AttackPowerUpdated {
+  type: "attackPowerUpdated";
+  roomId: RoomId;
+  playerId: PlayerId;
+  multiplier: number;
+  koCount: number;
+}
+
 export type ErrorCode =
   | "ROOM_NOT_FOUND"
   | "ROOM_FULL"
@@ -222,6 +267,31 @@ export interface S2C_Disconnected {
   reason: string;
 }
 
+export interface S2C_PlayerDisconnected {
+  type: "playerDisconnected";
+  roomId: RoomId;
+  playerId: PlayerId;
+  /** Milliseconds the player has to reconnect before forfeiting. */
+  timeoutMs: number;
+}
+
+export interface S2C_PlayerReconnected {
+  type: "playerReconnected";
+  roomId: RoomId;
+  playerId: PlayerId;
+}
+
+export interface S2C_GameRejoined {
+  type: "gameRejoined";
+  roomId: RoomId;
+  seed: number;
+  playerIndexes: Record<PlayerId, number>;
+  /** Current snapshots for every player in the session. */
+  currentStates: Record<PlayerId, GameStateSnapshot>;
+  handicapModifiers?: Record<string, HandicapModifiers>;
+  handicapMode?: HandicapMode;
+}
+
 export type ServerMessage =
   | S2C_RoomCreated
   | S2C_RoomUpdated
@@ -235,8 +305,13 @@ export type ServerMessage =
   | S2C_GarbageReceived
   | S2C_GarbageQueued
   | S2C_Pong
+  | S2C_TargetingUpdated
+  | S2C_AttackPowerUpdated
   | S2C_Error
-  | S2C_Disconnected;
+  | S2C_Disconnected
+  | S2C_PlayerDisconnected
+  | S2C_PlayerReconnected
+  | S2C_GameRejoined;
 
 export type ServerMessageType = ServerMessage["type"];
 
@@ -253,6 +328,11 @@ export const SERVER_MESSAGE_TYPES: readonly ServerMessageType[] = [
   "garbageReceived",
   "garbageQueued",
   "pong",
+  "targetingUpdated",
+  "attackPowerUpdated",
   "error",
   "disconnected",
+  "playerDisconnected",
+  "playerReconnected",
+  "gameRejoined",
 ] as const;

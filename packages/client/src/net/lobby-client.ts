@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type {
+  GarbageBatch,
   GameStateSnapshot,
   PlayerId,
   PlayerInfo,
@@ -7,12 +8,15 @@ import type {
   RoomState,
   RoomId,
   ErrorCode,
+  TargetingStrategyType,
+  TargetingSettings,
 } from "@tetris/shared";
 import { ClientSocket } from "./client-socket";
 import {
   DEFAULT_HANDICAP_SETTINGS,
   type HandicapSettingsValues,
 } from "../ui/HandicapSettings";
+import { DEFAULT_TARGETING_SETTINGS } from "../ui/TargetingSettingsPanel";
 import type { GameSessionData } from "./game-client";
 
 // ---------------------------------------------------------------------------
@@ -33,6 +37,16 @@ export interface GameEndData {
   stats: Record<PlayerId, PlayerStats>;
 }
 
+export interface PlayerTargetingState {
+  strategy: TargetingStrategyType;
+  targetPlayerId?: PlayerId;
+}
+
+export interface PlayerAttackPower {
+  multiplier: number;
+  koCount: number;
+}
+
 export interface LobbyState {
   view: LobbyView;
   room: RoomState | null;
@@ -44,6 +58,14 @@ export interface LobbyState {
   gameSession: GameSessionData | null;
   /** Latest snapshots for remote players, keyed by playerId. */
   opponentStates: Record<PlayerId, GameStateSnapshot>;
+  /** Pending garbage for the local player (from authoritative server snapshots). */
+  localPendingGarbage: GarbageBatch[];
+  /** Per-player targeting state. */
+  targetingStates: Record<PlayerId, PlayerTargetingState>;
+  /** Per-player attack power. */
+  attackPowers: Record<PlayerId, PlayerAttackPower>;
+  /** Targeting settings for the current game. */
+  targetingSettings: TargetingSettings | null;
   /** Set when the local player is eliminated but game continues. */
   localElimination: EliminationData | null;
   /** Set when the game ends (all but one eliminated). */
@@ -111,6 +133,10 @@ export interface UseLobbyResult {
   clearError: () => void;
   handicapSettings: HandicapSettingsValues;
   updateHandicapSettings: (settings: HandicapSettingsValues) => void;
+  lobbyTargetingSettings: TargetingSettings;
+  updateTargetingSettings: (settings: TargetingSettings) => void;
+  setTargetingStrategy: (strategy: TargetingStrategyType) => void;
+  setManualTarget: (targetPlayerId: PlayerId) => void;
   socket: ClientSocket | null;
 }
 
@@ -128,12 +154,20 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     countdownValue: null,
     gameSession: null,
     opponentStates: {},
+    localPendingGarbage: [],
+    targetingStates: {},
+    attackPowers: {},
+    targetingSettings: null,
     localElimination: null,
     gameEndData: null,
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
     () => ({ ...DEFAULT_HANDICAP_SETTINGS }),
+  );
+
+  const [lobbyTargetingSettings, setLobbyTargetingSettings] = useState<TargetingSettings>(
+    () => ({ ...DEFAULT_TARGETING_SETTINGS }),
   );
 
   // Keep a ref so callbacks can read latest state without re-subscribing
@@ -143,6 +177,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
   nameRef.current = playerName;
   const handicapRef = useRef(handicapSettings);
   handicapRef.current = handicapSettings;
+  const targetingRef = useRef(lobbyTargetingSettings);
+  targetingRef.current = lobbyTargetingSettings;
 
   // ---- Socket lifecycle ----
   useEffect(() => {
@@ -163,6 +199,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             countdownValue: null,
             gameSession: null,
             opponentStates: {},
+            localPendingGarbage: [],
+            targetingStates: {},
+            attackPowers: {},
+            targetingSettings: null,
             localElimination: null,
             gameEndData: null,
           }));
@@ -188,6 +228,9 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           ...msg.room.handicapSettings,
           ratingVisible: msg.room.ratingVisible ?? true,
         });
+      }
+      if (msg.room.targetingSettings) {
+        setLobbyTargetingSettings(msg.room.targetingSettings);
       }
     });
 
@@ -246,15 +289,58 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             handicapMode: msg.handicapMode,
           },
           opponentStates: initialOpponentStates,
+          localPendingGarbage: [],
+          targetingStates: {},
+          attackPowers: {},
+          targetingSettings: msg.targetingSettings ?? null,
           localElimination: null,
           gameEndData: null,
         };
       });
     });
 
+    socket.on("targetingUpdated", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          targetingStates: {
+            ...prev.targetingStates,
+            [msg.playerId]: {
+              strategy: msg.strategy,
+              targetPlayerId: msg.targetPlayerId,
+            },
+          },
+        };
+      });
+    });
+
+    socket.on("attackPowerUpdated", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          attackPowers: {
+            ...prev.attackPowers,
+            [msg.playerId]: {
+              multiplier: msg.multiplier,
+              koCount: msg.koCount,
+            },
+          },
+        };
+      });
+    });
+
     socket.on("gameStateSnapshot", (msg) => {
       const localId = getSessionPlayerId();
-      if (msg.playerId === localId) return;
+      if (msg.playerId === localId) {
+        // Extract local player's pending garbage from authoritative snapshot.
+        setState((prev) => {
+          if (!prev.room || prev.room.id !== msg.roomId) return prev;
+          return { ...prev, localPendingGarbage: msg.state.pendingGarbage };
+        });
+        return;
+      }
       setState((prev) => {
         if (!prev.room || prev.room.id !== msg.roomId) return prev;
         return {
@@ -318,6 +404,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         countdownValue: null,
         gameSession: null,
         opponentStates: {},
+        localPendingGarbage: [],
+        targetingStates: {},
+        attackPowers: {},
+        targetingSettings: null,
         localElimination: null,
         gameEndData: null,
       }));
@@ -376,11 +466,16 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       room: null,
       error: null,
       opponentStates: {},
+      localPendingGarbage: [],
+      targetingStates: {},
+      attackPowers: {},
+      targetingSettings: null,
       localElimination: null,
       gameEndData: null,
       gameSession: null,
     }));
     setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
+    setLobbyTargetingSettings({ ...DEFAULT_TARGETING_SETTINGS });
   }, []);
 
   const startGame = useCallback(() => {
@@ -421,6 +516,35 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     setState((prev) => ({ ...prev, error: null }));
   }, []);
 
+  const updateTargetingSettings = useCallback((settings: TargetingSettings) => {
+    setLobbyTargetingSettings(settings);
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    const { ratingVisible, ...hSettings } = handicapRef.current;
+    socket.send({
+      type: "updateRoomSettings",
+      roomId: room.id,
+      handicapSettings: hSettings,
+      ratingVisible,
+      targetingSettings: settings,
+    });
+  }, []);
+
+  const setTargetingStrategy = useCallback((strategy: TargetingStrategyType) => {
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    socket.send({ type: "setTargetingStrategy", roomId: room.id, strategy });
+  }, []);
+
+  const setManualTarget = useCallback((targetPlayerId: PlayerId) => {
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    socket.send({ type: "setManualTarget", roomId: room.id, targetPlayerId });
+  }, []);
+
   return {
     state,
     playerName,
@@ -435,6 +559,10 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     clearError,
     handicapSettings,
     updateHandicapSettings,
+    lobbyTargetingSettings,
+    updateTargetingSettings,
+    setTargetingStrategy,
+    setManualTarget,
     socket,
   };
 }

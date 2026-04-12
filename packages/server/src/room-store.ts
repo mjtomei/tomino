@@ -12,6 +12,7 @@ import type {
   RoomState,
   RoomStatus,
   HandicapSettings,
+  TargetingSettings,
 } from "@tetris/shared";
 import { generateRoomCode, createRoomState } from "./room.js";
 import type { RoomConfig } from "@tetris/shared";
@@ -126,7 +127,7 @@ export class RoomStore {
     // Host transfer if needed
     let hostChanged = false;
     if (room.hostId === playerId) {
-      room.hostId = room.players[0].id;
+      room.hostId = room.players[0]!.id;
       hostChanged = true;
     }
 
@@ -147,6 +148,14 @@ export class RoomStore {
     if (!room) return false;
     room.handicapSettings = settings;
     room.ratingVisible = ratingVisible;
+    return true;
+  }
+
+  /** Update targeting settings for a room. Returns false if room not found. */
+  setTargetingSettings(roomId: RoomId, settings: TargetingSettings): boolean {
+    const room = this.rooms.get(roomId);
+    if (!room) return false;
+    room.targetingSettings = settings;
     return true;
   }
 
