@@ -142,7 +142,7 @@ function App() {
           />
           {lobby.state.selfReconnecting && lobby.state.selfReconnectStartedAt != null && lobby.state.selfReconnectTimeoutMs != null && (
             <DisconnectOverlay
-              label="Reconnecting\u2026"
+              label={"Reconnecting\u2026"}
               timeoutMs={lobby.state.selfReconnectTimeoutMs}
               startedAt={lobby.state.selfReconnectStartedAt}
             />
