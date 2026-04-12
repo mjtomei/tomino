@@ -91,6 +91,22 @@ export interface C2S_RequestRematch {
   roomId: RoomId;
 }
 
+/** Small fixed set of emote kinds that players can send during a game. */
+export type EmoteKind = "thumbsUp" | "fire" | "wave" | "gg";
+
+export const EMOTE_KINDS: readonly EmoteKind[] = [
+  "thumbsUp",
+  "fire",
+  "wave",
+  "gg",
+] as const;
+
+export interface C2S_SendEmote {
+  type: "sendEmote";
+  roomId: RoomId;
+  emote: EmoteKind;
+}
+
 export type ClientMessage =
   | C2S_CreateRoom
   | C2S_JoinRoom
@@ -102,7 +118,8 @@ export type ClientMessage =
   | C2S_RejoinRoom
   | C2S_SetTargetingStrategy
   | C2S_SetManualTarget
-  | C2S_RequestRematch;
+  | C2S_RequestRematch
+  | C2S_SendEmote;
 
 export type ClientMessageType = ClientMessage["type"];
 
@@ -118,6 +135,7 @@ export const CLIENT_MESSAGE_TYPES: readonly ClientMessageType[] = [
   "setTargetingStrategy",
   "setManualTarget",
   "requestRematch",
+  "sendEmote",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -315,6 +333,16 @@ export interface RatingChange {
   after: number;
 }
 
+export interface S2C_PlayerEmote {
+  type: "playerEmote";
+  roomId: RoomId;
+  /** Player who sent the emote. */
+  playerId: PlayerId;
+  emote: EmoteKind;
+  /** Server-side timestamp (ms since epoch) for animation sync. */
+  timestamp: number;
+}
+
 export interface S2C_RatingUpdate {
   type: "ratingUpdate";
   roomId: RoomId;
@@ -343,7 +371,8 @@ export type ServerMessage =
   | S2C_PlayerReconnected
   | S2C_GameRejoined
   | S2C_RematchUpdate
-  | S2C_RatingUpdate;
+  | S2C_RatingUpdate
+  | S2C_PlayerEmote;
 
 export type ServerMessageType = ServerMessage["type"];
 
@@ -369,4 +398,5 @@ export const SERVER_MESSAGE_TYPES: readonly ServerMessageType[] = [
   "gameRejoined",
   "rematchUpdate",
   "ratingUpdate",
+  "playerEmote",
 ] as const;

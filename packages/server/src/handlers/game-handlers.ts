@@ -15,8 +15,14 @@ import type {
   ServerMessage,
   SkillStore,
 } from "@tetris/shared";
-import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
-import type { C2S_PlayerInput, C2S_RejoinRoom, C2S_SetTargetingStrategy, C2S_SetManualTarget } from "@tetris/shared";
+import { ALL_TARGETING_STRATEGIES, EMOTE_KINDS } from "@tetris/shared";
+import type {
+  C2S_PlayerInput,
+  C2S_RejoinRoom,
+  C2S_SendEmote,
+  C2S_SetTargetingStrategy,
+  C2S_SetManualTarget,
+} from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
@@ -183,6 +189,67 @@ export function handlePlayerInput(
 
   // Apply the input — the session handles broadcasting
   session.applyInput(playerId, msg.action);
+}
+
+/** Minimum ms between emotes per player to prevent spam. */
+export const EMOTE_COOLDOWN_MS = 500;
+const VALID_EMOTES: ReadonlySet<string> = new Set<string>(EMOTE_KINDS);
+const emoteLastAt = new Map<PlayerId, number>();
+
+/** Exposed for tests to reset global rate-limit state between cases. */
+export function clearEmoteCooldowns(): void {
+  emoteLastAt.clear();
+}
+
+export interface HandleSendEmoteDeps {
+  now?: () => number;
+}
+
+/**
+ * Handle a sendEmote message from a client.
+ * Broadcasts a `playerEmote` to everyone in the room (including the sender).
+ * Enforces a per-player cooldown so a malicious client can't flood the room.
+ */
+export function handleSendEmote(
+  msg: C2S_SendEmote,
+  playerId: PlayerId,
+  ctx: GameHandlerContext,
+  sendError: (code: ErrorCode, message: string) => void,
+  deps: HandleSendEmoteDeps = {},
+): void {
+  const now = deps.now ?? Date.now;
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    sendError("ROOM_NOT_FOUND", "No active game session for this room");
+    return;
+  }
+  if (session.state !== "playing") {
+    sendError("INVALID_MESSAGE", "Game is not in progress");
+    return;
+  }
+  if (!session.getPlayerIds().includes(playerId)) {
+    sendError("NOT_IN_ROOM", "Player is not in this game session");
+    return;
+  }
+  if (!VALID_EMOTES.has(msg.emote)) {
+    sendError("INVALID_MESSAGE", `Invalid emote: ${msg.emote}`);
+    return;
+  }
+  const t = now();
+  const last = emoteLastAt.get(playerId) ?? 0;
+  if (t - last < EMOTE_COOLDOWN_MS) {
+    // Silently drop — client also throttles; no need to error.
+    return;
+  }
+  emoteLastAt.set(playerId, t);
+
+  ctx.broadcastToRoom(msg.roomId, {
+    type: "playerEmote",
+    roomId: msg.roomId,
+    playerId,
+    emote: msg.emote,
+    timestamp: t,
+  });
 }
 
 /**

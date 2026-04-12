@@ -17,6 +17,7 @@ import {
   handleGameDisconnect,
   handlePlayerInput,
   handleRejoinRoom,
+  handleSendEmote,
   handleSetTargetingStrategy,
   handleSetManualTarget,
 } from "./handlers/game-handlers.js";
@@ -242,6 +243,14 @@ export function createWebSocketServer(
           break;
         case "requestRematch":
           handleRequestRematch(client.playerId!, msg.roomId, ctx, store);
+          break;
+        case "sendEmote":
+          handleSendEmote(
+            msg,
+            client.playerId!,
+            { broadcastToRoom, skillStore, balancingConfig },
+            (code, message) => ctx.send({ type: "error", code, message }),
+          );
           break;
       }
     });

@@ -1,10 +1,17 @@
-import { useRef, useEffect, useCallback } from "react";
-import type { GameStateSnapshot, PlayerId } from "@tetris/shared";
+import { useRef, useEffect, useCallback, useState } from "react";
+import type { EmoteKind, GameStateSnapshot, PlayerId } from "@tetris/shared";
 import {
   renderOpponentBoard,
   opponentCanvasWidth,
   opponentCanvasHeight,
 } from "./OpponentBoardCanvas.js";
+import { ParticleSystem } from "../atmosphere/particle-system.js";
+import { ParticleCanvas } from "../atmosphere/ParticleCanvas.js";
+import {
+  playEmoteEffect,
+  playReactionEffect,
+  type OpponentReaction,
+} from "../atmosphere/opponent-reactions.js";
 
 export function opponentCellSize(opponentCount: number): number {
   if (opponentCount <= 1) return 15;
@@ -24,7 +31,19 @@ export interface OpponentBoardProps {
   isAttackingYou?: boolean;
   /** Called when the player clicks this board (for manual targeting). */
   onSelect?: (playerId: PlayerId) => void;
+  /** Latest emote received from this opponent (timestamp is the identity key). */
+  activeEmote?: { emote: EmoteKind; timestamp: number } | null;
+  /** Latest reaction pulse for this opponent (at is the identity key). */
+  reactionPulse?: { reaction: OpponentReaction; at: number } | null;
 }
+
+const FLASH_DURATION_MS = 600;
+
+const FLASH_COLOR: Record<OpponentReaction, string> = {
+  tetris: "#ffd84a",
+  heavyGarbage: "#e74c3c",
+  eliminated: "#ffffff",
+};
 
 export function OpponentBoard({
   playerName,
@@ -34,11 +53,20 @@ export function OpponentBoard({
   isTargeted,
   isAttackingYou,
   onSelect,
+  activeEmote,
+  reactionPulse,
 }: OpponentBoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const snapshotRef = useRef(snapshot);
   const rafRef = useRef<number>(0);
+  const systemRef = useRef<ParticleSystem | null>(null);
+  if (!systemRef.current) {
+    systemRef.current = new ParticleSystem({ maxParticles: 200 });
+  }
+  const lastEmoteTsRef = useRef<number | null>(null);
+  const lastPulseAtRef = useRef<number | null>(null);
+  const [flash, setFlash] = useState<OpponentReaction | null>(null);
 
   snapshotRef.current = snapshot;
 
@@ -61,6 +89,30 @@ export function OpponentBoard({
 
   const w = opponentCanvasWidth(cellSize);
   const h = opponentCanvasHeight(cellSize);
+
+  // Fire a new emote burst when the emote timestamp changes.
+  useEffect(() => {
+    if (!activeEmote) return;
+    if (lastEmoteTsRef.current === activeEmote.timestamp) return;
+    lastEmoteTsRef.current = activeEmote.timestamp;
+    const system = systemRef.current;
+    if (!system) return;
+    playEmoteEffect(system, activeEmote.emote, { x: w / 2, y: h / 3 });
+  }, [activeEmote, w, h]);
+
+  // Fire a new reaction pulse when the pulse "at" changes.
+  useEffect(() => {
+    if (!reactionPulse) return;
+    if (lastPulseAtRef.current === reactionPulse.at) return;
+    lastPulseAtRef.current = reactionPulse.at;
+    const system = systemRef.current;
+    if (!system) return;
+    playReactionEffect(system, reactionPulse.reaction, { x: w / 2, y: h / 2 });
+    setFlash(reactionPulse.reaction);
+    const timer = setTimeout(() => setFlash(null), FLASH_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [reactionPulse, w, h]);
+
   const isGameOver = snapshot?.isGameOver ?? false;
 
   const handleClick = () => {
@@ -70,7 +122,9 @@ export function OpponentBoard({
   };
 
   let borderColor = "rgba(255,255,255,0.15)";
-  if (isTargeted) {
+  if (flash) {
+    borderColor = FLASH_COLOR[flash];
+  } else if (isTargeted) {
     borderColor = "#e74c3c"; // red for targeted
   } else if (isAttackingYou) {
     borderColor = "#e2b714"; // yellow for attackers
@@ -106,18 +160,24 @@ export function OpponentBoard({
         {isGameOver ? " \u2717" : ""}
         {isTargeted && !isGameOver ? " \u25C9" : ""}
       </div>
-      <canvas
-        ref={canvasRef}
-        width={w}
-        height={h}
-        data-testid="opponent-canvas"
-        style={{
-          display: "block",
-          border: `2px solid ${borderColor}`,
-          borderRadius: isTargeted ? "3px" : undefined,
-          transition: "border-color 0.15s ease",
-        }}
-      />
+      <div style={{ position: "relative", width: w, height: h }}>
+        <canvas
+          ref={canvasRef}
+          width={w}
+          height={h}
+          data-testid="opponent-canvas"
+          data-flash={flash ?? undefined}
+          data-emote={activeEmote?.emote ?? undefined}
+          style={{
+            display: "block",
+            border: `2px solid ${borderColor}`,
+            borderRadius: flash || isTargeted ? "3px" : undefined,
+            boxShadow: flash ? `0 0 12px ${FLASH_COLOR[flash]}` : undefined,
+            transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+          }}
+        />
+        <ParticleCanvas system={systemRef.current} width={w} height={h} />
+      </div>
     </div>
   );
 }
