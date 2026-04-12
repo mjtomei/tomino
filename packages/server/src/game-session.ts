@@ -61,7 +61,7 @@ export interface GameSessionConfig {
   targetingSettings?: TargetingSettings;
   /** Player skill ratings keyed by PlayerId. Used for targeting bias in 3+ player games. */
   playerRatings?: Record<PlayerId, number>;
-  /** Skill-aware targeting bias strength (0.0 = uniform, 1.0 = fully skill-weighted). Default 0.5. */
+  /** Skill-aware targeting bias strength (0.0 = uniform, 1.0 = fully skill-weighted). Default 0 (off). */
   targetingBiasStrength?: number;
 }
 
@@ -164,7 +164,7 @@ export class GameSession {
     this.garbageDelayMs = config.garbageDelayMs;
     this.targetingSettings = config.targetingSettings ?? DEFAULT_TARGETING_SETTINGS;
     this.playerRatings = config.playerRatings;
-    this.targetingBiasStrength = config.targetingBiasStrength ?? 0.5;
+    this.targetingBiasStrength = config.targetingBiasStrength ?? 0;
 
     // Assign player indexes (0-based, room order)
     this.playerIndexes = {};
