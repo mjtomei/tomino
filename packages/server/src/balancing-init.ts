@@ -122,7 +122,7 @@ function validateConfig(config: BalancingConfig): void {
       throw new Error(`Invalid config: unknown intensity preset "${key}"`);
     }
     assertNonNegative(
-      (config.intensityPresets as Record<string, number>)[key],
+      (config.intensityPresets as unknown as Record<string, number>)[key],
       `intensityPresets.${key}`,
     );
   }
@@ -195,7 +195,7 @@ export function loadBalancingConfig(dataDir?: string): BalancingConfig {
 
   if (!raw) {
     console.warn("[balancing] No balancing-config.json found — using defaults");
-    return { ...DEFAULTS };
+    return getDefaultBalancingConfig();
   }
 
   let json: Record<string, unknown>;
@@ -203,7 +203,7 @@ export function loadBalancingConfig(dataDir?: string): BalancingConfig {
     json = JSON.parse(raw) as Record<string, unknown>;
   } catch (err) {
     console.warn(`[balancing] Failed to parse ${loadedFrom}: ${err} — using defaults`);
-    return { ...DEFAULTS };
+    return getDefaultBalancingConfig();
   }
 
   // Deep-merge each section with defaults
