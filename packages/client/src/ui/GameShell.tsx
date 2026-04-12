@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import type { RuleSet, GameModeConfig, GameState, GarbageBatch, InputAction } from "@tetris/shared";
 import { TetrisEngine, modernRuleSet } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
@@ -158,7 +158,7 @@ function MultiplayerGameShell({
   const soundRef = useRef<SoundManager | null>(null);
   const dasRef = useRef<DASState>({ key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false });
 
-  const mpRuleSet = modernRuleSet();
+  const mpRuleSet = useMemo(() => modernRuleSet(), []);
   const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
 
   // Sound manager
