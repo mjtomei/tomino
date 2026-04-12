@@ -36,7 +36,7 @@ Partway through, a fourth plan was added: automated testing infrastructure. This
 - **>250 commits**, **>50 merged PRs**, **>30,000 lines of code** (>14k production, >18k tests)
 - A working multiplayer Tetris game with real-time networking, lobby system, garbage mechanics, Glicko-2 skill rating, adaptive handicapping, and end-to-end test coverage
 
-The one time the developer sat down to play the game, it was playable. The bugs found were UX-level: down-arrow auto-repeat scrolling the browser page instead of soft-dropping, DAS/ARR not feeling right on side arrow keys. 
+The one time the developer sat down to play the game, it was playable. The bugs found were UX-level: down-arrow auto-repeat scrolling the browser page instead of soft-dropping, DAS/ARR not feeling right on side arrow keys. The codebase itself is well-structured — small focused modules, typed interfaces at boundaries, a browser-dependency-free engine with injectable time, and 1,400+ tests — because the PR decomposition forced modular boundaries and the review agents enforced them.
 
 ## Why not just point an AI at an existing task tracker?
 
