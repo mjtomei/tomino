@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-8e93a65
+  active_pr: pr-40e39d6
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -337,7 +337,7 @@ prs:
   plan: plan-48e829d
   title: Canvas renderer for game board
   branch: pm/pr-c08aefa-canvas-renderer-for-game-board
-  status: in_progress
+  status: merged
   depends_on:
   - pr-0d483af
   description: 'Implement a React component with an HTML5 Canvas that renders the
@@ -359,17 +359,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/34
   gh_pr_number: 34
   created_at: '2026-04-11T20:46:48.057228+00:00'
-  updated_at: '2026-04-12T00:10:22.625354+00:00'
+  updated_at: '2026-04-12T03:53:42.422239+00:00'
   started_at: '2026-04-12T00:10:22.625354+00:00'
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422239+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-c08aefa-canvas-renderer-for-game-board-68328eb3
 - id: pr-c2613e4
   plan: plan-48e829d
   title: Input handler with DAS/ARR
   branch: pm/pr-c2613e4-input-handler-with-das-arr
-  status: pending
+  status: merged
   depends_on:
   - pr-0d483af
   - pr-1052bf4
@@ -391,14 +391,14 @@ prs:
 
 
     Files: `src/input/keyboard.ts`, `src/input/keyboard.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/56
+  gh_pr_number: 56
   created_at: '2026-04-11T20:46:48.057233+00:00'
-  updated_at: '2026-04-12T00:11:18.467612+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T04:00:05.657297+00:00'
+  started_at: '2026-04-12T03:53:45.545112+00:00'
+  reviewed_at: '2026-04-12T03:56:42.139556+00:00'
+  merged_at: '2026-04-12T04:00:05.657297+00:00'
   notes:
   - id: note-3867b30
     text: 'Tests should use testing infra from plan-17af8d3: game test harness (pr-1052bf4)
@@ -413,11 +413,12 @@ prs:
       alternatives.'
     created_at: '2026-04-12T00:11:18Z'
     last_edited: '2026-04-12T00:11:18Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-c2613e4-input-handler-with-das-arr-fadf3b49
 - id: pr-e90433b
   plan: plan-48e829d
   title: React UI shell — score, next queue, hold, mode display
   branch: pm/pr-e90433b-react-ui-shell-score-next-queue-hold-mode-display
-  status: pending
+  status: closed
   depends_on:
   - pr-c08aefa
   description: 'Build the React UI chrome around the canvas: score/level/lines display,
@@ -440,20 +441,21 @@ prs:
     Files: `src/ui/GameShell.tsx`, `src/ui/ScoreDisplay.tsx`, `src/ui/NextQueue.tsx`,
     `src/ui/HoldDisplay.tsx`, `src/ui/Overlay.tsx`, `src/ui/StartScreen.tsx`, `src/ui/CustomRuleSetPanel.tsx`,
     `src/ui/GameShell.css`, `src/App.tsx`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/57
+  gh_pr_number: 57
   created_at: '2026-04-11T20:46:48.057238+00:00'
-  updated_at: '2026-04-11T20:46:48.057238+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T13:14:32.520253+00:00'
+  started_at: '2026-04-12T03:53:49.527006+00:00'
+  reviewed_at: '2026-04-12T03:58:38.251548+00:00'
+  merged_at: '2026-04-12T04:11:31.625311+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-e90433b-react-ui-shell-score-next-queue-hold-fadf3b49
 - id: pr-297734e
   plan: plan-48e829d
   title: Sound effects with Web Audio API
   branch: pm/pr-297734e-sound-effects-with-web-audio-api
-  status: in_progress
+  status: merged
   depends_on:
   - pr-0d483af
   description: 'Implement sound effects using the Web Audio API: piece move, piece
@@ -475,17 +477,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/35
   gh_pr_number: 35
   created_at: '2026-04-11T20:46:48.057243+00:00'
-  updated_at: '2026-04-12T00:10:26.526642+00:00'
+  updated_at: '2026-04-12T03:53:42.422248+00:00'
   started_at: '2026-04-12T00:10:26.526642+00:00'
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422248+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-297734e-sound-effects-with-web-audio-api-68328eb3
 - id: pr-20fd8ff
   plan: plan-48e829d
   title: Integration — playable single-player Tetris
   branch: pm/pr-20fd8ff-integration-playable-single-player-tetris
-  status: pending
+  status: merged
   depends_on:
   - pr-c08aefa
   - pr-c2613e4
@@ -509,13 +511,13 @@ prs:
 
     Files: `src/App.tsx`, `src/main.tsx`, `src/game/GameController.ts`'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/42
+  gh_pr_number: 42
   created_at: '2026-04-11T20:46:48.057251+00:00'
-  updated_at: '2026-04-12T00:13:29.122605+00:00'
+  updated_at: '2026-04-12T04:11:38.451283+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:38.451270+00:00'
   notes:
   - id: note-c1f1a30
     text: 'REVIEW: Run ''npm test'' across all packages AND ''npm run test:e2e'' to
@@ -679,7 +681,7 @@ prs:
   plan: plan-c686698
   title: Server-authoritative game state
   branch: pm/pr-dfc0673-server-authoritative-game-state
-  status: pending
+  status: closed
   depends_on:
   - pr-3faa55d
   - pr-0d483af
@@ -701,14 +703,14 @@ prs:
 
     Files: `server/player-engine.ts`, `server/game-session.ts` (extend), `server/handlers/game-handlers.ts`
     (extend), `shared/state-snapshot.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/58
+  gh_pr_number: 58
   created_at: '2026-04-11T21:27:51.614817+00:00'
-  updated_at: '2026-04-12T00:11:12.287909+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T13:14:32.520266+00:00'
+  started_at: '2026-04-12T03:53:54.433868+00:00'
+  reviewed_at: '2026-04-12T04:00:33.258112+00:00'
+  merged_at: '2026-04-12T04:11:31.785455+00:00'
   notes:
   - id: note-83d8ff0
     text: 'Tests should use testing infra from plan-17af8d3: seeded PRNG (pr-109d87a)
@@ -724,11 +726,12 @@ prs:
       for board setup — not ad-hoc alternatives.'
     created_at: '2026-04-12T00:11:12Z'
     last_edited: '2026-04-12T00:11:12Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-dfc0673-server-authoritative-game-state-fadf3b49
 - id: pr-1e00262
   plan: plan-c686698
   title: Client multiplayer integration and prediction
   branch: pm/pr-1e00262-client-multiplayer-integration-and-prediction
-  status: pending
+  status: merged
   depends_on:
   - pr-dfc0673
   - pr-20fd8ff
@@ -751,13 +754,13 @@ prs:
     Files: `src/net/game-client.ts` (extend), `src/net/prediction.ts`, `src/engine/engine-proxy.ts`
     (multiplayer-aware engine wrapper)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/43
+  gh_pr_number: 43
   created_at: '2026-04-11T21:27:51.614824+00:00'
-  updated_at: '2026-04-12T00:11:15.150150+00:00'
+  updated_at: '2026-04-12T04:11:38.598070+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:38.598062+00:00'
   notes:
   - id: note-d796b9a
     text: 'Tests should use testing infra from plan-17af8d3: seeded PRNG (pr-109d87a)
@@ -814,7 +817,7 @@ prs:
   plan: plan-c686698
   title: Garbage network integration
   branch: pm/pr-7a9a7e5-garbage-network-integration
-  status: pending
+  status: merged
   depends_on:
   - pr-dfc0673
   - pr-d3377ef
@@ -843,13 +846,13 @@ prs:
     Files: `server/garbage-manager.ts`, `server/game-session.ts` (extend), `shared/protocol.ts`
     (add garbage messages), `shared/targeting-types.ts` (targeting strategy interface)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/44
+  gh_pr_number: 44
   created_at: '2026-04-11T21:27:51.614839+00:00'
-  updated_at: '2026-04-12T00:11:13.679696+00:00'
+  updated_at: '2026-04-12T04:11:38.741317+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:38.741307+00:00'
   notes:
   - id: note-cd0d03e
     text: 'Tests should use testing infra from plan-17af8d3: board builder (pr-940a121)
@@ -867,7 +870,7 @@ prs:
   plan: plan-c686698
   title: Opponent board display
   branch: pm/pr-1389028-opponent-board-display
-  status: pending
+  status: merged
   depends_on:
   - pr-1e00262
   - pr-c08aefa
@@ -884,19 +887,19 @@ prs:
 
     Files: `src/ui/OpponentBoard.tsx`, `src/ui/OpponentBoardCanvas.ts`, `src/ui/GameMultiplayer.tsx`'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/48
+  gh_pr_number: 48
   created_at: '2026-04-11T21:27:51.614846+00:00'
-  updated_at: '2026-04-11T21:32:56.490256+00:00'
+  updated_at: '2026-04-12T04:11:39.338116+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.338106+00:00'
   notes: []
 - id: pr-d422f66
   plan: plan-c686698
   title: Garbage queue indicator
   branch: pm/pr-d422f66-garbage-queue-indicator
-  status: pending
+  status: merged
   depends_on:
   - pr-7a9a7e5
   - pr-1389028
@@ -912,19 +915,19 @@ prs:
 
     Files: `src/ui/GarbageMeter.tsx`, `src/ui/GarbageMeter.css`'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/50
+  gh_pr_number: 50
   created_at: '2026-04-11T21:27:51.614850+00:00'
-  updated_at: '2026-04-11T21:27:51.614850+00:00'
+  updated_at: '2026-04-12T04:11:39.660288+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.660275+00:00'
   notes: []
 - id: pr-bd3b549
   plan: plan-c686698
   title: Win/loss detection and game-over screen
   branch: pm/pr-bd3b549-win-loss-detection-and-game-over-screen
-  status: pending
+  status: merged
   depends_on:
   - pr-1389028
   - pr-7a9a7e5
@@ -944,14 +947,14 @@ prs:
 
     Files: `server/game-session.ts` (extend with elimination logic), `src/ui/GameResults.tsx`,
     `src/ui/SpectatorOverlay.tsx`, `shared/protocol.ts` (add elimination/results messages)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/51
+  gh_pr_number: 51
   created_at: '2026-04-11T21:27:51.614855+00:00'
-  updated_at: '2026-04-12T00:11:17.458065+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T13:22:01.773939+00:00'
+  started_at: '2026-04-12T04:28:01.952664+00:00'
+  reviewed_at: '2026-04-12T04:29:20.899143+00:00'
+  merged_at: '2026-04-12T13:22:01.773939+00:00'
   notes:
   - id: note-2b0b130
     text: 'Tests should use testing infra from plan-17af8d3: board builder (pr-940a121)
@@ -965,11 +968,12 @@ prs:
       for transitions, and makeGameState factories — not ad-hoc alternatives.'
     created_at: '2026-04-12T00:11:17Z'
     last_edited: '2026-04-12T00:11:17Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-bd3b549-win-loss-detection-and-game-over-scr-dc3585e1
 - id: pr-6459c34
   plan: plan-c686698
   title: Disconnect handling
   branch: pm/pr-6459c34-disconnect-handling
-  status: pending
+  status: merged
   depends_on:
   - pr-dfc0673
   description: 'Handle player disconnects gracefully. On disconnect, start a reconnection
@@ -986,19 +990,19 @@ prs:
     Files: `server/disconnect-handler.ts`, `server/game-session.ts` (extend), `src/net/reconnect.ts`,
     `src/ui/DisconnectOverlay.tsx`'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/45
+  gh_pr_number: 45
   created_at: '2026-04-11T21:27:51.614860+00:00'
-  updated_at: '2026-04-11T21:27:51.614860+00:00'
+  updated_at: '2026-04-12T04:11:38.886669+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:38.886656+00:00'
   notes: []
 - id: pr-3f9112e
   plan: plan-c686698
   title: Rematch flow
   branch: pm/pr-3f9112e-rematch-flow
-  status: pending
+  status: in_review
   depends_on:
   - pr-bd3b549
   description: 'After a game ends, players can vote to rematch. Show a "Rematch" button
@@ -1016,19 +1020,19 @@ prs:
     `src/ui/GameResults.tsx` (extend with rematch button), `shared/protocol.ts` (add
     rematch messages)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/54
+  gh_pr_number: 54
   created_at: '2026-04-11T21:27:51.614863+00:00'
-  updated_at: '2026-04-11T21:27:51.614863+00:00'
+  updated_at: '2026-04-12T13:20:21.383184+00:00'
   started_at: null
-  reviewed_at: null
+  reviewed_at: '2026-04-12T13:20:21.383184+00:00'
   merged_at: null
   notes: []
 - id: pr-03c8022
   plan: plan-c686698
   title: Latency display
   branch: pm/pr-03c8022-latency-display
-  status: pending
+  status: merged
   depends_on:
   - pr-1e00262
   description: 'Measure round-trip latency using periodic ping/pong messages. Display
@@ -1042,19 +1046,19 @@ prs:
 
     Files: `src/net/latency.ts`, `src/ui/LatencyIndicator.tsx`'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/49
+  gh_pr_number: 49
   created_at: '2026-04-11T21:27:51.614867+00:00'
-  updated_at: '2026-04-11T21:27:51.614867+00:00'
+  updated_at: '2026-04-12T04:11:39.483949+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.483938+00:00'
   notes: []
 - id: pr-1bab92a
   plan: plan-c686698
   title: Garbage targeting strategies and attack power
   branch: pm/pr-1bab92a-garbage-targeting-strategies-and-attack-power
-  status: pending
+  status: merged
   depends_on:
   - pr-7a9a7e5
   - pr-1389028
@@ -1115,13 +1119,13 @@ prs:
     (extend with target selection), `src/net/game-client.ts` (extend with targeting
     commands)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/52
+  gh_pr_number: 52
   created_at: '2026-04-11T21:48:08.878486+00:00'
-  updated_at: '2026-04-11T21:48:08.878486+00:00'
+  updated_at: '2026-04-12T04:11:39.793974+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.793965+00:00'
   notes: []
 - id: pr-c7b0d7c
   plan: plan-45cb304
@@ -1260,7 +1264,7 @@ prs:
   plan: plan-45cb304
   title: Performance metrics collector
   branch: pm/pr-73cfbb0-performance-metrics-collector
-  status: pending
+  status: merged
   depends_on:
   - pr-c7b0d7c
   - pr-dfc0673
@@ -1278,19 +1282,19 @@ prs:
 
     Files: `server/metrics-collector.ts`, `server/metrics-collector.test.ts`'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/46
+  gh_pr_number: 46
   created_at: '2026-04-11T21:50:04.211759+00:00'
-  updated_at: '2026-04-11T21:51:55.554920+00:00'
+  updated_at: '2026-04-12T04:11:39.031882+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.031870+00:00'
   notes: []
 - id: pr-3b2b0fc
   plan: plan-45cb304
   title: Balancing middleware for garbage pipeline
   branch: pm/pr-3b2b0fc-balancing-middleware-for-garbage-pipeline
-  status: pending
+  status: merged
   depends_on:
   - pr-998f69e
   - pr-7a9a7e5
@@ -1321,13 +1325,13 @@ prs:
     Files: `server/balancing-middleware.ts`, `server/balancing-middleware.test.ts`,
     `server/game-session.ts` (extend to inject middleware)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/47
+  gh_pr_number: 47
   created_at: '2026-04-11T21:50:04.211764+00:00'
-  updated_at: '2026-04-12T00:11:16.042941+00:00'
+  updated_at: '2026-04-12T04:11:39.197703+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.197693+00:00'
   notes:
   - id: note-ab307d2
     text: 'Tests should use testing infra from plan-17af8d3: board builder (pr-940a121)
@@ -1346,7 +1350,7 @@ prs:
   plan: plan-45cb304
   title: Skill-aware targeting bias
   branch: pm/pr-f25402c-skill-aware-targeting-bias
-  status: pending
+  status: merged
   depends_on:
   - pr-998f69e
   - pr-1bab92a
@@ -1373,19 +1377,19 @@ prs:
     Files: `server/targeting-bias.ts`, `server/targeting-bias.test.ts`, `server/game-session.ts`
     (extend to wire targeting strategy)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/53
+  gh_pr_number: 53
   created_at: '2026-04-11T21:50:04.211768+00:00'
-  updated_at: '2026-04-11T21:51:53.650514+00:00'
+  updated_at: '2026-04-12T04:11:39.948975+00:00'
   started_at: null
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T04:11:39.948965+00:00'
   notes: []
 - id: pr-c2fef7a
   plan: plan-45cb304
   title: Post-game rating updates
   branch: pm/pr-c2fef7a-post-game-rating-updates
-  status: pending
+  status: in_review
   depends_on:
   - pr-4601342
   - pr-ebfaa61
@@ -1407,12 +1411,12 @@ prs:
     Files: `server/post-game-handler.ts`, `server/post-game-handler.test.ts`, `server/game-session.ts`
     (extend with post-game hook)'
   agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  gh_pr: https://github.com/mjtomei/tetris/pull/55
+  gh_pr_number: 55
   created_at: '2026-04-11T21:50:04.211773+00:00'
-  updated_at: '2026-04-11T21:51:54.621212+00:00'
+  updated_at: '2026-04-12T13:20:21.383200+00:00'
   started_at: null
-  reviewed_at: null
+  reviewed_at: '2026-04-12T13:20:21.383200+00:00'
   merged_at: null
   notes: []
 - id: pr-493072b
@@ -1459,7 +1463,7 @@ prs:
   plan: plan-45cb304
   title: In-game handicap indicator
   branch: pm/pr-b34072f-in-game-handicap-indicator
-  status: pending
+  status: merged
   depends_on:
   - pr-493072b
   - pr-c08aefa
@@ -1474,15 +1478,16 @@ prs:
     indicator also shows their reduced outgoing multiplier. **INPUT_REQUIRED: Human
     testing needed** to verify indicator placement doesn''t obscure gameplay and is
     readable at a glance.'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/59
+  gh_pr_number: 59
   created_at: '2026-04-11T21:50:04.211781+00:00'
-  updated_at: '2026-04-11T21:52:08.648114+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T13:21:35.893026+00:00'
+  started_at: '2026-04-12T03:53:58.397320+00:00'
+  reviewed_at: '2026-04-12T03:59:51.275951+00:00'
+  merged_at: '2026-04-12T13:21:35.893026+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-b34072f-in-game-handicap-indicator-fadf3b49
 - id: pr-90a1525
   plan: plan-45cb304
   title: Stats screen with match history and skill progression
@@ -1737,7 +1742,7 @@ prs:
   plan: plan-17af8d3
   title: Board builder test utility
   branch: pm/pr-940a121-board-builder-test-utility
-  status: in_progress
+  status: merged
   depends_on: []
   description: 'Add a `boardFromAscii()` helper and a `boardToAscii()` helper for
     test readability. Accepts a multiline string where `.` = empty, `X` = filled (generic),
@@ -1756,10 +1761,10 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/28
   gh_pr_number: 28
   created_at: '2026-04-11T23:10:58.040033+00:00'
-  updated_at: '2026-04-12T00:02:35.671806+00:00'
+  updated_at: '2026-04-12T03:53:42.422253+00:00'
   started_at: '2026-04-12T00:02:35.671806+00:00'
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422253+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-940a121-board-builder-test-utility-c186ce8d
 - id: pr-8d8faf9
@@ -1795,7 +1800,7 @@ prs:
   plan: plan-17af8d3
   title: Snapshot tests for piece shapes and SRS kick tables
   branch: pm/pr-f48ed86-snapshot-tests-for-piece-shapes-and-srs-kick-table
-  status: in_progress
+  status: merged
   depends_on:
   - pr-48ed9f4
   description: 'Add snapshot tests that lock down the static data tables defined in
@@ -1814,17 +1819,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/30
   gh_pr_number: 30
   created_at: '2026-04-11T23:10:58.040047+00:00'
-  updated_at: '2026-04-12T00:02:44.438018+00:00'
+  updated_at: '2026-04-12T03:53:42.422254+00:00'
   started_at: '2026-04-12T00:02:44.438018+00:00'
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422254+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-f48ed86-snapshot-tests-for-piece-shapes-and--c186ce8d
 - id: pr-1052bf4
   plan: plan-17af8d3
   title: Game test harness (input replay)
   branch: pm/pr-1052bf4-game-test-harness-input-replay
-  status: in_progress
+  status: merged
   depends_on:
   - pr-109d87a
   - pr-8d8faf9
@@ -1850,17 +1855,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/33
   gh_pr_number: 33
   created_at: '2026-04-11T23:10:58.040053+00:00'
-  updated_at: '2026-04-12T00:09:32.357103+00:00'
+  updated_at: '2026-04-12T03:53:42.422255+00:00'
   started_at: '2026-04-12T00:09:32.357103+00:00'
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422255+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-1052bf4-game-test-harness-input-replay-eee02ddf
 - id: pr-d8c0916
   plan: plan-17af8d3
   title: State transition assertion helpers
   branch: pm/pr-d8c0916-state-transition-assertion-helpers
-  status: pending
+  status: merged
   depends_on:
   - pr-940a121
   - pr-8d8faf9
@@ -1878,15 +1883,16 @@ prs:
 
     Files: `packages/shared/src/__test-utils__/assertions.ts`, `packages/shared/src/__test-utils__/assertions.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/60
+  gh_pr_number: 60
   created_at: '2026-04-11T23:10:58.040059+00:00'
-  updated_at: '2026-04-11T23:10:58.040059+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T03:57:27.136999+00:00'
+  started_at: '2026-04-12T03:54:02.553350+00:00'
+  reviewed_at: '2026-04-12T03:55:49.110148+00:00'
+  merged_at: '2026-04-12T03:57:27.136999+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-d8c0916-state-transition-assertion-helpers-fadf3b49
 - id: pr-9fa62c0
   plan: plan-17af8d3
   title: Playwright E2E setup and dev server orchestration
@@ -1920,7 +1926,7 @@ prs:
   plan: plan-17af8d3
   title: E2E test helpers for multiplayer flows
   branch: pm/pr-8e93a65-e2e-test-helpers-for-multiplayer-flows
-  status: in_progress
+  status: merged
   depends_on:
   - pr-9fa62c0
   - pr-ea6f093
@@ -1945,10 +1951,10 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/36
   gh_pr_number: 36
   created_at: '2026-04-11T23:10:58.040068+00:00'
-  updated_at: '2026-04-12T00:13:50.874314+00:00'
+  updated_at: '2026-04-12T03:53:42.422257+00:00'
   started_at: '2026-04-12T00:13:50.874314+00:00'
   reviewed_at: null
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422257+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-8e93a65-e2e-test-helpers-for-multiplayer-flo-3a38676a
 - id: pr-86780be
@@ -1985,7 +1991,7 @@ prs:
   plan: plan-17af8d3
   title: Coverage configuration and CI thresholds
   branch: pm/pr-edcf972-coverage-configuration-and-ci-thresholds
-  status: in_review
+  status: merged
   depends_on: []
   description: 'Configure vitest coverage (v8 provider) with per-package thresholds.
     Set `packages/shared/src/engine/` to 90% branch coverage minimum. Add `npm run
@@ -2003,10 +2009,10 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/32
   gh_pr_number: 32
   created_at: '2026-04-11T23:10:58.040077+00:00'
-  updated_at: '2026-04-12T00:06:51.040119+00:00'
+  updated_at: '2026-04-12T03:53:42.422258+00:00'
   started_at: '2026-04-12T00:02:53.310587+00:00'
   reviewed_at: '2026-04-12T00:06:51.040119+00:00'
-  merged_at: null
+  merged_at: '2026-04-12T03:53:42.422258+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-edcf972-coverage-configuration-and-ci-thresh-c186ce8d
 - id: pr-8b8c60d
