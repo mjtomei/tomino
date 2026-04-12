@@ -75,6 +75,32 @@ export const ScreenEffects = forwardRef<ScreenEffectsHandle, ScreenEffectsProps>
     const lastFrameRef = useRef<number>(0);
     const rafRef = useRef<number>(0);
 
+    // Imperative RAF loop, kicked off whenever a transient channel is
+    // bumped. Not managed by useEffect lifecycle — if it were, the
+    // forceRender inside tick would re-run the effect and cancel/reset
+    // our timing state every frame, stalling decay.
+    const ensureDecayLoop = useCallback(() => {
+      if (rafRef.current !== 0) return;
+      const tick = (timestamp: number) => {
+        if (lastFrameRef.current === 0) lastFrameRef.current = timestamp;
+        const dt = timestamp - lastFrameRef.current;
+        lastFrameRef.current = timestamp;
+
+        shakeRef.current = decayTransient(shakeRef.current, dt, SHAKE_HALF_LIFE_MS);
+        flashRef.current = decayTransient(flashRef.current, dt, FLASH_HALF_LIFE_MS);
+        forceRender((n) => (n + 1) & 0xffff);
+
+        if (shakeRef.current > 0 || flashRef.current > 0) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          lastFrameRef.current = 0;
+          rafRef.current = 0;
+        }
+      };
+      lastFrameRef.current = 0;
+      rafRef.current = requestAnimationFrame(tick);
+    }, []);
+
     // Apply atmosphere events to transient channels.
     useEffect(() => {
       if (atmosphere.events.length === 0) return;
@@ -93,14 +119,18 @@ export const ScreenEffects = forwardRef<ScreenEffectsHandle, ScreenEffectsProps>
       }
       if (shakeBump > shakeRef.current) shakeRef.current = shakeBump;
       if (flashBump > flashRef.current) flashRef.current = flashBump;
-      if (shakeBump > 0 || flashBump > 0) forceRender((n) => (n + 1) & 0xffff);
-    }, [atmosphere.events]);
+      if (shakeBump > 0 || flashBump > 0) {
+        forceRender((n) => (n + 1) & 0xffff);
+        ensureDecayLoop();
+      }
+    }, [atmosphere.events, ensureDecayLoop]);
 
     const triggerHardDropShake = useCallback(() => {
       const m = computeShakeMagnitude("hardDrop", 1);
       if (m > shakeRef.current) shakeRef.current = m;
       forceRender((n) => (n + 1) & 0xffff);
-    }, []);
+      ensureDecayLoop();
+    }, [ensureDecayLoop]);
 
     useImperativeHandle(
       ref,
@@ -108,30 +138,8 @@ export const ScreenEffects = forwardRef<ScreenEffectsHandle, ScreenEffectsProps>
       [triggerHardDropShake],
     );
 
-    // Decay loop. Runs only while a transient value is non-zero.
+    // Unmount cleanup: cancel any pending RAF.
     useEffect(() => {
-      const tick = (timestamp: number) => {
-        if (lastFrameRef.current === 0) lastFrameRef.current = timestamp;
-        const dt = timestamp - lastFrameRef.current;
-        lastFrameRef.current = timestamp;
-
-        shakeRef.current = decayTransient(shakeRef.current, dt, SHAKE_HALF_LIFE_MS);
-        flashRef.current = decayTransient(flashRef.current, dt, FLASH_HALF_LIFE_MS);
-        forceRender((n) => (n + 1) & 0xffff);
-
-        if (shakeRef.current > 0 || flashRef.current > 0) {
-          rafRef.current = requestAnimationFrame(tick);
-        } else {
-          lastFrameRef.current = 0;
-          rafRef.current = 0;
-        }
-      };
-
-      // Kick off a frame if we have pending transients and no loop running.
-      if ((shakeRef.current > 0 || flashRef.current > 0) && rafRef.current === 0) {
-        rafRef.current = requestAnimationFrame(tick);
-      }
-
       return () => {
         if (rafRef.current !== 0) {
           cancelAnimationFrame(rafRef.current);
@@ -139,7 +147,7 @@ export const ScreenEffects = forwardRef<ScreenEffectsHandle, ScreenEffectsProps>
           lastFrameRef.current = 0;
         }
       };
-    });
+    }, []);
 
     const vignetteOpacity = computeVignetteOpacity(atmosphere.danger);
     const vignetteColor = computeVignetteColor(
