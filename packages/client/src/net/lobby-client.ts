@@ -30,11 +30,20 @@ export interface EliminationData {
   placement: number;
 }
 
+/** Per-player rating change entry received after a ranked game. */
+export interface RatingChangeData {
+  username: string;
+  before: number;
+  after: number;
+}
+
 /** Data stored when the game ends. */
 export interface GameEndData {
   winnerId: PlayerId;
   placements: Record<PlayerId, number>;
   stats: Record<PlayerId, PlayerStats>;
+  /** Rating changes per player, populated when ratingUpdate message arrives. */
+  ratingChanges?: Record<PlayerId, RatingChangeData>;
 }
 
 /** Tracks rematch voting status. */
@@ -419,6 +428,20 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           rematchVotes: {
             votes: msg.votes,
             totalPlayers: msg.totalPlayers,
+          },
+        };
+      });
+    });
+
+    socket.on("ratingUpdate", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        if (!prev.gameEndData) return prev;
+        return {
+          ...prev,
+          gameEndData: {
+            ...prev.gameEndData,
+            ratingChanges: msg.changes,
           },
         };
       });

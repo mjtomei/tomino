@@ -28,11 +28,8 @@ import {
   disconnectRegistry,
   DisconnectRegistry,
 } from "../disconnect-handler.js";
-<<<<<<< ours
 import { clearRematchVotes } from "./rematch-handlers.js";
-=======
 import { handlePostGame } from "../post-game-handler.js";
->>>>>>> theirs
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
@@ -94,13 +91,11 @@ export function startGameCountdown(
     handicapMode = settings.mode;
   }
 
-<<<<<<< ours
   // Clear any stale rematch votes from a previous game
   clearRematchVotes(roomId);
-=======
+
   // Determine whether this game is ranked (handicap enabled → ratings tracked)
   const isRanked = settings !== undefined && settings.intensity !== "off";
->>>>>>> theirs
 
   const session = createGameSession({
     roomId,
