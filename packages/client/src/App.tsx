@@ -126,6 +126,7 @@ function App() {
             currentPlayerId={currentPlayerId}
             seed={session?.seed}
             opponentSnapshots={lobby.state.opponentStates}
+            localPendingGarbage={lobby.state.localPendingGarbage}
           />
           <LatencyIndicator latencyMs={latencyMs} />
         </>

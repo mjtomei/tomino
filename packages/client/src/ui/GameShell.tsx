@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import type { RuleSet, GameModeConfig, GameState } from "@tetris/shared";
+import type { RuleSet, GameModeConfig, GameState, GarbageBatch } from "@tetris/shared";
 import { TetrisEngine } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
 import { ScoreDisplay } from "./ScoreDisplay.js";
 import { NextQueue } from "./NextQueue.js";
 import { HoldDisplay } from "./HoldDisplay.js";
+import { GarbageMeter } from "./GarbageMeter.js";
 import { Overlay } from "./Overlay.js";
 import { StartScreen } from "./StartScreen.js";
 import { SoundManager } from "../audio/sounds.js";
@@ -92,9 +93,11 @@ interface DASState {
 export interface GameShellProps {
   seed?: number;
   onBack?: () => void;
+  /** Pending incoming garbage (multiplayer only). */
+  pendingGarbage?: GarbageBatch[];
 }
 
-export function GameShell({ seed, onBack }: GameShellProps) {
+export function GameShell({ seed, onBack, pendingGarbage }: GameShellProps) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [ruleSet, setRuleSet] = useState<RuleSet | null>(null);
   const [modeConfig, setModeConfig] = useState<GameModeConfig | null>(null);
@@ -329,6 +332,9 @@ export function GameShell({ seed, onBack }: GameShellProps) {
         </div>
 
         <div className="game-board-container">
+          {pendingGarbage && pendingGarbage.length > 0 && (
+            <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
+          )}
           <BoardCanvas state={gameState} showSidePanels={false} />
           <Overlay
             state={gameState}
