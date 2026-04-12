@@ -20,6 +20,7 @@ import { gameStateToSignals } from "../atmosphere/signals.js";
 import { ParticleSystem } from "../atmosphere/particle-system.js";
 import { ParticleCanvas } from "../atmosphere/ParticleCanvas.js";
 import { BoardEffects } from "../atmosphere/board-effects.js";
+import { EventBurstCanvas } from "../atmosphere/EventBurstCanvas.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
@@ -418,6 +419,7 @@ function MultiplayerGameShell({
             width={BOARD_EFFECTS_WIDTH}
             height={BOARD_EFFECTS_HEIGHT}
           />
+          <EventBurstCanvas width={BOARD_EFFECTS_WIDTH} height={BOARD_EFFECTS_HEIGHT} />
         </div>
 
         <div className="game-right-panel">
@@ -767,6 +769,7 @@ function SoloGameShell({
             width={BOARD_EFFECTS_WIDTH}
             height={BOARD_EFFECTS_HEIGHT}
           />
+          <EventBurstCanvas width={BOARD_EFFECTS_WIDTH} height={BOARD_EFFECTS_HEIGHT} />
           <Overlay
             state={gameState}
             modeConfig={modeConfig}
