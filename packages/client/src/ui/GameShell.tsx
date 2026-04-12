@@ -16,7 +16,6 @@ import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
 import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
-import { BackgroundCanvas } from "../atmosphere/BackgroundCanvas.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
@@ -339,7 +338,6 @@ function MultiplayerGameShell({
 
   return (
     <div className="game-shell" data-testid="game-shell">
-      <BackgroundCanvas />
       <div className="game-layout">
         <div className="game-left-panel">
           <HoldDisplay hold={gameState.hold} holdUsed={gameState.holdUsed} ruleSet={mpRuleSet} />
@@ -629,7 +627,6 @@ function SoloGameShell({
   if (!gameState || !ruleSet || !modeConfig) {
     return (
       <div className="game-shell">
-        <BackgroundCanvas />
         {onBack && (
           <button className="back-btn" onClick={onBack} data-testid="back-btn">
             &larr; Back
@@ -642,7 +639,6 @@ function SoloGameShell({
 
   return (
     <div className="game-shell" data-testid="game-shell">
-      <BackgroundCanvas />
       {onBack && (
         <button className="back-btn" onClick={onBack} data-testid="back-btn">
           &larr; Back
