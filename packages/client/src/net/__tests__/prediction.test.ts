@@ -75,6 +75,23 @@ describe("PredictionEngine — server state handling", () => {
     expect(dup.accepted).toBe(false);
   });
 
+  it("drops inputs once the local engine is game-over", () => {
+    // Force game-over by spamming hardDrops until top-out. This exercises
+    // the real engine's gameOver path rather than mocking it.
+    const pe = new PredictionEngine(mkOpts());
+    let safety = 500;
+    while (!pe.isGameOver && safety-- > 0) {
+      pe.applyLocalInput("hardDrop");
+    }
+    expect(pe.isGameOver).toBe(true);
+    const seqBefore = pe.nextSeq;
+    const pendingBefore = pe.pendingInputs.length;
+    const dropped = pe.applyLocalInput("moveLeft");
+    expect(dropped).toBe(0);
+    expect(pe.nextSeq).toBe(seqBefore);
+    expect(pe.pendingInputs.length).toBe(pendingBefore);
+  });
+
   it("does not prune pending inputs when ack is omitted", () => {
     const pe = new PredictionEngine(mkOpts());
     pe.applyLocalInput("moveLeft");

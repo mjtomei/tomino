@@ -58,9 +58,13 @@ export class PredictionEngine {
 
   /**
    * Apply an input locally and record it as pending.
-   * Returns the assigned sequence number (to be sent to the server).
+   * Returns the assigned sequence number, or 0 if the input was dropped
+   * because the local engine is already in a non-playing state — dropped
+   * inputs must not be recorded, otherwise a later `reconcile()` would
+   * replay them on a fresh engine and incorrectly resurrect the game.
    */
   applyLocalInput(action: InputAction): number {
+    if (this.proxy.isGameOver) return 0;
     const seq = this.nextSeqCounter++;
     this.history.push({ seq, action });
     this.proxy.applyInput(action);

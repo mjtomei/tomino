@@ -88,6 +88,7 @@ export class GameClient {
    */
   sendInput(action: InputAction): number {
     const seq = this.prediction.applyLocalInput(action);
+    if (seq === 0) return 0;
     this.socket.send({
       type: "playerInput",
       roomId: this.roomId,
