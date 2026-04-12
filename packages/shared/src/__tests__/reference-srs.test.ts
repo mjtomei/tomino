@@ -103,19 +103,6 @@ for (const [from, to] of TRANSITIONS) {
 
 const JLSTZ_PIECES: readonly PieceType[] = ["J", "L", "S", "T", "Z"];
 
-/** Fill a grid column from startRow to endRow (inclusive). */
-function fillCol(
-  grid: Grid,
-  col: number,
-  startRow: number,
-  endRow: number,
-  piece: PieceType = "T",
-): void {
-  for (let r = startRow; r <= endRow; r++) {
-    grid[r]![col] = piece;
-  }
-}
-
 /** Fill a grid row completely. */
 function fillRow(grid: Grid, row: number, piece: PieceType = "T"): void {
   for (let c = 0; c < BOARD_WIDTH; c++) {
@@ -260,23 +247,16 @@ describe("SRS wall kick behavior — reference verification", () => {
   });
 
   describe("left wall kicks", () => {
-    it("T-piece 0→1 kicks right when against left wall with obstruction", () => {
+    it("T-piece 0→1 kicks left (dx=-1) when against left wall with obstruction", () => {
       const grid = createGrid();
-      // T-piece state 0 at (30, 0): shape [0,1,0] / [1,1,1] / [0,0,0]
-      // Fills: (30,1), (31,0), (31,1), (31,2)
-      //
+      // T-piece state 0 at (30, 0): fills (30,1), (31,0), (31,1), (31,2)
       // CW to state 1: shape [0,1,0] / [0,1,1] / [0,1,0]
       // At base (30, 0): fills (30,1), (31,1), (31,2), (32,1) — fits in open space.
-      //
       // Block (31,2) to force a kick.
       grid[31]![2] = "J";
       // Kick offsets for 0→1: [0,0], [-1,0], [-1,+1], [0,-2], [-1,-2]
-      // Test 1 [0,0]: state 1 at (30,0) → fills (31,2) blocked ✗
-      // Test 2 [-1,0]: col=-1 → fills (30,0), (31,0), (31,1), (32,0) — all open ✓
-      //   dx=-1 → col = 0 + (-1) = -1. Shape col 1 → grid col 0, shape col 2 → grid col 1.
-      //   Wait — let me recalculate. Shape [0,1,0]/[0,1,1]/[0,1,0].
-      //   At kickCol=-1: filled cells at (-1+1, -1+2, -1+1, -1+1) = (col 0, col 1, col 0, col 0)
-      //   Rows: (30,0), (31,0), (31,1), (32,0). (31,1) is open, (31,0) open. ✓
+      // Test 1 [0,0]: (31,2) blocked ✗
+      // Test 2 [-1,0]: col=-1. State 1 fills (30,0), (31,0), (31,1), (32,0) — all open ✓
       const result = tryRotate(grid, "T", 30, 0, 0, "cw", SRSRotation);
       expect(result).not.toBeNull();
       expect(result!.col).toBe(-1); // kicked left by 1 (dx=-1)
@@ -286,18 +266,15 @@ describe("SRS wall kick behavior — reference verification", () => {
   });
 
   describe("right wall kicks", () => {
-    it("T-piece 0→3 kicks left when against right wall with obstruction", () => {
+    it("T-piece 0→3 kicks right (dx=+1) when against right wall with obstruction", () => {
       const grid = createGrid();
       // T-piece state 0 at (30, 7): fills (30,8), (31,7), (31,8), (31,9)
-      //
       // CCW to state 3: shape [0,1,0] / [1,1,0] / [0,1,0]
-      // At base (30, 7): fills (30,8), (31,7), (31,8), (32,8) — fits in open space.
-      //
-      // Block (31,7) to force a kick.
+      // At base (30, 7): fits in open space. Block (31,7) to force a kick.
       grid[31]![7] = "J";
       // Kick offsets for 0→3: [0,0], [+1,0], [+1,+1], [0,-2], [+1,-2]
-      // Test 1 [0,0]: state 3 at (30,7) → (31,7) blocked ✗
-      // Test 2 [+1,0]: col=8. State 3 fills (30,9), (31,8), (31,9), (32,9). Col 9 is valid (0-9). ✓
+      // Test 1 [0,0]: (31,7) blocked ✗
+      // Test 2 [+1,0]: col=8. State 3 fills (30,9), (31,8), (31,9), (32,9) — all open ✓
       const result = tryRotate(grid, "T", 30, 7, 0, "ccw", SRSRotation);
       expect(result).not.toBeNull();
       expect(result!.col).toBe(8); // kicked right by 1 (dx=+1)
@@ -309,30 +286,19 @@ describe("SRS wall kick behavior — reference verification", () => {
   describe("floor kicks (upward)", () => {
     it("T-piece 3→0 kicks up when near floor", () => {
       const grid = createGrid();
-      // T-piece state 3 at (38, 4): shape [0,1,0] / [1,1,0] / [0,1,0]
-      // Fills: (38,5), (39,4), (39,5), (40,5) — row 40 is out of bounds!
-      // So state 3 doesn't fit at row 38. Use row 37.
-      //
       // T-piece state 3 at (37, 4): fills (37,5), (38,4), (38,5), (39,5)
-      //
       // CW to state 0: shape [0,1,0] / [1,1,1] / [0,0,0]
-      // At base (37, 4): fills (37,5), (38,4), (38,5), (38,6) — open in empty grid ✓
+      // At base (37, 4): fills (37,5), (38,4), (38,5), (38,6)
       //
-      // Need to block base position. Fill row 38 except col 5.
+      // Fill row 38 entirely except col 5 to block base and early kicks.
       for (let c = 0; c < BOARD_WIDTH; c++) {
         if (c !== 4 && c !== 5 && c !== 6) grid[38]![c] = "J";
       }
-      // Also block (38,4) and (38,6) to prevent base rotation
       grid[38]![4] = "J";
       grid[38]![6] = "J";
-      // State 0 at base (37,4): fills (37,5), (38,4), (38,5), (38,6)
-      // (38,4) blocked, (38,6) blocked ✗
       // Kick offsets for 3→0: [0,0], [-1,0], [-1,-1], [0,+2], [-1,+2]
-      // Test 1 [0,0]: blocked ✗
-      // Test 2 [-1,0]: col=3. Fills (37,4), (38,3), (38,4), (38,5). (38,3) blocked, (38,4) blocked ✗
-      // Test 3 [-1,-1]: col=3, row=38. Fills (38,4), (39,3), (39,4), (39,5). (38,4) blocked ✗
-      //   Wait: dy=-1 means row = 37-(-1) = 38. Shape fills (38,4), (39,3), (39,4), (39,5). (38,4) blocked ✗
-      // Test 4 [0,+2]: row = 37-2 = 35. col=4. Fills (35,5), (36,4), (36,5), (36,6) — all open ✓
+      // Tests 1-3 all hit (38,4) or other blocked cells in row 38 ✗
+      // Test 4 [0,+2]: row=35, col=4. Fills (35,5), (36,4), (36,5), (36,6) — all open ✓
       const result = tryRotate(grid, "T", 37, 4, 3, "cw", SRSRotation);
       expect(result).not.toBeNull();
       expect(result!.row).toBe(35); // kicked up by 2 (dy=+2)
@@ -428,43 +394,17 @@ describe("SRS wall kick behavior — reference verification", () => {
   describe("kick priority — correct kick index selected", () => {
     it("JLSTZ: when tests 1-3 fail, test 4 (dy=-2) is used", () => {
       const grid = createGrid();
-      // T-piece state 0 at (30, 4): fills (30,5), (31,4), (31,5), (31,6)
-      // CW to state 1: shape [0,1,0] / [0,1,1] / [0,1,0]
-      //
-      // Kick offsets for 0→1: [0,0], [-1,0], [-1,+1], [0,-2], [-1,-2]
-      //
-      // Block kicks 1-3, allow kick 4 [0,-2] (row = 30-(-2) = 32, col = 4):
-      //   State 1 at (32,4): fills (32,5), (33,5), (33,6), (34,5)
-      //
-      // Test 1 [0,0]: state 1 at (30,4): fills (30,5), (31,5), (31,6), (32,5)
-      grid[32]![5] = "J"; // blocks test 1
-      // Test 2 [-1,0]: state 1 at (30,3): fills (30,4), (31,4), (31,5), (32,4)
-      grid[32]![4] = "J"; // blocks test 2
-      // Test 3 [-1,+1]: dx=-1, dy=+1 → col=3, row=29. State 1 at (29,3): fills (29,4), (30,4), (30,5), (31,4)
-      grid[31]![4] = "J"; // blocks test 3
-
-      // Test 4 [0,-2]: dx=0, dy=-2 → col=4, row=32. State 1 at (32,4): fills (32,5), (33,5), (33,6), (34,5)
-      // (32,5) is blocked! We need to unblock test 4.
-      // Hmm, (32,5) is already set. Let me reconsider the blocking strategy.
-
-      // Reset and use a cleaner setup.
-      const grid2 = createGrid();
       // T-piece state 2 at (30, 4): shape [0,0,0] / [1,1,1] / [0,1,0]
-      // Fills: (31,4), (31,5), (31,6), (32,5)
-      //
       // CW to state 3: shape [0,1,0] / [1,1,0] / [0,1,0]
       // Kick offsets for 2→3: [0,0], [+1,0], [+1,+1], [0,-2], [+1,-2]
       //
-      // Test 1 [0,0]: state 3 at (30,4): fills (30,5), (31,4), (31,5), (32,5)
-      grid2[30]![5] = "J"; // blocks test 1
-      // Test 2 [+1,0]: col=5. State 3 at (30,5): fills (30,6), (31,5), (31,6), (32,6)
-      grid2[30]![6] = "J"; // blocks test 2
-      // Test 3 [+1,+1]: dx=+1, dy=+1 → col=5, row=29. State 3 at (29,5): fills (29,6), (30,5), (30,6), (31,6)
-      // (30,5) blocked and (30,6) blocked → ✗
-      // Test 4 [0,-2]: dx=0, dy=-2 → col=4, row=32. State 3 at (32,4): fills (32,5), (33,4), (33,5), (34,5)
-      // All open ✓
+      // Block tests 1-3, allow test 4 [0,-2] at (32,4):
+      grid[30]![5] = "J"; // blocks test 1: state 3 at (30,4) fills (30,5) ✗
+      grid[30]![6] = "J"; // blocks test 2: state 3 at (30,5) fills (30,6) ✗
+      // Test 3 [+1,+1] at (29,5) also blocked: (30,5) and (30,6) occupied ✗
+      // Test 4 [0,-2] at (32,4): fills (32,5), (33,4), (33,5), (34,5) — all open ✓
 
-      const result = tryRotate(grid2, "T", 30, 4, 2, "cw", SRSRotation);
+      const result = tryRotate(grid, "T", 30, 4, 2, "cw", SRSRotation);
       expect(result).not.toBeNull();
       expect(result!.row).toBe(32); // kicked down by 2 (dy=-2 → row+2)
       expect(result!.col).toBe(4); // dx=0
@@ -473,23 +413,15 @@ describe("SRS wall kick behavior — reference verification", () => {
 
     it("JLSTZ: when tests 1-4 fail, test 5 is used", () => {
       const grid = createGrid();
-      // T-piece state 2 at (30, 4): shape [0,0,0] / [1,1,1] / [0,1,0]
-      // CW to state 3: shape [0,1,0] / [1,1,0] / [0,1,0]
+      // T-piece state 2 at (30, 4), CW to state 3.
       // Kick offsets for 2→3: [0,0], [+1,0], [+1,+1], [0,-2], [+1,-2]
       //
-      // State 3 at various kick positions — block tests 1-4:
-      //
-      // Test 1 [0,0]: (30,4) → fills (30,5), (31,4), (31,5), (32,5)
-      grid[30]![5] = "J"; // blocks test 1
-      // Test 2 [+1,0]: (30,5) → fills (30,6), (31,5), (31,6), (32,6)
-      grid[30]![6] = "J"; // blocks test 2 (and helps block test 3)
-      // Test 3 [+1,+1]: (29,5) → fills (29,6), (30,5), (30,6), (31,6)
-      // (30,5) and (30,6) blocked → ✗
-      // Test 4 [0,-2]: (32,4) → fills (32,5), (33,4), (33,5), (34,5)
-      grid[32]![5] = "J"; // blocks test 4
+      // Block tests 1-4:
+      grid[30]![5] = "J"; // blocks test 1: state 3 at (30,4) fills (30,5) ✗
+      grid[30]![6] = "J"; // blocks test 2 at (30,5) and test 3 at (29,5) via (30,5)/(30,6) ✗
+      grid[32]![5] = "J"; // blocks test 4: state 3 at (32,4) fills (32,5) ✗
+      // Test 5 [+1,-2] at (32,5): fills (32,6), (33,5), (33,6), (34,6) — all open ✓
 
-      // Test 5 [+1,-2]: dx=+1, dy=-2 → col=5, row=32.
-      //   State 3 at (32,5): fills (32,6), (33,5), (33,6), (34,6) — all open ✓
       const result = tryRotate(grid, "T", 30, 4, 2, "cw", SRSRotation);
       expect(result).not.toBeNull();
       expect(result!.row).toBe(32); // dy=-2 → row+2
