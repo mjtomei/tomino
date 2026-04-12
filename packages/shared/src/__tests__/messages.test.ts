@@ -94,11 +94,14 @@ const validS2CMessages: ServerMessage[] = [
   {
     type: "garbageReceived",
     roomId: "room-1",
+    playerId: "p2",
+    senderId: "p1",
     garbage: { lines: 2, gapColumn: 5 },
   },
   {
     type: "garbageQueued",
     roomId: "room-1",
+    playerId: "p2",
     pendingGarbage: [{ lines: 4, gapColumn: 3 }],
   },
   { type: "pong", timestamp: Date.now() },

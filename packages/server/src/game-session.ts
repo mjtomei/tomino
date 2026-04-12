@@ -15,11 +15,13 @@ import type {
   RoomId,
   RuleSet,
   ServerMessage,
+  TargetingStrategy,
 } from "@tetris/shared";
 import {
   modernRuleSet,
 } from "@tetris/shared";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "./player-engine.js";
+import { GarbageManager } from "./garbage-manager.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,6 +42,10 @@ export interface GameSessionConfig {
   handicapMode?: HandicapMode;
   /** Optional rule set override (defaults to modernRuleSet). */
   ruleSet?: RuleSet;
+  /** Optional targeting strategy override for garbage distribution. */
+  targetingStrategy?: TargetingStrategy;
+  /** Optional garbage delay override in milliseconds. */
+  garbageDelayMs?: number;
 }
 
 export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished";
@@ -82,6 +88,9 @@ export class GameSession {
   private readonly engines = new Map<PlayerId, PlayerEngine>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
+  private readonly targetingStrategy?: TargetingStrategy;
+  private readonly garbageDelayMs?: number;
+  private garbageManager: GarbageManager | null = null;
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -92,6 +101,8 @@ export class GameSession {
     this.handicapModifiers = config.handicapModifiers;
     this.handicapMode = config.handicapMode;
     this.ruleSet = config.ruleSet ?? modernRuleSet();
+    this.targetingStrategy = config.targetingStrategy;
+    this.garbageDelayMs = config.garbageDelayMs;
 
     // Assign player indexes (0-based, room order)
     this.playerIndexes = {};
@@ -145,6 +156,8 @@ export class GameSession {
     const applied = engine.applyInput(action);
     if (!applied) return undefined;
 
+    this.processGarbageFor(playerId, engine);
+
     const snapshot = engine.getSnapshot();
     this.broadcastSnapshot(playerId, snapshot);
 
@@ -167,6 +180,7 @@ export class GameSession {
 
     // We can't force game-over on the engine, but we remove it from active play
     this.engines.delete(playerId);
+    this.garbageManager?.removePlayer(playerId);
     this.broadcastToRoom(this.roomId, {
       type: "gameOver",
       roomId: this.roomId,
@@ -234,7 +248,8 @@ export class GameSession {
   // -------------------------------------------------------------------------
 
   private initializeEngines(): void {
-    for (const playerId of Object.keys(this.playerIndexes)) {
+    const playerIds = Object.keys(this.playerIndexes);
+    for (const playerId of playerIds) {
       const engine = new PlayerEngine({
         playerId,
         seed: this.seed,
@@ -243,6 +258,16 @@ export class GameSession {
       });
       this.engines.set(playerId, engine);
     }
+
+    this.garbageManager = new GarbageManager({
+      playerIds,
+      ...(this.targetingStrategy !== undefined
+        ? { targetingStrategy: this.targetingStrategy }
+        : {}),
+      ...(this.garbageDelayMs !== undefined
+        ? { delayMs: this.garbageDelayMs }
+        : {}),
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -276,6 +301,9 @@ export class GameSession {
 
       const prevSnapshot = engine.getSnapshot();
       engine.advanceTick(deltaMs);
+
+      this.processGarbageFor(playerId, engine);
+
       const currSnapshot = engine.getSnapshot();
 
       // Only broadcast if state changed
@@ -288,6 +316,54 @@ export class GameSession {
         this.handlePlayerGameOver(playerId);
       }
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // Garbage processing (line-clear events + delayed drain)
+  // -------------------------------------------------------------------------
+
+  private processGarbageFor(playerId: PlayerId, engine: PlayerEngine): void {
+    const gm = this.garbageManager;
+    if (!gm) return;
+
+    // 1. Any line clears from the player's latest action? → enqueue garbage.
+    const event = engine.consumeLineClearEvent();
+    if (event) {
+      const outcome = gm.onLinesCleared(playerId, event);
+      for (const receiverId of outcome.affectedReceivers) {
+        this.syncPendingGarbage(receiverId);
+      }
+    }
+
+    // 2. Drain any ready incoming garbage and apply to this player's board.
+    const ready = gm.drainReady(playerId);
+    if (ready.length > 0) {
+      engine.applyGarbage(ready);
+      for (const batch of ready) {
+        this.broadcastToRoom(this.roomId, {
+          type: "garbageReceived",
+          roomId: this.roomId,
+          playerId,
+          garbage: batch,
+        });
+      }
+      this.syncPendingGarbage(playerId);
+    }
+  }
+
+  private syncPendingGarbage(playerId: PlayerId): void {
+    const gm = this.garbageManager;
+    if (!gm) return;
+    const engine = this.engines.get(playerId);
+    if (!engine) return;
+    const pending = gm.getPending(playerId);
+    engine.setPendingGarbage(pending);
+    this.broadcastToRoom(this.roomId, {
+      type: "garbageQueued",
+      roomId: this.roomId,
+      playerId,
+      pendingGarbage: pending,
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -311,6 +387,7 @@ export class GameSession {
   // -------------------------------------------------------------------------
 
   private handlePlayerGameOver(playerId: PlayerId): void {
+    this.garbageManager?.removePlayer(playerId);
     this.broadcastToRoom(this.roomId, {
       type: "gameOver",
       roomId: this.roomId,

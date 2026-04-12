@@ -8,7 +8,9 @@
 
 import type {
   GameStateSnapshot,
+  GarbageBatch,
   InputAction,
+  LineClearEvent,
   PlayerId,
   RuleSet,
   GameModeConfig,
@@ -51,6 +53,7 @@ export class PlayerEngine {
   readonly playerId: PlayerId;
   private readonly engine: TetrisEngine;
   private tick = 0;
+  private pendingGarbage: GarbageBatch[] = [];
 
   constructor(options: PlayerEngineOptions) {
     this.playerId = options.playerId;
@@ -126,6 +129,30 @@ export class PlayerEngine {
    * Get the current state as a protocol GameStateSnapshot.
    */
   getSnapshot(): GameStateSnapshot {
-    return engineStateToSnapshot(this.engine.getState(), this.tick);
+    const snapshot = engineStateToSnapshot(this.engine.getState(), this.tick);
+    return {
+      ...snapshot,
+      pendingGarbage: [...this.pendingGarbage],
+    };
+  }
+
+  /** Pull and clear the engine's most recent line-clear event. */
+  consumeLineClearEvent(): LineClearEvent | null {
+    return this.engine.consumeLineClearEvent();
+  }
+
+  /** Insert garbage batches at the bottom of the player's board. */
+  applyGarbage(batches: readonly GarbageBatch[]): void {
+    this.engine.applyGarbage(batches);
+  }
+
+  /** Overwrite the server-tracked pending garbage queue (for snapshots). */
+  setPendingGarbage(batches: readonly GarbageBatch[]): void {
+    this.pendingGarbage = [...batches];
+  }
+
+  /** Read the server-tracked pending garbage queue. */
+  getPendingGarbage(): readonly GarbageBatch[] {
+    return this.pendingGarbage;
   }
 }
