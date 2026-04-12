@@ -14,6 +14,11 @@ import { StartScreen } from "./StartScreen.js";
 import { SoundManager } from "../audio/sounds.js";
 import type { SoundEvent } from "../audio/sounds.js";
 import { useTheme } from "../atmosphere/theme-context.js";
+import {
+  useSettings,
+  effectsIntensityMultiplier,
+} from "../atmosphere/settings-context.js";
+import { SettingsPanel } from "./SettingsPanel.js";
 import type { GameClient } from "../net/game-client.js";
 import { useAtmosphere, useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { useMusicSync } from "../audio/use-music.js";
@@ -229,6 +234,7 @@ function MultiplayerGameShell({
   const screenEffectsRef = useRef<ScreenEffectsHandle | null>(null);
 
   const { genreId, theme } = useTheme();
+  const { sfxVolume, masterMuted, effectsIntensity } = useSettings();
   const themeRef = useRef(theme);
   themeRef.current = theme;
 
@@ -257,7 +263,10 @@ function MultiplayerGameShell({
 
   // Sound manager
   useEffect(() => {
-    soundRef.current = new SoundManager(genreId);
+    const sm = new SoundManager(genreId);
+    sm.volume = sfxVolume;
+    sm.muted = masterMuted;
+    soundRef.current = sm;
     return () => {
       soundRef.current?.dispose();
       soundRef.current = null;
@@ -270,6 +279,12 @@ function MultiplayerGameShell({
   useEffect(() => {
     soundRef.current?.setGenreId(genreId);
   }, [genreId]);
+
+  useEffect(() => {
+    if (!soundRef.current) return;
+    soundRef.current.volume = sfxVolume;
+    soundRef.current.muted = masterMuted;
+  }, [sfxVolume, masterMuted]);
 
   const sendAction = useCallback((action: string) => {
     if (VALID_INPUT_ACTIONS.has(action)) {
@@ -463,7 +478,7 @@ function MultiplayerGameShell({
           <BoardCanvas
             state={gameState}
             showSidePanels={false}
-            atmosphereIntensity={atmosphereState.intensity}
+            atmosphereIntensity={atmosphereState.intensity * effectsIntensityMultiplier(effectsIntensity)}
             themePalette={theme.palette}
           />
           <ParticleCanvas
@@ -522,6 +537,12 @@ function SoloGameShell({
   const soloAtmosphereState = useAtmosphere();
   const screenEffectsRef = useRef<ScreenEffectsHandle | null>(null);
   const { genreId: soloGenreId, theme: soloTheme } = useTheme();
+  const {
+    sfxVolume: soloSfxVolume,
+    masterMuted: soloMasterMuted,
+    effectsIntensity: soloEffectsIntensity,
+  } = useSettings();
+  const [showSettings, setShowSettings] = useState(false);
   const themeRef = useRef(soloTheme);
   themeRef.current = soloTheme;
 
@@ -547,7 +568,10 @@ function SoloGameShell({
 
   // Initialize sound manager
   useEffect(() => {
-    soundRef.current = new SoundManager(soloGenreId);
+    const sm = new SoundManager(soloGenreId);
+    sm.volume = soloSfxVolume;
+    sm.muted = soloMasterMuted;
+    soundRef.current = sm;
     return () => {
       soundRef.current?.dispose();
       soundRef.current = null;
@@ -558,6 +582,12 @@ function SoloGameShell({
   useEffect(() => {
     soundRef.current?.setGenreId(soloGenreId);
   }, [soloGenreId]);
+
+  useEffect(() => {
+    if (!soundRef.current) return;
+    soundRef.current.volume = soloSfxVolume;
+    soundRef.current.muted = soloMasterMuted;
+  }, [soloSfxVolume, soloMasterMuted]);
 
   // Start a new game
   const startGame = useCallback((rs: RuleSet, mc: GameModeConfig) => {
@@ -824,7 +854,7 @@ function SoloGameShell({
           <BoardCanvas
             state={gameState}
             showSidePanels={false}
-            atmosphereIntensity={soloAtmosphereState.intensity}
+            atmosphereIntensity={soloAtmosphereState.intensity * effectsIntensityMultiplier(soloEffectsIntensity)}
             themePalette={soloTheme.palette}
           />
           <ParticleCanvas
@@ -839,7 +869,9 @@ function SoloGameShell({
             onResume={handleResume}
             onPlayAgain={handlePlayAgain}
             onQuit={handleQuit}
+            onOpenSettings={() => setShowSettings(true)}
           />
+          {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
         </div>
 
         <div className="game-right-panel">

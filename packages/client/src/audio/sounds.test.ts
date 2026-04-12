@@ -206,6 +206,52 @@ describe("SoundManager", () => {
   });
 
   // -----------------------------------------------------------------------
+  // Volume
+  // -----------------------------------------------------------------------
+
+  describe("volume", () => {
+    it("defaults to 1", () => {
+      const sm = new SoundManager();
+      expect(sm.volume).toBe(1);
+    });
+
+    it("clamps negative values to 0", () => {
+      const sm = new SoundManager();
+      sm.volume = -0.5;
+      expect(sm.volume).toBe(0);
+    });
+
+    it("clamps values above 1 to 1", () => {
+      const sm = new SoundManager();
+      sm.volume = 2.5;
+      expect(sm.volume).toBe(1);
+    });
+
+    it("ignores non-finite values", () => {
+      const sm = new SoundManager();
+      sm.volume = 0.3;
+      sm.volume = Number.NaN;
+      expect(sm.volume).toBe(0.3);
+    });
+
+    it("suppresses playback when volume is 0", () => {
+      const sm = new SoundManager();
+      sm.volume = 0;
+      sm.play("move");
+      expect(oscillatorInstances).toHaveLength(0);
+    });
+
+    it("resumes playback after restoring volume", () => {
+      const sm = new SoundManager();
+      sm.volume = 0;
+      sm.play("move");
+      sm.volume = 0.7;
+      sm.play("move");
+      expect(oscillatorInstances.length).toBeGreaterThan(0);
+    });
+  });
+
+  // -----------------------------------------------------------------------
   // Sound events trigger oscillators
   // -----------------------------------------------------------------------
 

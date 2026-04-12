@@ -7,6 +7,7 @@ export interface OverlayProps {
   onResume: () => void;
   onPlayAgain: () => void;
   onQuit: () => void;
+  onOpenSettings?: () => void;
 }
 
 function endReasonText(reason: EndReason | undefined, mode: string): string {
@@ -24,13 +25,30 @@ function endReasonText(reason: EndReason | undefined, mode: string): string {
   }
 }
 
-function PauseOverlay({ onResume, onQuit }: { onResume: () => void; onQuit: () => void }) {
+function PauseOverlay({
+  onResume,
+  onQuit,
+  onOpenSettings,
+}: {
+  onResume: () => void;
+  onQuit: () => void;
+  onOpenSettings?: () => void;
+}) {
   return (
     <div className="overlay" data-testid="pause-overlay">
       <div className="overlay-content">
         <h2 className="overlay-title">PAUSED</h2>
         <div className="overlay-buttons">
           <button className="overlay-btn" onClick={onResume}>RESUME</button>
+          {onOpenSettings && (
+            <button
+              className="overlay-btn overlay-btn-secondary"
+              data-testid="pause-settings-btn"
+              onClick={onOpenSettings}
+            >
+              SETTINGS
+            </button>
+          )}
           <button className="overlay-btn overlay-btn-secondary" onClick={onQuit}>QUIT</button>
         </div>
       </div>
@@ -98,9 +116,9 @@ function GameOverOverlay({
   );
 }
 
-export function Overlay({ state, modeConfig, onResume, onPlayAgain, onQuit }: OverlayProps) {
+export function Overlay({ state, modeConfig, onResume, onPlayAgain, onQuit, onOpenSettings }: OverlayProps) {
   if (state.status === "paused") {
-    return <PauseOverlay onResume={onResume} onQuit={onQuit} />;
+    return <PauseOverlay onResume={onResume} onQuit={onQuit} onOpenSettings={onOpenSettings} />;
   }
 
   if (state.status === "gameOver") {

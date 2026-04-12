@@ -6,6 +6,7 @@ interface LobbyProps {
   onJoinRoom: () => void;
   onSoloPlay: () => void;
   onViewStats: () => void;
+  onOpenSettings: () => void;
   onClearError: () => void;
 }
 
@@ -17,6 +18,7 @@ export function Lobby({
   onJoinRoom,
   onSoloPlay,
   onViewStats,
+  onOpenSettings,
   onClearError,
 }: LobbyProps) {
   const connected = connectionState === "connected";
@@ -68,6 +70,13 @@ export function Lobby({
           style={styles.button}
         >
           View Stats
+        </button>
+        <button
+          onClick={onOpenSettings}
+          style={styles.button}
+          data-testid="lobby-settings-btn"
+        >
+          Settings
         </button>
       </div>
     </div>
