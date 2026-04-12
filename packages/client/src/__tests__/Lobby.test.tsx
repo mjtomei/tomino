@@ -9,6 +9,7 @@ const defaultProps = {
   error: null,
   onCreateRoom: vi.fn(),
   onJoinRoom: vi.fn(),
+  onSoloPlay: vi.fn(),
   onViewStats: vi.fn(),
   onClearError: vi.fn(),
 };

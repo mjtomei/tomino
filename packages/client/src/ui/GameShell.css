@@ -1,0 +1,368 @@
+/* =========================================================================
+   GameShell — tetr.io-inspired dark layout
+   ========================================================================= */
+
+.game-shell {
+  min-height: 100vh;
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* -- Back button ---------------------------------------------------------- */
+
+.back-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #aaa;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.back-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* -- Game layout ---------------------------------------------------------- */
+
+.game-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.game-left-panel,
+.game-right-panel {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.game-board-container {
+  position: relative;
+}
+
+/* -- Panel labels --------------------------------------------------------- */
+
+.panel-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+/* -- Hold display --------------------------------------------------------- */
+
+.hold-display {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.hold-piece-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+}
+
+.hold-empty {
+  width: 40px;
+  height: 40px;
+}
+
+/* -- Next queue ----------------------------------------------------------- */
+
+.next-queue {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.next-piece {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0;
+}
+
+.next-piece-first {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.25rem;
+}
+
+/* -- Score display -------------------------------------------------------- */
+
+.score-display {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.stat-row {
+  margin-bottom: 0.75rem;
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+/* -- Overlays ------------------------------------------------------------- */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.overlay-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.overlay-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0 0 1.5rem;
+  color: #fff;
+}
+
+.overlay-stats {
+  margin-bottom: 1.5rem;
+}
+
+.overlay-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  gap: 2rem;
+}
+
+.overlay-stat.highlight {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #00D4D4;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.overlay-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.overlay-btn {
+  background: #4040d0;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+}
+
+.overlay-btn:hover {
+  background: #5050e0;
+}
+
+.overlay-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.overlay-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* -- Start screen --------------------------------------------------------- */
+
+.start-screen {
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  padding: 2rem;
+}
+
+.start-title {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  margin: 0 0 2rem;
+  background: linear-gradient(135deg, #00D4D4, #A020D0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.start-section {
+  margin-bottom: 1.5rem;
+}
+
+.start-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+}
+
+.start-button-group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.start-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ccc;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  min-width: 100px;
+}
+
+.start-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.start-btn-active {
+  background: rgba(64, 64, 208, 0.3);
+  border-color: #4040d0;
+  color: #fff;
+}
+
+.mode-btn-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.mode-btn-desc {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.2rem;
+}
+
+.start-play-btn {
+  background: linear-gradient(135deg, #4040d0, #6020a0);
+  color: #fff;
+  border: none;
+  padding: 0.8rem 3rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: opacity 0.15s ease;
+}
+
+.start-play-btn:hover {
+  opacity: 0.85;
+}
+
+/* -- Custom panel --------------------------------------------------------- */
+
+.custom-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.custom-panel-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+}
+
+.custom-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+}
+
+.custom-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.custom-field-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-field-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-field-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e0e0e0;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.custom-field-input:focus {
+  outline: none;
+  border-color: #4040d0;
+}
