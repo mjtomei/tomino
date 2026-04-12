@@ -365,6 +365,23 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       });
     });
 
+    socket.on("garbageQueued", (msg) => {
+      const localId = getSessionPlayerId();
+      if (msg.playerId !== localId) return;
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return { ...prev, localPendingGarbage: msg.pendingGarbage };
+      });
+    });
+
+    socket.on("garbageReceived", (msg) => {
+      // The server follows garbageReceived with a garbageQueued event
+      // containing the authoritative pending queue, so no local state
+      // update is needed here. This handler exists as a hook for future
+      // visual/audio feedback when garbage lands on the board.
+      void msg;
+    });
+
     socket.on("gameStateSnapshot", (msg) => {
       const localId = getSessionPlayerId();
       if (msg.playerId === localId) {
