@@ -13,8 +13,9 @@ import { useLatency } from "./net/latency";
 import { GameMultiplayer } from "./ui/GameMultiplayer";
 import { GameResults } from "./ui/GameResults";
 import { DisconnectOverlay } from "./ui/DisconnectOverlay";
+import { BackgroundCanvas } from "./atmosphere/BackgroundCanvas";
 
-function App() {
+function AppInner() {
   const lobby = useLobby();
   const [showStats, setShowStats] = useState(false);
   const [showSolo, setShowSolo] = useState(false);
@@ -186,6 +187,15 @@ function App() {
       );
     }
   }
+}
+
+function App() {
+  return (
+    <>
+      <BackgroundCanvas />
+      <AppInner />
+    </>
+  );
 }
 
 export default App;
