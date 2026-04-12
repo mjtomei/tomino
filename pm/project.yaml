@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-40e39d6
+  active_pr: pr-63f7e69
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -26,6 +26,11 @@ plans:
 - id: plan-17af8d3
   name: Automated testing
   file: plans/plan-17af8d3.md
+  status: draft
+  parent: null
+- id: plan-b7926f4
+  name: Playwright testing
+  file: plans/plan-b7926f4.md
   status: draft
   parent: null
 prs:
@@ -1002,7 +1007,7 @@ prs:
   plan: plan-c686698
   title: Rematch flow
   branch: pm/pr-3f9112e-rematch-flow
-  status: in_review
+  status: merged
   depends_on:
   - pr-bd3b549
   description: 'After a game ends, players can vote to rematch. Show a "Rematch" button
@@ -1019,15 +1024,16 @@ prs:
     Files: `server/handlers/rematch-handlers.ts`, `server/game-session.ts` (extend),
     `src/ui/GameResults.tsx` (extend with rematch button), `shared/protocol.ts` (add
     rematch messages)'
-  agent_machine: null
+  agent_machine: spark-424d
   gh_pr: https://github.com/mjtomei/tetris/pull/54
   gh_pr_number: 54
   created_at: '2026-04-11T21:27:51.614863+00:00'
-  updated_at: '2026-04-12T13:20:21.383184+00:00'
-  started_at: null
-  reviewed_at: '2026-04-12T13:20:21.383184+00:00'
-  merged_at: null
+  updated_at: '2026-04-12T13:40:00.125913+00:00'
+  started_at: '2026-04-12T13:36:46.351602+00:00'
+  reviewed_at: '2026-04-12T13:36:56.422037+00:00'
+  merged_at: '2026-04-12T13:40:00.125913+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3f9112e-rematch-flow-4f47c95f
 - id: pr-03c8022
   plan: plan-c686698
   title: Latency display
@@ -1385,11 +1391,12 @@ prs:
   reviewed_at: null
   merged_at: '2026-04-12T04:11:39.948965+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3f9112e-rematch-flow-e814c94d
 - id: pr-c2fef7a
   plan: plan-45cb304
   title: Post-game rating updates
   branch: pm/pr-c2fef7a-post-game-rating-updates
-  status: in_review
+  status: merged
   depends_on:
   - pr-4601342
   - pr-ebfaa61
@@ -1414,11 +1421,12 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/55
   gh_pr_number: 55
   created_at: '2026-04-11T21:50:04.211773+00:00'
-  updated_at: '2026-04-12T13:20:21.383200+00:00'
+  updated_at: '2026-04-12T13:48:26.737303+00:00'
   started_at: null
   reviewed_at: '2026-04-12T13:20:21.383200+00:00'
-  merged_at: null
+  merged_at: '2026-04-12T13:48:26.737303+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-c2fef7a-post-game-rating-updates-e814c94d
 - id: pr-493072b
   plan: plan-45cb304
   title: Handicap settings in lobby UI
@@ -1526,7 +1534,7 @@ prs:
   plan: plan-45cb304
   title: Post-game results integration with ratings
   branch: pm/pr-fb5033a-post-game-results-integration-with-ratings
-  status: pending
+  status: merged
   depends_on:
   - pr-c2fef7a
   - pr-90a1525
@@ -1536,20 +1544,21 @@ prs:
     screen. When handicap was active, show what the modifiers were for transparency.
     **INPUT_REQUIRED: Human testing needed** to verify rating animation, delta display,
     and navigation to stats screen.'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/62
+  gh_pr_number: 62
   created_at: '2026-04-11T21:50:04.211791+00:00'
-  updated_at: '2026-04-11T21:52:11.540631+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T14:41:17.334742+00:00'
+  started_at: '2026-04-12T13:48:30.554898+00:00'
+  reviewed_at: '2026-04-12T14:01:38.442857+00:00'
+  merged_at: '2026-04-12T14:41:17.334742+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-fb5033a-post-game-results-integration-with-r-868e481a
 - id: pr-2699742
   plan: plan-45cb304
   title: End-to-end balancing integration and tuning config
   branch: pm/pr-2699742-end-to-end-balancing-integration-and-tuning-config
-  status: pending
+  status: merged
   depends_on:
   - pr-3b2b0fc
   - pr-f25402c
@@ -1573,20 +1582,21 @@ prs:
 
     Files: `server/balancing-init.ts`, `balancing-config.json`, `server/index.ts`
     (extend startup), `server/integration/balancing.integration.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/63
+  gh_pr_number: 63
   created_at: '2026-04-11T21:50:04.211796+00:00'
-  updated_at: '2026-04-11T21:50:04.211796+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T14:05:18.605367+00:00'
+  started_at: '2026-04-12T13:48:35.350362+00:00'
+  reviewed_at: '2026-04-12T14:00:30.444000+00:00'
+  merged_at: '2026-04-12T14:05:18.605367+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-2699742-end-to-end-balancing-integration-and-868e481a
 - id: pr-c0cc689
   plan: null
   title: Integration — playable multiplayer Tetris
   branch: pm/pr-c0cc689-integration-playable-multiplayer-tetris
-  status: pending
+  status: merged
   depends_on:
   - pr-3f9112e
   - pr-6459c34
@@ -1597,14 +1607,14 @@ prs:
     into a working end-to-end multiplayer Tetris experience: lobby, real-time gameplay,
     garbage sending, opponent display, win/loss, rematch, disconnect handling, and
     latency display.'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/61
+  gh_pr_number: 61
   created_at: '2026-04-11T21:59:57.456616+00:00'
-  updated_at: '2026-04-12T00:13:30.807564+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T14:11:40.441126+00:00'
+  started_at: '2026-04-12T13:40:03.911852+00:00'
+  reviewed_at: '2026-04-12T13:55:07.581306+00:00'
+  merged_at: '2026-04-12T14:11:40.441126+00:00'
   notes:
   - id: note-3350dbc
     text: 'REVIEW: Run ''npm test'' across all packages AND ''npm run test:e2e'' to
@@ -1613,11 +1623,12 @@ prs:
       → game state → UI updates.'
     created_at: '2026-04-12T00:13:30Z'
     last_edited: '2026-04-12T00:13:30Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-c0cc689-integration-playable-multiplayer-tet-bca3f66e
 - id: pr-234798c
   plan: null
   title: Full integration test — single-player, multiplayer, and adaptive balancing
   branch: pm/pr-234798c-full-integration-test-single-player-multiplayer-an
-  status: pending
+  status: merged
   depends_on:
   - pr-2699742
   - pr-fb5033a
@@ -1628,14 +1639,14 @@ prs:
     work together end-to-end. Tests the complete flow: lobby creation, skill-based
     handicapping, gameplay, garbage balancing, post-game rating updates, and stats
     display.'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/66
+  gh_pr_number: 66
   created_at: '2026-04-11T22:00:02.150190+00:00'
-  updated_at: '2026-04-12T00:11:20.123762+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T15:18:15.687216+00:00'
+  started_at: '2026-04-12T14:41:21.054625+00:00'
+  reviewed_at: '2026-04-12T14:54:37.461860+00:00'
+  merged_at: '2026-04-12T15:18:15.687216+00:00'
   notes:
   - id: note-977e61d
     text: 'Should use the full testing infra from plan-17af8d3: seeded PRNG, board
@@ -1650,6 +1661,7 @@ prs:
       and Playwright E2E helpers — not ad-hoc alternatives.'
     created_at: '2026-04-12T00:11:20Z'
     last_edited: '2026-04-12T00:11:20Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-234798c-full-integration-test-single-player--ad3c52f7
 - id: pr-e38d93c
   plan: null
   title: Testing infrastructure — Vitest setup with shared/client/server configs
@@ -1961,7 +1973,7 @@ prs:
   plan: plan-17af8d3
   title: E2E multiplayer game flow test
   branch: pm/pr-86780be-e2e-multiplayer-game-flow-test
-  status: pending
+  status: merged
   depends_on:
   - pr-8e93a65
   - pr-c0cc689
@@ -1978,15 +1990,16 @@ prs:
 
 
     Files: `e2e/multiplayer-game.spec.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/64
+  gh_pr_number: 64
   created_at: '2026-04-11T23:10:58.040072+00:00'
-  updated_at: '2026-04-11T23:19:05.313354+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T14:23:57.489643+00:00'
+  started_at: '2026-04-12T14:11:44.285064+00:00'
+  reviewed_at: '2026-04-12T14:20:09.489586+00:00'
+  merged_at: '2026-04-12T14:23:57.489643+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-86780be-e2e-multiplayer-game-flow-test-474ea897
 - id: pr-edcf972
   plan: plan-17af8d3
   title: Coverage configuration and CI thresholds
@@ -2019,7 +2032,7 @@ prs:
   plan: plan-17af8d3
   title: Testing plan review gate
   branch: pm/pr-8b8c60d-testing-plan-review-gate
-  status: pending
+  status: merged
   depends_on:
   - pr-f48ed86
   - pr-1052bf4
@@ -2027,20 +2040,21 @@ prs:
   - pr-86780be
   - pr-edcf972
   description: ''
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/65
+  gh_pr_number: 65
   created_at: '2026-04-11T23:55:24.401345+00:00'
-  updated_at: '2026-04-11T23:55:24.401345+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T14:32:09.912180+00:00'
+  started_at: '2026-04-12T14:24:01.432173+00:00'
+  reviewed_at: '2026-04-12T14:30:51.580616+00:00'
+  merged_at: '2026-04-12T14:32:09.912180+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-8b8c60d-testing-plan-review-gate-99ad4953
 - id: pr-40e39d6
   plan: null
   title: Project gate — all plans
   branch: pm/pr-40e39d6-project-gate-all-plans
-  status: pending
+  status: merged
   depends_on:
   - pr-8b8c60d
   - pr-234798c
@@ -2048,11 +2062,685 @@ prs:
     the testing plan review gate and the full integration test, which transitively
     cover all PRs across all four plans (core Tetris, multiplayer, adaptive balancing,
     automated testing). No implementation — close once all dependencies are merged.
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/67
+  gh_pr_number: 67
+  created_at: '2026-04-11T23:56:03.030691+00:00'
+  updated_at: '2026-04-12T15:44:48.049866+00:00'
+  started_at: '2026-04-12T15:18:19.555051+00:00'
+  reviewed_at: '2026-04-12T15:20:29.546546+00:00'
+  merged_at: '2026-04-12T15:44:48.049866+00:00'
+  notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-40e39d6-project-gate-all-plans-cde9cca7
+- id: pr-3687ade
+  plan: plan-b7926f4
+  title: Expand E2E test helpers and add data-testid coverage
+  branch: pm/pr-3687ade-expand-e2e-test-helpers-and-add-data-testid-covera
+  status: pending
+  depends_on: []
+  description: '**This is the foundation PR that all E2E test PRs depend on.** It
+    has two parts: (A) new Playwright helpers and (B) data-testid attributes on UI
+    components.
+
+
+    **Part A — New helpers** (all in `e2e/helpers/`):
+
+    - `holdKey(page, key, durationMs)` in `input.ts`: press a key down, wait `durationMs`,
+    then release. Uses `page.keyboard.down(key)` / `page.keyboard.up(key)` with a
+    `page.waitForTimeout(durationMs)` in between. Return type void.
+
+    - `readScoreDisplay(page)` in `game-state.ts`: read the `[data-testid="score-display"]`
+    element and parse out all `.stat-row` children. Return `{ score?: number, level?:
+    number, lines?: number, time?: string, remaining?: number }` by matching `.stat-label`
+    text (SCORE/LEVEL/LINES/TIME/REMAINING) and extracting `.stat-value` text content.
+
+    - `waitForElimination(page, timeoutMs?)` in `game-state.ts`: wait for `[data-testid="spectator-overlay"]`
+    to be visible.
+
+    - `setupSoloGame(page, options: { preset?: "classic" | "modern" | "custom", mode?:
+    "marathon" | "sprint" | "ultra" | "zen" })` in `solo.ts` (new file): navigate
+    to `/`, click `[data-testid="preset-{preset}"]` to select ruleset (default "modern"),
+    click `[data-testid="mode-{mode}"]` to select game mode (default "marathon"),
+    click `[data-testid="start-play"]`, then wait for either `[data-testid="game-board"]`
+    or the game canvas to be visible (confirming the game started). The StartScreen
+    already has these testid attributes.
+
+    - Re-export all new helpers from `index.ts`.
+
+
+    **Part B — data-testid attributes** to add to UI components (only add attributes,
+    do not change logic or layout):
+
+    - `ScoreDisplay.tsx`: already has `data-testid="score-display"` on the container.
+    **Add** `data-testid="stat-{stat}"` to each `StatRow`''s outer div (e.g., `data-testid="stat-score"`,
+    `data-testid="stat-level"`).
+
+    - `GameShell.tsx`: **Add** `data-testid="game-board"` to the main game board container
+    div (the one wrapping BoardCanvas). The pause and game-over overlays already have
+    testids in `Overlay.tsx` — use the existing names: `data-testid="pause-overlay"`
+    and `data-testid="gameover-overlay"`.
+
+    - `GarbageMeter.tsx`: already has `data-testid="garbage-meter"` — no changes needed.
+
+    - `NextQueue.tsx`: already has `data-testid="next-queue"` — no changes needed.
+
+    - `HoldDisplay.tsx`: already has `data-testid="hold-display"` and passes `testId="hold-piece"`
+    to PiecePreview — no changes needed.
+
+    - `Overlay.tsx`: already has `data-testid="pause-overlay"` and `data-testid="gameover-overlay"`
+    — no changes needed.
+
+
+    **Note for downstream PRs**: The existing overlay testids are `pause-overlay`
+    and `gameover-overlay` (NOT `game-paused-overlay` / `game-over-overlay`). All
+    E2E tests must use these existing names.
+
+
+    No human testing needed — helper correctness is verified by the tests in subsequent
+    PRs.
+
+
+    Tests: Add one smoke-level E2E test in `e2e/helpers.spec.ts` that calls `setupSoloGame(page,
+    { preset: "modern", mode: "marathon" })`, then calls `readScoreDisplay(page)`
+    and asserts `score` is defined and `level` is defined. This validates the helper
+    chain works end-to-end.
+
+
+    Files: `e2e/helpers/input.ts`, `e2e/helpers/game-state.ts`, `e2e/helpers/solo.ts`
+    (new), `e2e/helpers/index.ts`, `e2e/helpers.spec.ts` (new), `packages/client/src/ui/ScoreDisplay.tsx`,
+    `packages/client/src/ui/GameShell.tsx`'
   agent_machine: null
   gh_pr: null
   gh_pr_number: null
-  created_at: '2026-04-11T23:56:03.030691+00:00'
-  updated_at: '2026-04-11T23:56:07.914770+00:00'
+  created_at: '2026-04-12T16:05:51.469496+00:00'
+  updated_at: '2026-04-12T16:09:10.142777+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-698d1ce
+  plan: plan-b7926f4
+  title: Fix arrow key page scroll while held
+  branch: pm/pr-698d1ce-fix-arrow-key-page-scroll-while-held
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: '**Root cause**: In `GameShell.tsx`, both the solo keydown handler
+    (~line 486) and the multiplayer keydown handler (~line 248) follow this pattern:
+    `if (e.repeat) return;` then later `e.preventDefault();`. When a player holds
+    an arrow key, the browser fires repeated keydown events with `e.repeat === true`.
+    The handler returns before `preventDefault()` is called, so the browser performs
+    its default scroll action.
+
+
+    Tests: `e2e/input-bugs.spec.ts` (new) containing:
+
+
+    Files: `packages/client/src/ui/GameShell.tsx`, `e2e/input-bugs.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469516+00:00'
+  updated_at: '2026-04-12T16:05:51.469516+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-76a4952
+  plan: plan-b7926f4
+  title: Fix left/right movement double-fire and stuck keys
+  branch: pm/pr-76a4952-fix-left-right-movement-double-fire-and-stuck-keys
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: '**Root cause**: The active inline DAS code in `GameShell.tsx` (both
+    solo ~line 484 and multiplayer ~line 246) relies only on `if (e.repeat) return`
+    to prevent duplicate actions from a single physical keypress. Unlike the unused
+    `KeyboardHandler` class in `input/keyboard.ts` (which maintains a `firedKeys:
+    Set<string>` and clears it on keyup, plus has a `handleBlur()` that resets all
+    state when the window loses focus), the inline code has no such protections. This
+    causes two problems:
+
+
+    Tests: `e2e/input-bugs.spec.ts` — add to the file created by the arrow-key PR:
+
+
+    Files: `packages/client/src/ui/GameShell.tsx`, `packages/client/src/input/keyboard.ts`
+    (if integrating), `e2e/input-bugs.spec.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469525+00:00'
+  updated_at: '2026-04-12T16:05:51.469525+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1477f2b
+  plan: plan-b7926f4
+  title: Fix garbage not appearing on receiving player's game
+  branch: pm/pr-1477f2b-fix-garbage-not-appearing-on-receiving-player-s-ga
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: '**Root cause**: The server''s `game-session.ts` broadcasts two garbage-related
+    messages — `garbageQueued` (lines 703-708, sent whenever a player''s pending garbage
+    queue changes, containing the full `pendingGarbage` array) and `garbageReceived`
+    (lines 646-652, sent when garbage is ready to insert into the board). However,
+    `lobby-client.ts` has handlers for `gameStateSnapshot`, `gameStarted`, `gameOver`,
+    etc. but **no handler** for `garbageQueued` or `garbageReceived`. This means the
+    receiving player''s client only learns about incoming garbage when the next periodic
+    `gameStateSnapshot` arrives, which is at a much lower frequency and creates visible
+    lag.
+
+
+    Tests: `e2e/multiplayer-garbage.spec.ts` (new) with 90s timeout:
+
+
+    Files: `packages/client/src/net/lobby-client.ts`, `e2e/multiplayer-garbage.spec.ts`
+    (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469532+00:00'
+  updated_at: '2026-04-12T16:05:51.469532+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-f99a3e8
+  plan: plan-b7926f4
+  title: Investigate and fix NES classic mode level progression
+  branch: pm/pr-f99a3e8-investigate-and-fix-nes-classic-mode-level-progres
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: '**Reported issue**: Levels don''t appear to work in classic NES mode.
+    The engine is correct — `scoring-nes.ts` has `updateNESLevel()` with proper thresholds,
+    and `gravity.ts` has the full NES frame table. The bug is somewhere in the UI
+    wiring.
+
+
+    Tests: - `e2e/single-player.spec.ts` — `test("classic NES marathon shows level
+    0 at start")`: call `setupSoloGame(page, { preset: "classic", mode: "marathon"
+    })`, then `readScoreDisplay(page)` and assert `level === 0`.
+
+
+    Files: `packages/client/src/ui/StartScreen.tsx`, `packages/client/src/ui/GameShell.tsx`,
+    `packages/shared/src/engine/engine.ts` (if gravity curve wiring needs fixing),
+    `e2e/single-player.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469538+00:00'
+  updated_at: '2026-04-12T16:05:51.469538+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-e1885a9
+  plan: plan-b7926f4
+  title: Single-player E2E tests — game modes and basic gameplay
+  branch: pm/pr-e1885a9-single-player-e2e-tests-game-modes-and-basic-gamep
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: 'Add comprehensive Playwright tests for all single-player features.
+    The current E2E suite has zero single-player coverage. Each test should use the
+    `setupSoloGame()` helper to start the appropriate mode, then interact via keyboard
+    and verify UI state via data-testid selectors and `readScoreDisplay()`. Use 60s
+    timeout per test.
+
+
+    **Test cases to implement** (each as its own `test()` block):
+
+
+    **Game mode startup tests** (verify correct stats displayed for each mode):
+
+    (1) `"marathon modern shows score, level, and lines"`: `setupSoloGame(page, {
+    preset: "modern", mode: "marathon" })`, `readScoreDisplay(page)`, assert all three
+    of `score`, `level`, `lines` are defined numbers.
+
+    (2) `"sprint mode shows timer and lines remaining"`: `setupSoloGame(page, { preset:
+    "modern", mode: "sprint" })`, verify `[data-testid="stat-timer"]` and `[data-testid="stat-linesRemaining"]`
+    are visible. Assert `remaining` starts at 40.
+
+    (3) `"ultra mode shows timer and score"`: `setupSoloGame(page, { preset: "modern",
+    mode: "ultra" })`, verify `stat-timer` and `stat-score` visible. Timer should
+    start counting down from 3:00.
+
+    (4) `"zen mode shows lines and score, no game over on top-out"`: `setupSoloGame(page,
+    { preset: "modern", mode: "zen" })`, hard-drop 25+ pieces rapidly (to fill the
+    board past row 20), verify no game-over overlay appears (`[data-testid="gameover-overlay"]`
+    should not be visible).
+
+
+    **Piece interaction tests** (use modern marathon):
+
+    (5) `"hard drop increases score"`: start modern marathon, read initial score (should
+    be 0), press Space (hard drop), wait 200ms, read score again, assert it increased
+    (hard drop awards 2 points per cell dropped).
+
+    (6) `"hold piece swaps current piece"`: start modern marathon, verify `[data-testid="hold-display"]`
+    is visible but `[data-testid="hold-piece"]` is not (no piece held yet). Press
+    "c" (hold key), wait 200ms, verify `[data-testid="hold-piece"]` is now visible.
+
+    (7) `"next queue shows preview pieces"`: start modern marathon, verify `[data-testid="next-queue"]`
+    is visible and contains at least 1 piece preview element.
+
+
+    **Game state tests**:
+
+    (8) `"pause and unpause"`: start modern marathon, press Escape, verify `[data-testid="pause-overlay"]`
+    is visible. Press Escape again, verify overlay disappears and game continues (score
+    display still visible).
+
+    (9) `"game over on top-out shows overlay"`: start modern marathon, hard-drop pieces
+    as fast as possible (25+ times with 100ms delays), verify `[data-testid="gameover-overlay"]`
+    becomes visible within 15s.
+
+
+    **Ruleset selection tests**:
+
+    (10) `"classic preset disables hold and hard drop"`: start classic marathon (which
+    has `holdEnabled: false`, `hardDropEnabled: false`). Press "c" (hold) — verify
+    `[data-testid="hold-piece"]` does NOT appear (hold is disabled). Press Space —
+    verify it does nothing (no score increase from hard drop). The classic preset
+    also has `ghostEnabled: false` — could verify ghost piece is absent if there''s
+    a testid for it.
+
+
+    Tests: All test cases listed above in `e2e/single-player.spec.ts` (new file or
+    extend from NES fix PR)
+
+
+    Files: `e2e/single-player.spec.ts` (new or extend)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469545+00:00'
+  updated_at: '2026-04-12T16:09:37.259659+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-155e552
+  plan: plan-b7926f4
+  title: Reference verification — NES scoring and gravity tables
+  branch: pm/pr-155e552-reference-verification-nes-scoring-and-gravity-tab
+  status: pending
+  depends_on: []
+  description: 'Add unit tests in `packages/shared` that verify our NES implementation
+    against the authoritative data from [Tetris (NES) — TetrisWiki](https://tetris.wiki/Tetris_(NES))
+    and [Scoring — TetrisWiki](https://tetris.wiki/Scoring). These are table-driven
+    snapshot tests — hardcode the expected reference values and compare. Any accidental
+    change to the engine constants will be caught immediately.
+
+
+    Tests: `packages/shared/src/__tests__/reference-nes.test.ts` (new)
+
+
+    Files: `packages/shared/src/__tests__/reference-nes.test.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469550+00:00'
+  updated_at: '2026-04-12T16:05:51.469550+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-511ada6
+  plan: plan-b7926f4
+  title: Reference verification — SRS rotation and wall kicks
+  branch: pm/pr-511ada6-reference-verification-srs-rotation-and-wall-kicks
+  status: pending
+  depends_on: []
+  description: 'Add unit tests verifying our SRS rotation system against [Super Rotation
+    System — TetrisWiki](https://tetris.wiki/Super_Rotation_System) and [SRS — Hard
+    Drop Wiki](https://harddrop.com/wiki/SRS). The tests should validate both the
+    raw kick table data AND behavioral outcomes.
+
+
+    Tests: `packages/shared/src/__tests__/reference-srs.test.ts` (new)
+
+
+    Files: `packages/shared/src/__tests__/reference-srs.test.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469555+00:00'
+  updated_at: '2026-04-12T16:05:51.469555+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3bd15fc
+  plan: plan-b7926f4
+  title: Reference verification — guideline garbage and scoring
+  branch: pm/pr-3bd15fc-reference-verification-guideline-garbage-and-scori
+  status: pending
+  depends_on: []
+  description: 'Add unit tests verifying our modern/guideline scoring and garbage
+    values against [Garbage — TetrisWiki](https://tetris.wiki/Garbage) and [Scoring
+    — TetrisWiki](https://tetris.wiki/Scoring). Covers garbage lines sent, scoring
+    points, and bonus mechanics.
+
+
+    Tests: `packages/shared/src/__tests__/reference-guideline.test.ts` (new)
+
+
+    Files: `packages/shared/src/__tests__/reference-guideline.test.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469560+00:00'
+  updated_at: '2026-04-12T16:05:51.469560+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3414828
+  plan: plan-b7926f4
+  title: Multiplayer rematch flow E2E tests
+  branch: pm/pr-3414828-multiplayer-rematch-flow-e2e-tests
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: 'The rematch flow has no E2E coverage. The results screen (`GameResults.tsx`)
+    has three buttons: "REMATCH" (`[data-testid="rematch-btn"]`), "BACK TO LOBBY"
+    (`[data-testid="back-to-lobby"]`), and "VIEW STATS" (`[data-testid="view-stats"]`).
+    When a player clicks REMATCH, the button text changes to "WAITING..." (disabled),
+    and a rematch status line (`[data-testid="rematch-status"]`) appears showing "{n}/{total}
+    voted for rematch". When all players vote, a new game countdown should start.
+
+
+    **Test cases to implement** (use 90s timeout, reuse the `setupAndStartGame` +
+    `forceTopOut` pattern from `multiplayer-game.spec.ts`):
+
+    (1) `"clicking rematch shows waiting state"`: Play a game to completion (host
+    hard-drops to top out). On the host''s results screen, click `[data-testid="rematch-btn"]`.
+    Assert the button becomes disabled and shows "WAITING...". Assert `[data-testid="rematch-status"]`
+    shows "1/2 voted for rematch".
+
+    (2) `"opponent sees rematch vote count update"`: After host votes for rematch,
+    on the guest''s page assert `[data-testid="rematch-status"]` shows "1/2 voted
+    for rematch" (guest hasn''t voted yet).
+
+    (3) `"both players accepting rematch starts a new game"`: Both players click rematch.
+    Wait for `[data-testid="game-multiplayer"]` to appear on both pages (new game
+    started). Verify the results screen is no longer visible.
+
+    (4) `"back to lobby returns both players to lobby"`: Play a game to completion.
+    Host clicks `[data-testid="back-to-lobby"]`. Verify host''s page shows the lobby
+    menu (e.g., "Create Room" and "Join Room" buttons visible). The guest should also
+    be returned to the lobby (or see a "host left" message). Note: the exact behavior
+    when one player leaves may vary — the test should verify the guest isn''t stuck
+    on a dead results screen.
+
+    (5) `"rematch button cannot be clicked twice"`: Click rematch once, verify button
+    is disabled (`[data-testid="rematch-btn"]` has `disabled` attribute), attempt
+    to click again, verify vote count is still 1/2 (not 2/2).
+
+
+    **INPUT_REQUIRED**: Manual verification that the rematch UI transitions look correct
+    — button state changes, countdown animation before new game, and that both players''
+    screens stay in sync throughout the flow.
+
+
+    Tests: `e2e/multiplayer-rematch.spec.ts` (new)
+
+
+    Files: `e2e/multiplayer-rematch.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469565+00:00'
+  updated_at: '2026-04-12T16:09:53.835957+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-7945e4c
+  plan: plan-b7926f4
+  title: Multiplayer reconnection flow E2E tests
+  branch: pm/pr-7945e4c-multiplayer-reconnection-flow-e2e-tests
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: 'Currently only the disconnect→forfeit path is tested (in `multiplayer-game.spec.ts`).
+    The reconnection path (where a player reconnects within the 15-second `RECONNECT_WINDOW_MS`)
+    has no coverage. The `DisconnectOverlay` component shows a countdown (`[data-testid="disconnect-overlay"]`
+    with `.disconnect-overlay-countdown` showing seconds remaining). The `ReconnectController`
+    (in `reconnect.ts`) uses exponential backoff starting at 250ms, doubling up to
+    2s max, within the 15s window. To simulate reconnection in Playwright, navigate
+    the page away and back (or close/reopen the browser context).
+
+
+    Tests: `e2e/multiplayer-reconnect.spec.ts` (new)
+
+
+    Files: `e2e/multiplayer-reconnect.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469569+00:00'
+  updated_at: '2026-04-12T16:05:51.469569+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-a64e895
+  plan: plan-b7926f4
+  title: Room settings and handicap UI E2E tests
+  branch: pm/pr-a64e895-room-settings-and-handicap-ui-e2e-tests
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: 'The waiting room (`WaitingRoom.tsx`) displays two settings panels
+    that only the host can modify: `HandicapSettings` and `TargetingSettingsPanel`.
+    These have zero E2E coverage. The handicap panel has: intensity select (`#handicap-intensity`
+    with options "off"/"light"/"standard"/"heavy"), mode select (`#handicap-mode`
+    with "boost"/"symmetric"), targeting bias slider (`#handicap-bias`, range 0-1),
+    delay modifier checkbox (`#handicap-delay`), messiness modifier checkbox (`#handicap-messiness`),
+    and show ratings checkbox (`#handicap-rating-visible`). The targeting panel has:
+    checkboxes for each strategy (random/attackers/kos/manual) and a default strategy
+    select. Non-host players see these controls as disabled.
+
+
+    Tests: `e2e/room-settings.spec.ts` (new)
+
+
+    Files: `e2e/room-settings.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469575+00:00'
+  updated_at: '2026-04-12T16:05:51.469575+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-a5bbff2
+  plan: plan-b7926f4
+  title: Three-or-more player game E2E tests
+  branch: pm/pr-a5bbff2-three-or-more-player-game-e2e-tests
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: 'All existing multiplayer tests use exactly 2 players. The game is
+    designed for family play with siblings, so 3+ player games are a core use case.
+    The `createPlayerContext` helper already supports creating additional browser
+    contexts. The waiting room shows "Players (n/maxPlayers)" and the Start Game button
+    enables when `players.length >= 2`.
+
+
+    **Test cases to implement** (use 120s timeout — 3 browser contexts are heavier):
+
+    (1) `"three players can join a room and see each other"`: Player 1 creates a room,
+    Player 2 and Player 3 join with the room code. All three pages should show all
+    three player names in the player list. The player count should show "3/". The
+    host''s Start Game button should be enabled.
+
+    (2) `"3-player game: first elimination shows spectator overlay only for eliminated
+    player"`: Start a 3-player game. Player 1 hard-drops rapidly to top out. Player
+    1 should see `[data-testid="spectator-overlay"]` with text "ELIMINATED" and "You
+    placed 3rd". Players 2 and 3 should NOT see the spectator overlay on their own
+    screens — they should still see the active game (`[data-testid="game-multiplayer"]`).
+    Verify Player 2 and Player 3 can still interact (send a hard drop on each to confirm
+    the game is still active).
+
+    (3) `"3-player game: second elimination ends game and shows correct placements"`:
+    After Player 1 tops out, have Player 2 hard-drop rapidly to also top out. Now
+    all three should see `[data-testid="game-results"]`. Verify placements: Player
+    3 (last standing) sees "VICTORY" and "1st". Player 2 sees "DEFEATED" and "2nd".
+    Player 1 sees "DEFEATED" and "3rd". On every player''s results table (`[data-testid="results-table"]`),
+    there should be 3 `.results-row` elements with all three player names.
+
+    (4) `"3-player game: opponent boards are shown for all opponents"`: During an
+    active 3-player game, each player should see 2 opponent mini-boards. Verify each
+    player''s page has 2 opponent board elements visible (check for `[data-testid^="opponent-board"]`
+    or the OpponentBoard component''s container).
+
+    (5) `"targeting selector appears in 3-player game"`: Start a 3-player game. Verify
+    `[data-testid="targeting-selector"]` is visible on each player''s page. Verify
+    it shows the strategy buttons (at minimum "Random" via `[data-testid="targeting-btn-random"]`).
+    Click a different strategy button and verify it becomes active (gets the active
+    styling).
+
+
+    **INPUT_REQUIRED**: Manual verification that 3-player game UI layout looks correct
+    — opponent boards are properly sized and positioned, targeting selector is usable,
+    elimination/spectator transitions are smooth. Also verify that results screen
+    placements (1st/2nd/3rd) display correctly for all three players.
+
+
+    Tests: `e2e/multiplayer-3player.spec.ts` (new)
+
+
+    Files: `e2e/multiplayer-3player.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469579+00:00'
+  updated_at: '2026-04-12T16:10:15.827727+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-77a4924
+  plan: plan-b7926f4
+  title: Stats screen and post-game UI E2E tests
+  branch: pm/pr-77a4924-stats-screen-and-post-game-ui-e2e-tests
+  status: pending
+  depends_on:
+  - pr-3687ade
+  description: 'The stats screen (`StatsScreen.tsx`) loads data from `/api/stats/{username}`
+    and displays: a rating card (rating value, RD, games played, rank badge), a "Rating
+    Over Time" sparkline chart, and a match history table with columns (Opponent,
+    Result, Rating Change, Date). It has a "Back" button (`.stats-back-btn`). The
+    results screen (`GameResults.tsx`) has stat columns per player (Sent, Recv, Pieces,
+    Lines, Score, Time) and optional rating changes with animated reveal. A handicap
+    summary section appears when handicap modifiers were active.
+
+
+    **Test cases to implement** (90s timeout):
+
+    (1) `"view stats button opens stats screen"`: Play a 2-player game to completion.
+    On the winner''s results screen, click `[data-testid="view-stats"]`. Verify the
+    stats screen appears (look for `.stats-screen` or heading "Stats for {name}").
+    The stats screen fetches from `/api/stats/{username}` — verify it doesn''t show
+    an error (`.stats-empty` with "Error:" text should not be present). If the stats
+    API returns data, verify the rating card is visible.
+
+    (2) `"stats screen back button returns to results"`: From the stats screen, click
+    `.stats-back-btn`. Verify the results screen (`[data-testid="game-results"]`)
+    is visible again.
+
+    (3) `"results table shows plausible stat values for both players"`: After a game
+    where the host hard-dropped many pieces, verify on the results screen: the results
+    table has 2 rows. For each row, the "Pieces" column should be a positive number
+    (at least 1). The "Score" column should be a non-negative number. The "Time" column
+    should match a time format like "0:XX" or "X:XX". Extract values using `page.locator(''[data-testid="results-table"]
+    .results-row'')`.nth(0).locator(''.cell-stat'')` and checking `textContent()`
+    for each of the 6 stat cells.
+
+    (4) `"results table stat values are non-negative numbers"`: For every `.cell-stat`
+    in the results table (excluding the Time column which is a formatted string),
+    parse the text content and verify it''s a valid non-negative integer (after removing
+    locale formatting like commas).
+
+    (5) `"match history appears after playing a game"`: Play a game to completion.
+    Open the stats screen. If the match history table (`.stats-table`) is visible,
+    verify it has at least 1 row in `tbody`. Each row should have 4 cells (Opponent,
+    Result, Rating Change, Date). The Result cell should contain either "Win" or "Loss".
+
+    (6) `"rating changes appear on results screen"`: After the game ends, verify that
+    `[data-testid^="rating-"]` elements appear on the results screen (one per player).
+    Each should contain a numeric rating value (`.rating-value`) and a delta (`.rating-delta`
+    with "+" or "-" prefix). Wait up to 5s for the rating elements since they arrive
+    async.
+
+
+    **INPUT_REQUIRED**: Manual verification that the stats screen renders correctly
+    — rating card layout, sparkline chart visibility, match history table formatting.
+    Also verify the animated rating reveal on the results screen plays smoothly.
+
+
+    Tests: `e2e/stats-screen.spec.ts` (new)
+
+
+    Files: `e2e/stats-screen.spec.ts` (new)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469584+00:00'
+  updated_at: '2026-04-12T16:10:36.189226+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-63f7e69
+  plan: plan-b7926f4
+  title: Final gate — all Playwright testing plan PRs merged
+  branch: pm/pr-63f7e69-final-gate-all-playwright-testing-plan-prs-merged
+  status: pending
+  depends_on:
+  - pr-3687ade
+  - pr-698d1ce
+  - pr-76a4952
+  - pr-1477f2b
+  - pr-f99a3e8
+  - pr-e1885a9
+  - pr-155e552
+  - pr-511ada6
+  - pr-3bd15fc
+  - pr-3414828
+  - pr-7945e4c
+  - pr-a64e895
+  - pr-a5bbff2
+  - pr-77a4924
+  description: 'Gate PR that depends on every other PR in this plan. No implementation
+    needed — this PR exists solely so that `pm autostart` can target a single PR that
+    transitively requires all work to be complete. The PR body should list all merged
+    PRs with their titles and confirm: (1) all four known bugs are fixed (arrow key
+    scroll, movement double-fire, garbage display, NES levels), (2) all E2E test suites
+    pass (`npx playwright test` exits 0), (3) all reference verification unit tests
+    pass (`npm test` exits 0 in `packages/shared`), and (4) no regressions in the
+    existing test suite. The PR itself can be an empty commit or a small update to
+    a doc/changelog noting the testing improvements.
+
+
+    Tests: Run the full test suite: `npm test` (vitest across all packages) and `npm
+    run test:e2e` (Playwright). All must pass.
+
+
+    Files: None (or minimal — e.g., a CHANGELOG entry)'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:05:51.469592+00:00'
+  updated_at: '2026-04-12T16:05:51.469592+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
