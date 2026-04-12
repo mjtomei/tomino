@@ -340,9 +340,10 @@ export class GameSession {
   forfeitPlayer(playerId: PlayerId): void {
     if (this._state !== "playing") return;
     const engine = this.engines.get(playerId);
-    if (!engine) return;
+    if (!engine || engine.isGameOver) return;
     this.disconnected.delete(playerId);
-    // Capture stats before engine deletion (disconnect-specific)
+
+    // Capture stats while engine still exists, then delete it
     this.capturePlayerStats(playerId);
     this.engines.delete(playerId);
     this.eliminatePlayer(playerId, /* statsCaptured */ true);
