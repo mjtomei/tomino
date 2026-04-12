@@ -14,10 +14,9 @@ async function setupRoom(browser: import("@playwright/test").Browser) {
   return { host, guest, roomId };
 }
 
-/** Locate the default-strategy <select> inside the Targeting section.
- *  HandicapSettings selects have known IDs, so exclude them. */
+/** Locate the default-strategy <select> inside the Targeting section. */
 function targetingSelect(page: Page) {
-  return page.locator("select:not(#handicap-intensity):not(#handicap-mode)");
+  return page.locator("#targeting-default-strategy");
 }
 
 // ---------------------------------------------------------------------------
