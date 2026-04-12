@@ -128,6 +128,23 @@ describe("SevenBagRandomizer", () => {
     }
   });
 
+  it("defaults to Math.random when no rng provided", () => {
+    const rand = new SevenBagRandomizer(5);
+    const piece = rand.next();
+    expect(ALL_PIECES).toContain(piece);
+    expect(rand.queue.length).toBe(5);
+  });
+
+  it("refills bag when exhausted during on-demand generation (previewCount = 0)", () => {
+    const rand = new SevenBagRandomizer(0, testRng());
+    // Draw 8 pieces with previewCount=0: first 7 exhaust the bag, 8th forces a refill
+    const drawn: PieceType[] = [];
+    for (let i = 0; i < 8; i++) {
+      drawn.push(rand.next());
+    }
+    expect(drawn.every((p) => ALL_PIECES.includes(p))).toBe(true);
+  });
+
   it("deterministic with same seed", () => {
     const a = new SevenBagRandomizer(5, seededRng(42));
     const b = new SevenBagRandomizer(5, seededRng(42));
@@ -187,6 +204,13 @@ describe("PureRandomRandomizer", () => {
     expect(rand.queue.length).toBe(0);
     const piece = rand.next();
     expect(ALL_PIECES).toContain(piece);
+  });
+
+  it("defaults to Math.random when no rng provided", () => {
+    const rand = new PureRandomRandomizer(5);
+    const piece = rand.next();
+    expect(ALL_PIECES).toContain(piece);
+    expect(rand.queue.length).toBe(5);
   });
 
   it("deterministic with same seed", () => {
