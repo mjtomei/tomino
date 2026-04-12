@@ -65,7 +65,6 @@ function createMockCtx(): CanvasRenderingContext2D {
     lineTo: vi.fn(),
     stroke: vi.fn(),
     closePath: vi.fn(),
-    quadraticCurveTo: vi.fn(),
     fill: vi.fn(),
     measureText: vi.fn().mockReturnValue({ width: 30 }),
   } as unknown as CanvasRenderingContext2D;
