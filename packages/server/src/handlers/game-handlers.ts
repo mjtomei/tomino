@@ -96,6 +96,7 @@ export function startGameCountdown(
     handicapDelayEnabled: settings?.delayEnabled ?? false,
     handicapMessinessEnabled: settings?.messinessEnabled ?? false,
     targetingSettings: room.targetingSettings,
+    playerRatings: room.playerRatings,
     onGameStarted: () => {
       // Engines and tick loop are now managed by GameSession itself
     },

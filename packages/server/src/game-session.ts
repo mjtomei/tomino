@@ -28,6 +28,7 @@ import { GarbageManager } from "./garbage-manager.js";
 import { BalancingMiddleware } from "./balancing-middleware.js";
 import { AttackPowerTracker } from "./attack-power.js";
 import { getStrategy } from "./targeting.js";
+import { createSkillBiasStrategy, type TargetingBiasConfig } from "./targeting-bias.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -58,6 +59,10 @@ export interface GameSessionConfig {
   garbageDelayMs?: number;
   /** Targeting settings from room configuration. */
   targetingSettings?: TargetingSettings;
+  /** Player skill ratings keyed by PlayerId. Used for targeting bias in 3+ player games. */
+  playerRatings?: Record<PlayerId, number>;
+  /** Skill-aware targeting bias strength (0.0 = uniform, 1.0 = fully skill-weighted). Default 0.5. */
+  targetingBiasStrength?: number;
 }
 
 export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished";
@@ -126,6 +131,8 @@ export class GameSession {
   private lastTickTime: number = 0;
   private readonly legacyTargetingStrategy?: import("@tetris/shared").TargetingStrategy;
   private readonly garbageDelayMs?: number;
+  private readonly playerRatings?: Record<PlayerId, number>;
+  private readonly targetingBiasStrength: number;
   private garbageManager: GarbageManager | BalancingMiddleware | null = null;
 
   // -- Targeting state --
@@ -134,6 +141,8 @@ export class GameSession {
   private attackPower: AttackPowerTracker | null = null;
   /** Tracks who last sent garbage to each player, for KO attribution. */
   private readonly lastGarbageSender = new Map<PlayerId, PlayerId>();
+  /** Skill-aware targeting bias config (null when no ratings available or 2-player). */
+  private skillBiasConfig: TargetingBiasConfig | null = null;
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -152,6 +161,8 @@ export class GameSession {
     this.legacyTargetingStrategy = config.targetingStrategy;
     this.garbageDelayMs = config.garbageDelayMs;
     this.targetingSettings = config.targetingSettings ?? DEFAULT_TARGETING_SETTINGS;
+    this.playerRatings = config.playerRatings;
+    this.targetingBiasStrength = config.targetingBiasStrength ?? 0.5;
 
     // Assign player indexes (0-based, room order)
     this.playerIndexes = {};
@@ -422,6 +433,14 @@ export class GameSession {
     // Initialize attack power tracker
     this.attackPower = new AttackPowerTracker(playerIds);
 
+    // Initialize skill-aware targeting bias (only for 3+ players with ratings)
+    if (this.playerRatings && playerIds.length >= 3 && this.targetingBiasStrength > 0) {
+      this.skillBiasConfig = {
+        ratings: { ...this.playerRatings },
+        biasStrength: this.targetingBiasStrength,
+      };
+    }
+
     for (const playerId of playerIds) {
       const engine = new PlayerEngine({
         playerId,
@@ -513,7 +532,11 @@ export class GameSession {
     if (event) {
       // Build targeting context with per-player strategy dispatch
       const senderStrategy = this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy;
-      const strategy = this.legacyTargetingStrategy ?? getStrategy(senderStrategy);
+      const baseStrategy = this.legacyTargetingStrategy ?? getStrategy(senderStrategy);
+      // Apply skill-aware targeting bias for non-manual strategies in 3+ player games
+      const strategy = (senderStrategy !== "manual" && this.skillBiasConfig)
+        ? createSkillBiasStrategy(this.skillBiasConfig)
+        : baseStrategy;
       const targetingContext = this.buildTargetingContext(playerId);
 
       // Apply attack power multiplier
@@ -636,6 +659,9 @@ export class GameSession {
   private handlePlayerGameOver(playerId: PlayerId): void {
     this.garbageManager?.removePlayer(playerId);
     this.attackPower?.removePlayer(playerId);
+    if (this.skillBiasConfig) {
+      delete this.skillBiasConfig.ratings[playerId];
+    }
     this.cleanupTargetingForRemovedPlayer(playerId);
 
     this.broadcastToRoom(this.roomId, {
