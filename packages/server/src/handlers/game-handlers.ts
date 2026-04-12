@@ -113,18 +113,17 @@ export function startGameCountdown(
     onGameEnd: (gameResult) => {
       const afterRatings = isRanked && ctx.skillStore
         ? handlePostGame(gameResult, ctx.skillStore, ctx.broadcastToRoom)
-            .then(() => {
+            .then(async () => {
               // Update room player ratings for lobby display
-              for (const pid of Object.keys(gameResult.placements)) {
+              const updates = Object.keys(gameResult.placements).map(async (pid) => {
                 const username = gameResult.playerNames[pid];
-                if (username) {
-                  ctx.skillStore!.getPlayer(username).then((profile) => {
-                    if (profile) {
-                      store.setPlayerRating(roomId, pid, profile.rating);
-                    }
-                  }).catch(() => { /* best-effort lobby update */ });
+                if (!username) return;
+                const profile = await ctx.skillStore!.getPlayer(username);
+                if (profile) {
+                  store.setPlayerRating(roomId, pid, profile.rating);
                 }
-              }
+              });
+              await Promise.all(updates);
             })
             .catch((err) => {
               console.error("Post-game rating update failed:", err);
