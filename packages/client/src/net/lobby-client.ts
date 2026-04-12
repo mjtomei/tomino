@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type {
+  EmoteKind,
   GarbageBatch,
   GameStateSnapshot,
   PlayerId,
@@ -59,6 +60,13 @@ export interface PlayerAttackPower {
   koCount: number;
 }
 
+/** Latest emote received for a player. Overwritten whenever a new emote arrives. */
+export interface ActiveEmote {
+  emote: EmoteKind;
+  /** Server-assigned timestamp — identity used to detect "new" emotes. */
+  timestamp: number;
+}
+
 /** Tracks a peer's disconnect state for the DisconnectOverlay. */
 export interface PeerDisconnectInfo {
   playerId: PlayerId;
@@ -83,6 +91,8 @@ export interface LobbyState {
   targetingStates: Record<PlayerId, PlayerTargetingState>;
   /** Per-player attack power. */
   attackPowers: Record<PlayerId, PlayerAttackPower>;
+  /** Most recent emote per player, keyed by playerId. Overwritten on new emotes. */
+  recentEmotes: Record<PlayerId, ActiveEmote>;
   /** Targeting settings for the current game. */
   targetingSettings: TargetingSettings | null;
   /** Set when the local player is eliminated but game continues. */
@@ -167,6 +177,7 @@ export interface UseLobbyResult {
   updateTargetingSettings: (settings: TargetingSettings) => void;
   setTargetingStrategy: (strategy: TargetingStrategyType) => void;
   setManualTarget: (targetPlayerId: PlayerId) => void;
+  sendEmote: (emote: EmoteKind) => void;
   socket: ClientSocket | null;
 }
 
@@ -187,6 +198,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     localPendingGarbage: [],
     targetingStates: {},
     attackPowers: {},
+    recentEmotes: {},
     targetingSettings: null,
     localElimination: null,
     gameEndData: null,
@@ -248,6 +260,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
                   localPendingGarbage: [],
                   targetingStates: {},
                   attackPowers: {},
+                  recentEmotes: {},
                   targetingSettings: null,
                   localElimination: null,
                   gameEndData: null,
@@ -280,6 +293,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             localPendingGarbage: [],
             targetingStates: {},
             attackPowers: {},
+            recentEmotes: {},
             targetingSettings: null,
             localElimination: null,
             gameEndData: null,
@@ -314,6 +328,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             localPendingGarbage: [],
             targetingStates: {},
             attackPowers: {},
+            recentEmotes: {},
             targetingSettings: null,
             localElimination: null,
             gameEndData: null,
@@ -396,6 +411,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           localPendingGarbage: [],
           targetingStates: {},
           attackPowers: {},
+          recentEmotes: {},
           targetingSettings: msg.targetingSettings ?? null,
           localElimination: null,
           gameEndData: null,
@@ -510,6 +526,19 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       });
     });
 
+    socket.on("playerEmote", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          recentEmotes: {
+            ...prev.recentEmotes,
+            [msg.playerId]: { emote: msg.emote, timestamp: msg.timestamp },
+          },
+        };
+      });
+    });
+
     socket.on("ratingUpdate", (msg) => {
       setState((prev) => {
         if (!prev.room || prev.room.id !== msg.roomId) return prev;
@@ -612,6 +641,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         localPendingGarbage: [],
         targetingStates: {},
         attackPowers: {},
+        recentEmotes: {},
         targetingSettings: null,
         localElimination: null,
         gameEndData: null,
@@ -683,6 +713,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       localPendingGarbage: [],
       targetingStates: {},
       attackPowers: {},
+      recentEmotes: {},
       targetingSettings: null,
       localElimination: null,
       gameEndData: null,
@@ -771,6 +802,17 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     socket.send({ type: "setManualTarget", roomId: room.id, targetPlayerId });
   }, []);
 
+  const lastEmoteAtRef = useRef(0);
+  const sendEmote = useCallback((emote: EmoteKind) => {
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    const now = Date.now();
+    if (now - lastEmoteAtRef.current < 500) return;
+    lastEmoteAtRef.current = now;
+    socket.send({ type: "sendEmote", roomId: room.id, emote });
+  }, []);
+
   return {
     state,
     playerName,
@@ -790,6 +832,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     updateTargetingSettings,
     setTargetingStrategy,
     setManualTarget,
+    sendEmote,
     socket,
   };
 }

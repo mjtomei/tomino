@@ -139,6 +139,8 @@ function App() {
             onManualTarget={lobby.setManualTarget}
             socket={lobby.socket}
             gameSession={session}
+            recentEmotes={lobby.state.recentEmotes}
+            onSendEmote={lobby.sendEmote}
           />
           {lobby.state.selfReconnecting && lobby.state.selfReconnectStartedAt != null && lobby.state.selfReconnectTimeoutMs != null && (
             <DisconnectOverlay
