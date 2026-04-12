@@ -91,6 +91,16 @@ interface DASState {
   dasTriggered: boolean;
 }
 
+/** Actions that fire once per keypress (no auto-repeat). */
+const SINGLE_FIRE_ACTIONS: ReadonlySet<string> = new Set([
+  "rotateCW", "rotateCCW", "hardDrop", "hold",
+]);
+
+/** Reset DAS to neutral. */
+function resetDAS(): DASState {
+  return { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
+}
+
 // ---------------------------------------------------------------------------
 // GameShell
 // ---------------------------------------------------------------------------
@@ -156,7 +166,8 @@ function MultiplayerGameShell({
   const startTimeRef = useRef<number>(0);
   const prevStateRef = useRef<GameState | null>(null);
   const soundRef = useRef<SoundManager | null>(null);
-  const dasRef = useRef<DASState>({ key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false });
+  const dasRef = useRef<DASState>(resetDAS());
+  const firedKeysRef = useRef<Set<string>>(new Set());
 
   const mpRuleSet = useMemo(() => modernRuleSet(), []);
   const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
@@ -244,6 +255,8 @@ function MultiplayerGameShell({
 
   // Keyboard handler (multiplayer — no pause)
   useEffect(() => {
+    const firedKeys = firedKeysRef.current;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
 
@@ -253,6 +266,12 @@ function MultiplayerGameShell({
 
       // No pause in multiplayer
       if (action === "pause") return;
+
+      // Single-fire actions: gate through firedKeys to prevent double-fire
+      if (SINGLE_FIRE_ACTIONS.has(action)) {
+        if (firedKeys.has(e.code)) return;
+        firedKeys.add(e.code);
+      }
 
       // DAS for lateral movement
       if (action === "moveLeft" || action === "moveRight") {
@@ -278,17 +297,26 @@ function MultiplayerGameShell({
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      firedKeys.delete(e.code);
       const das = dasRef.current;
       if (das.key === e.code) {
-        dasRef.current = { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
+        dasRef.current = resetDAS();
       }
+    };
+
+    const handleBlur = () => {
+      firedKeys.clear();
+      dasRef.current = resetDAS();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
+      firedKeys.clear();
     };
   }, [sendAction]);
 
@@ -346,7 +374,8 @@ function SoloGameShell({
   const prevTimeRef = useRef<number>(0);
   const prevStateRef = useRef<GameState | null>(null);
   const soundRef = useRef<SoundManager | null>(null);
-  const dasRef = useRef<DASState>({ key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false });
+  const dasRef = useRef<DASState>(resetDAS());
+  const firedKeysRef = useRef<Set<string>>(new Set());
 
   // Initialize sound manager
   useEffect(() => {
@@ -370,7 +399,8 @@ function SoloGameShell({
     engine.start();
     engineRef.current = engine;
     prevStateRef.current = null;
-    dasRef.current = { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
+    dasRef.current = resetDAS();
+    firedKeysRef.current.clear();
 
     setGameState(engine.getState());
   }, [seed]);
@@ -482,6 +512,8 @@ function SoloGameShell({
 
   // Keyboard handler
   useEffect(() => {
+    const firedKeys = firedKeysRef.current;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
 
@@ -503,6 +535,12 @@ function SoloGameShell({
       }
 
       if (status !== "playing") return;
+
+      // Single-fire actions: gate through firedKeys to prevent double-fire
+      if (SINGLE_FIRE_ACTIONS.has(action)) {
+        if (firedKeys.has(e.code)) return;
+        firedKeys.add(e.code);
+      }
 
       // DAS for lateral movement
       if (action === "moveLeft" || action === "moveRight") {
@@ -529,17 +567,26 @@ function SoloGameShell({
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      firedKeys.delete(e.code);
       const das = dasRef.current;
       if (das.key === e.code) {
-        dasRef.current = { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
+        dasRef.current = resetDAS();
       }
+    };
+
+    const handleBlur = () => {
+      firedKeys.clear();
+      dasRef.current = resetDAS();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
+      firedKeys.clear();
     };
   }, []);
 
