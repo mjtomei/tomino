@@ -166,6 +166,47 @@ export function useMusicSync(
 }
 
 /**
+ * Drive ambient music on non-game screens (menu/lobby/waiting/results).
+ *
+ * When `view` is one of the menu views, starts the engine in ambient
+ * mode (attenuated master gain) and feeds it a low-intensity state so
+ * only the base drone layer plays. On `playing`/`countdown`, exits
+ * ambient mode and stops — GameShell's useMusicSync then owns the
+ * engine for the duration of the match.
+ */
+const MENU_ATMOSPHERE_STATE: AtmosphereState = {
+  intensity: 0.15,
+  danger: 0,
+  momentum: 0.05,
+  events: [],
+};
+
+export function useMenuMusic(view: string | undefined): void {
+  const ctx = useContext(MusicContext);
+
+  useEffect(() => {
+    if (!ctx) return;
+    const isMenu =
+      view === "menu" ||
+      view === "name-input" ||
+      view === "joining" ||
+      view === "waiting" ||
+      view === "results";
+    if (isMenu) {
+      ctx.engine.setAmbient(true);
+      ctx.engine.start();
+      ctx.engine.sync(1, MENU_ATMOSPHERE_STATE);
+      if (isDevOrTest() && typeof window !== "undefined") {
+        window.__music__ = ctx.engine.getReadout();
+      }
+    } else {
+      ctx.engine.setAmbient(false);
+      ctx.engine.stop();
+    }
+  }, [ctx, view]);
+}
+
+/**
  * Test/dev helper: feed a synthesized AtmosphereState into the engine.
  * Not used in production code; exported for debugging panels.
  */

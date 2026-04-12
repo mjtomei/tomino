@@ -39,6 +39,7 @@ import {
 const LOOKAHEAD_MS = 25;
 const SCHEDULE_AHEAD_S = 0.1;
 const MUTE_RAMP_S = 0.03;
+const AMBIENT_GAIN_MULTIPLIER = 0.35;
 
 export interface MusicEngineReadout {
   tempo: number;
@@ -65,6 +66,7 @@ export class MusicEngine {
   private genre: Genre;
   private _volume = 0.8;
   private _muted = false;
+  private _ambient = false;
 
   private running = false;
   private intervalId: ReturnType<typeof setInterval> | null = null;
@@ -108,6 +110,20 @@ export class MusicEngine {
   setVolume(v: number): void {
     this._volume = Math.max(0, Math.min(1, v));
     this.applyMasterGain();
+  }
+
+  /**
+   * Ambient mode — attenuates master gain for menu/lobby screens so
+   * the background loop sits quietly underneath the UI.
+   */
+  setAmbient(ambient: boolean): void {
+    if (this._ambient === ambient) return;
+    this._ambient = ambient;
+    this.applyMasterGain();
+  }
+
+  get ambient(): boolean {
+    return this._ambient;
   }
 
   setGenre(genreId: string): void {
@@ -183,7 +199,12 @@ export class MusicEngine {
     try {
       this.ctx = new AudioContext();
       this.master = this.ctx.createGain();
-      this.master.gain.value = this._muted ? 0 : this._volume;
+      {
+        const base = this._muted ? 0 : this._volume;
+        this.master.gain.value = this._ambient
+          ? base * AMBIENT_GAIN_MULTIPLIER
+          : base;
+      }
       this.master.connect(this.ctx.destination);
       return this.ctx;
     } catch {
@@ -193,7 +214,8 @@ export class MusicEngine {
 
   private applyMasterGain(): void {
     if (!this.ctx || !this.master) return;
-    const target = this._muted ? 0 : this._volume;
+    const base = this._muted ? 0 : this._volume;
+    const target = this._ambient ? base * AMBIENT_GAIN_MULTIPLIER : base;
     const t = this.ctx.currentTime;
     this.master.gain.cancelScheduledValues(t);
     this.master.gain.setValueAtTime(this.master.gain.value, t);

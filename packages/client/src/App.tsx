@@ -14,11 +14,47 @@ import { GameMultiplayer } from "./ui/GameMultiplayer";
 import { GameResults } from "./ui/GameResults";
 import { DisconnectOverlay } from "./ui/DisconnectOverlay";
 import { BackgroundCanvas } from "./atmosphere/BackgroundCanvas";
+import {
+  computeMenuAtmosphere,
+  type MenuView,
+} from "./atmosphere/menu-atmosphere";
+import { useMenuMusic } from "./audio/use-music";
 
 function AppInner() {
   const lobby = useLobby();
   const [showStats, setShowStats] = useState(false);
   const [showSolo, setShowSolo] = useState(false);
+
+  // Menu atmosphere override — drives BackgroundCanvas and ambient
+  // music on non-game screens. Null while in countdown/playing so the
+  // real game-driven atmosphere takes over.
+  const currentView = lobby.state.view as MenuView;
+  const menuOverride = useMemo(() => {
+    if (showStats || showSolo) return computeMenuAtmosphere({ view: "menu" });
+    return computeMenuAtmosphere({
+      view: currentView,
+      playerCount: lobby.state.room?.players.length ?? 0,
+      maxPlayers: lobby.state.room?.config.maxPlayers ?? 4,
+      results: lobby.state.gameEndData
+        ? {
+            winnerId: lobby.state.gameEndData.winnerId,
+            localPlayerId: makePlayerInfo(lobby.playerName).id,
+          }
+        : undefined,
+    });
+  }, [
+    currentView,
+    showStats,
+    showSolo,
+    lobby.state.room,
+    lobby.state.gameEndData,
+    lobby.playerName,
+  ]);
+
+  // Solo play hands the music engine off to GameShell's useMusicSync;
+  // stats screen is visually over the menu so keep ambient on there.
+  const musicView = showSolo ? "playing" : showStats ? "menu" : currentView;
+  useMenuMusic(musicView);
 
   // Compute handicap indicator data (must be called unconditionally as a hook)
   const currentPlayerId = makePlayerInfo(lobby.playerName).id;
@@ -38,6 +74,9 @@ function AppInner() {
 
   const latencyMs = useLatency(lobby.socket, lobby.state.view === "playing");
 
+  const screen = renderScreen();
+
+  function renderScreen() {
   if (showStats) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e" }}>
@@ -169,7 +208,7 @@ function AppInner() {
         playerNames[p.id] = p.name;
       }
       return (
-        <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e", color: "#e0e0e0", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ minHeight: "100vh", backgroundColor: "transparent", color: "#e0e0e0", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
           <GameResults
             localPlayerId={currentPlayerId}
             winnerId={lobby.state.gameEndData.winnerId}
@@ -187,15 +226,22 @@ function AppInner() {
       );
     }
   }
+  }
+
+  // Background canvas mounts once and persists across view changes so
+  // crossfade animation stays continuous between screens. Solo play
+  // passes `null` to let the real game-driven atmosphere take over.
+  const canvasOverride = showSolo ? null : menuOverride;
+  return (
+    <>
+      <BackgroundCanvas override={canvasOverride} />
+      {screen}
+    </>
+  );
 }
 
 function App() {
-  return (
-    <>
-      <BackgroundCanvas />
-      <AppInner />
-    </>
-  );
+  return <AppInner />;
 }
 
 export default App;

@@ -109,8 +109,10 @@ const styles = {
     justifyContent: "center",
     minHeight: "100vh",
     fontFamily: "system-ui, sans-serif",
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "transparent",
     color: "#e0e0e0",
+    position: "relative" as const,
+    zIndex: 1,
   },
   title: {
     fontSize: "2.5rem",

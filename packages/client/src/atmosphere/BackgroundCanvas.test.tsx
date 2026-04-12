@@ -18,4 +18,23 @@ describe("BackgroundCanvas", () => {
     unmount();
     cleanup();
   });
+
+  it("mounts with an override atmosphere state without crashing", () => {
+    const override = {
+      intensity: 0.5,
+      danger: 0,
+      momentum: 0.3,
+      events: [],
+    };
+    const { getByTestId, unmount } = render(
+      <ThemeProvider>
+        <AtmosphereProvider>
+          <BackgroundCanvas override={override} />
+        </AtmosphereProvider>
+      </ThemeProvider>,
+    );
+    expect(getByTestId("background-canvas").tagName).toBe("CANVAS");
+    unmount();
+    cleanup();
+  });
 });
