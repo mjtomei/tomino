@@ -245,11 +245,10 @@ function MultiplayerGameShell({
   // Keyboard handler (multiplayer — no pause)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.repeat) return;
-
       const action = KEY_MAP[e.code];
       if (!action) return;
       e.preventDefault();
+      if (e.repeat) return;
 
       // No pause in multiplayer
       if (action === "pause") return;
@@ -483,14 +482,13 @@ function SoloGameShell({
   // Keyboard handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const action = KEY_MAP[e.code];
+      if (!action) return;
+      e.preventDefault();
       if (e.repeat) return;
 
       const engine = engineRef.current;
       if (!engine) return;
-
-      const action = KEY_MAP[e.code];
-      if (!action) return;
-      e.preventDefault();
 
       const status = engine.getState().status;
 
