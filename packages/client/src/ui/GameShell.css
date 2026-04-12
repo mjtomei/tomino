@@ -4,7 +4,7 @@
 
 .game-shell {
   min-height: 100vh;
-  background-color: #1a1a2e;
+  background-color: transparent;
   color: #e0e0e0;
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   display: flex;
@@ -12,6 +12,14 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  isolation: isolate;
+}
+
+.game-shell > .game-layout,
+.game-shell > .start-screen,
+.game-shell > .back-btn {
+  position: relative;
+  z-index: 1;
 }
 
 /* -- Back button ---------------------------------------------------------- */
