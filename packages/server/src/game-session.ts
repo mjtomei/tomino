@@ -341,10 +341,11 @@ export class GameSession {
 
 /**
  * Quick equality check for two snapshots — used to avoid broadcasting
- * unchanged state on tick. Compares only fields that change during gameplay.
+ * unchanged state on tick. Compares only gameplay-relevant fields; `tick` is
+ * excluded because it is always incremented by `advanceTick` and would make
+ * the check trivially false every time.
  */
 function snapshotsEqual(a: GameStateSnapshot, b: GameStateSnapshot): boolean {
-  if (a.tick !== b.tick) return false;
   if (a.score !== b.score) return false;
   if (a.level !== b.level) return false;
   if (a.linesCleared !== b.linesCleared) return false;
