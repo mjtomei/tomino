@@ -358,22 +358,13 @@ describe("Full integration — single-player, multiplayer, and adaptive balancin
       // Continue ticking to let garbage insertion top out p2
       vi.advanceTimersByTime(5000);
 
+      // p2 should have topped out from garbage pressure
       const gameEndMsgs = spy.messages
         .filter((m) => m.msg.type === "gameEnd")
         .map((m) => m.msg);
 
-      if (gameEndMsgs.length > 0) {
-        // If game ended, p1 should be the winner (p2 topped out from garbage)
-        expect((gameEndMsgs[0] as any).winnerId).toBe("p1");
-      } else {
-        // If p2 didn't top out (they cleared some garbage), at minimum
-        // they should have a substantially filled board
-        const p2Snapshot = session.getPlayerEngine("p2")!.getSnapshot();
-        const filledRows = p2Snapshot.board.filter(
-          (row) => row.some((cell) => cell !== null),
-        ).length;
-        expect(filledRows).toBeGreaterThan(0);
-      }
+      expect(gameEndMsgs).toHaveLength(1);
+      expect((gameEndMsgs[0] as any).winnerId).toBe("p1");
     });
 
     it("both players share seed and start with identical pieces", () => {
@@ -551,22 +542,22 @@ describe("Full integration — single-player, multiplayer, and adaptive balancin
       // The session should have ended
       expect(session.state).toBe("finished");
 
-      // If onGameEnd was called, run post-game updates
-      if (gameEndResult) {
-        const postGameBroadcasts: ServerMessage[] = [];
-        await handlePostGame(
-          gameEndResult,
-          store,
-          (_roomId, msg) => postGameBroadcasts.push(msg),
-        );
+      // onGameEnd must have been called
+      expect(gameEndResult).toBeDefined();
 
-        expect(postGameBroadcasts).toHaveLength(1);
-        const msg = postGameBroadcasts[0]! as any;
-        expect(msg.type).toBe("ratingUpdate");
-        // p1 wins, p2 loses
-        expect(msg.changes.p1.after).toBeGreaterThan(msg.changes.p1.before);
-        expect(msg.changes.p2.after).toBeLessThan(msg.changes.p2.before);
-      }
+      const postGameBroadcasts: ServerMessage[] = [];
+      await handlePostGame(
+        gameEndResult!,
+        store,
+        (_roomId, msg) => postGameBroadcasts.push(msg),
+      );
+
+      expect(postGameBroadcasts).toHaveLength(1);
+      const msg = postGameBroadcasts[0]! as any;
+      expect(msg.type).toBe("ratingUpdate");
+      // p1 wins, p2 loses
+      expect(msg.changes.p1.after).toBeGreaterThan(msg.changes.p1.before);
+      expect(msg.changes.p2.after).toBeLessThan(msg.changes.p2.before);
     });
 
     it("full pipeline: ratings → modifiers → session → gameplay → post-game → updated ratings", async () => {
@@ -625,36 +616,37 @@ describe("Full integration — single-player, multiplayer, and adaptive balancin
       // Step 5: Game should have ended
       expect(session.state).toBe("finished");
 
-      // Step 6: Run post-game rating updates
-      if (gameEndResult) {
-        const postGameBroadcasts: ServerMessage[] = [];
-        await handlePostGame(
-          gameEndResult,
-          store,
-          (_roomId, msg) => postGameBroadcasts.push(msg),
-        );
+      // Step 6: onGameEnd must have been called
+      expect(gameEndResult).toBeDefined();
 
-        // Rating update broadcast
-        expect(postGameBroadcasts).toHaveLength(1);
-        const msg = postGameBroadcasts[0]! as any;
-        expect(msg.type).toBe("ratingUpdate");
+      // Step 7: Run post-game rating updates
+      const postGameBroadcasts: ServerMessage[] = [];
+      await handlePostGame(
+        gameEndResult!,
+        store,
+        (_roomId, msg) => postGameBroadcasts.push(msg),
+      );
 
-        // Bob (winner) gains rating, Alice (loser) loses
-        // Note: p2 = Bob = winner in this scenario
-        expect(msg.changes.p2.after).toBeGreaterThan(msg.changes.p2.before);
-        expect(msg.changes.p1.after).toBeLessThan(msg.changes.p1.before);
+      // Rating update broadcast
+      expect(postGameBroadcasts).toHaveLength(1);
+      const msg = postGameBroadcasts[0]! as any;
+      expect(msg.type).toBe("ratingUpdate");
 
-        // Profiles should be persisted
-        expect(store.savedPlayers.length).toBeGreaterThanOrEqual(2);
+      // Bob (winner) gains rating, Alice (loser) loses
+      // Note: p2 = Bob = winner in this scenario
+      expect(msg.changes.p2.after).toBeGreaterThan(msg.changes.p2.before);
+      expect(msg.changes.p1.after).toBeLessThan(msg.changes.p1.before);
 
-        // Verify consistency: final stored ratings match broadcast
-        const bobFinal = store.savedPlayers.find((p) => p.username === "Bob");
-        const aliceFinal = store.savedPlayers.find((p) => p.username === "Alice");
-        expect(bobFinal).toBeDefined();
-        expect(aliceFinal).toBeDefined();
-        expect(bobFinal!.rating).toBe(msg.changes.p2.after);
-        expect(aliceFinal!.rating).toBe(msg.changes.p1.after);
-      }
+      // Profiles should be persisted
+      expect(store.savedPlayers.length).toBeGreaterThanOrEqual(2);
+
+      // Verify consistency: final stored ratings match broadcast
+      const bobFinal = store.savedPlayers.find((p) => p.username === "Bob");
+      const aliceFinal = store.savedPlayers.find((p) => p.username === "Alice");
+      expect(bobFinal).toBeDefined();
+      expect(aliceFinal).toBeDefined();
+      expect(bobFinal!.rating).toBe(msg.changes.p2.after);
+      expect(aliceFinal!.rating).toBe(msg.changes.p1.after);
     });
   });
 });
