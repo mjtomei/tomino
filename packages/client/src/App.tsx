@@ -131,6 +131,8 @@ function App() {
             handicap={handicapData}
             onStrategyChange={lobby.setTargetingStrategy}
             onManualTarget={lobby.setManualTarget}
+            socket={lobby.socket}
+            gameSession={session}
           />
           <LatencyIndicator latencyMs={latencyMs} />
         </>

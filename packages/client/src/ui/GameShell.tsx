@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import type { RuleSet, GameModeConfig, GameState, GarbageBatch } from "@tetris/shared";
-import { TetrisEngine } from "@tetris/shared";
+import type { RuleSet, GameModeConfig, GameState, GarbageBatch, InputAction } from "@tetris/shared";
+import { TetrisEngine, modernRuleSet } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
 import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 import { ScoreDisplay } from "./ScoreDisplay.js";
@@ -12,6 +12,9 @@ import { Overlay } from "./Overlay.js";
 import { StartScreen } from "./StartScreen.js";
 import { SoundManager } from "../audio/sounds.js";
 import type { SoundEvent } from "../audio/sounds.js";
+import type { GameClient } from "../net/game-client.js";
+import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
+import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
 
 // ---------------------------------------------------------------------------
@@ -99,9 +102,241 @@ export interface GameShellProps {
   pendingGarbage?: GarbageBatch[];
   /** Handicap indicator data. If undefined, no indicator is shown. */
   handicap?: HandicapIndicatorData;
+  /** Multiplayer game client. When provided, GameShell runs in multiplayer mode. */
+  gameClient?: GameClient;
 }
 
-export function GameShell({ seed, onBack, pendingGarbage, handicap }: GameShellProps) {
+export function GameShell({ seed, onBack, pendingGarbage, handicap, gameClient }: GameShellProps) {
+  // ---------------------------------------------------------------------------
+  // Multiplayer mode — delegates to GameClient for input + state
+  // ---------------------------------------------------------------------------
+  if (gameClient) {
+    return (
+      <MultiplayerGameShell
+        gameClient={gameClient}
+        pendingGarbage={pendingGarbage}
+        handicap={handicap}
+      />
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Solo mode — standalone TetrisEngine
+  // ---------------------------------------------------------------------------
+  return (
+    <SoloGameShell
+      seed={seed}
+      onBack={onBack}
+      pendingGarbage={pendingGarbage}
+      handicap={handicap}
+    />
+  );
+}
+
+// ===========================================================================
+// MultiplayerGameShell
+// ===========================================================================
+
+function MultiplayerGameShell({
+  gameClient,
+  pendingGarbage,
+  handicap,
+}: {
+  gameClient: GameClient;
+  pendingGarbage?: GarbageBatch[];
+  handicap?: HandicapIndicatorData;
+}) {
+  const [gameState, setGameState] = useState<GameState>(() =>
+    snapshotToGameState(gameClient.getRenderSnapshot(), 0),
+  );
+  const clientRef = useRef(gameClient);
+  clientRef.current = gameClient;
+  const rafRef = useRef<number>(0);
+  const prevTimeRef = useRef<number>(0);
+  const startTimeRef = useRef<number>(0);
+  const prevStateRef = useRef<GameState | null>(null);
+  const soundRef = useRef<SoundManager | null>(null);
+  const dasRef = useRef<DASState>({ key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false });
+
+  const mpRuleSet = modernRuleSet();
+  const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
+
+  // Sound manager
+  useEffect(() => {
+    soundRef.current = new SoundManager();
+    return () => {
+      soundRef.current?.dispose();
+      soundRef.current = null;
+    };
+  }, []);
+
+  const sendAction = useCallback((action: string) => {
+    if (VALID_INPUT_ACTIONS.has(action)) {
+      clientRef.current.sendInput(action as InputAction);
+    }
+  }, []);
+
+  // DAS/ARR processing for multiplayer
+  const processDAS = useCallback((deltaMs: number) => {
+    const das = dasRef.current;
+    if (!das.key || !das.action) return;
+    const action = das.action;
+    if (action !== "moveLeft" && action !== "moveRight") return;
+
+    const rSet = mpRuleSet;
+    if (!das.dasTriggered) {
+      das.dasTimer += deltaMs;
+      if (das.dasTimer >= rSet.das) {
+        das.dasTriggered = true;
+        das.arrTimer = 0;
+        sendAction(action);
+      }
+    } else {
+      if (rSet.arr === 0) {
+        for (let i = 0; i < 10; i++) sendAction(action);
+      } else {
+        das.arrTimer += deltaMs;
+        while (das.arrTimer >= rSet.arr) {
+          das.arrTimer -= rSet.arr;
+          sendAction(action);
+        }
+      }
+    }
+  }, [sendAction, mpRuleSet]);
+
+  // Game loop — advance tick + render predicted state
+  useEffect(() => {
+    startTimeRef.current = performance.now();
+
+    const loop = (timestamp: number) => {
+      if (prevTimeRef.current === 0) {
+        prevTimeRef.current = timestamp;
+      }
+      const delta = timestamp - prevTimeRef.current;
+      prevTimeRef.current = timestamp;
+
+      processDAS(delta);
+      clientRef.current.advanceTick(delta);
+
+      const elapsedMs = timestamp - startTimeRef.current;
+      const snapshot = clientRef.current.getRenderSnapshot();
+      const state = snapshotToGameState(snapshot, elapsedMs);
+
+      // Sound events
+      const sounds = detectSoundEvents(prevStateRef.current, state);
+      for (const s of sounds) {
+        soundRef.current?.play(s);
+      }
+      prevStateRef.current = state;
+
+      setGameState(state);
+
+      if (!snapshot.isGameOver) {
+        rafRef.current = requestAnimationFrame(loop);
+      }
+    };
+
+    prevTimeRef.current = 0;
+    rafRef.current = requestAnimationFrame(loop);
+
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [processDAS]);
+
+  // Keyboard handler (multiplayer — no pause)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+
+      const action = KEY_MAP[e.code];
+      if (!action) return;
+      e.preventDefault();
+
+      // No pause in multiplayer
+      if (action === "pause") return;
+
+      // DAS for lateral movement
+      if (action === "moveLeft" || action === "moveRight") {
+        dasRef.current = {
+          key: e.code,
+          action,
+          dasTimer: 0,
+          arrTimer: 0,
+          dasTriggered: false,
+        };
+      }
+
+      sendAction(action);
+
+      // Play move/rotate sounds
+      if (action === "moveLeft" || action === "moveRight") {
+        soundRef.current?.play("move");
+      } else if (action === "rotateCW" || action === "rotateCCW") {
+        soundRef.current?.play("rotate");
+      } else if (action === "hardDrop") {
+        soundRef.current?.play("hardDrop");
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      const das = dasRef.current;
+      if (das.key === e.code) {
+        dasRef.current = { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [sendAction]);
+
+  return (
+    <div className="game-shell" data-testid="game-shell">
+      <div className="game-layout">
+        <div className="game-left-panel">
+          <HoldDisplay hold={gameState.hold} holdUsed={gameState.holdUsed} ruleSet={mpRuleSet} />
+          <ScoreDisplay scoring={gameState.scoring} modeConfig={mpModeConfig} elapsedMs={gameState.elapsedMs} />
+          {handicap && <HandicapIndicator handicap={handicap} />}
+        </div>
+
+        <div className="game-board-container">
+          {pendingGarbage && pendingGarbage.length > 0 && (
+            <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
+          )}
+          <BoardCanvas state={gameState} showSidePanels={false} />
+        </div>
+
+        <div className="game-right-panel">
+          <NextQueue queue={gameState.queue} ruleSet={mpRuleSet} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Valid input actions that can be sent to GameClient. */
+const VALID_INPUT_ACTIONS = new Set<string>([
+  "moveLeft", "moveRight", "rotateCW", "rotateCCW", "rotate180",
+  "softDrop", "hardDrop", "hold",
+]);
+
+// ===========================================================================
+// SoloGameShell (original logic, unchanged)
+// ===========================================================================
+
+function SoloGameShell({
+  seed,
+  onBack,
+  pendingGarbage,
+  handicap,
+}: {
+  seed?: number;
+  onBack?: () => void;
+  pendingGarbage?: GarbageBatch[];
+  handicap?: HandicapIndicatorData;
+}) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [ruleSet, setRuleSet] = useState<RuleSet | null>(null);
   const [modeConfig, setModeConfig] = useState<GameModeConfig | null>(null);

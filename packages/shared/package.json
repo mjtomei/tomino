@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "default": "./dist/index.js"
+      "default": "./src/index.ts"
     },
     "./__test-utils__/game-harness.js": {
       "types": "./src/__test-utils__/game-harness.ts",
