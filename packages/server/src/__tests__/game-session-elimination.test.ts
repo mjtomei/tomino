@@ -191,7 +191,8 @@ describe("GameSession elimination and stats", () => {
       const spy = createBroadcastSpy();
       const session = startSession(spy, THREE_PLAYERS);
 
-      session.handlePlayerDisconnect("p1");
+      session.markDisconnected("p1", 10_000);
+      session.forfeitPlayer("p1");
 
       const gameOvers = getMessagesByType<S2C_GameOver>(spy.messages, "gameOver");
       const p1GO = gameOvers.find((m) => m.playerId === "p1");
@@ -208,7 +209,8 @@ describe("GameSession elimination and stats", () => {
 
       // Play a piece before disconnecting
       session.applyInput("p1", "hardDrop");
-      session.handlePlayerDisconnect("p1");
+      session.markDisconnected("p1", 10_000);
+      session.forfeitPlayer("p1");
 
       const gameEnds = getMessagesByType<S2C_GameEnd>(spy.messages, "gameEnd");
       expect(gameEnds).toHaveLength(1);
