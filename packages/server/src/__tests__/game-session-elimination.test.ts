@@ -231,5 +231,19 @@ describe("GameSession elimination and stats", () => {
       expect(gameEnds).toHaveLength(1);
       expect(gameEnds[0]!.placements).toEqual({ p1: 3, p3: 2, p2: 1 });
     });
+
+    it("correct placements when all players top out (last-out wins)", () => {
+      const spy = createBroadcastSpy();
+      const session = startSession(spy);
+
+      // Both players top out — last one out wins
+      forceTopOut(session, "p1");
+      forceTopOut(session, "p2");
+
+      const gameEnds = getMessagesByType<S2C_GameEnd>(spy.messages, "gameEnd");
+      expect(gameEnds).toHaveLength(1);
+      expect(gameEnds[0]!.winnerId).toBe("p2");
+      expect(gameEnds[0]!.placements).toEqual({ p1: 2, p2: 1 });
+    });
   });
 });

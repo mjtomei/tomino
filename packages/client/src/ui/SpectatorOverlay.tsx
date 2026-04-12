@@ -1,14 +1,7 @@
+import { placementLabel } from "./formatTime.js";
+
 export interface SpectatorOverlayProps {
   placement: number;
-}
-
-function placementLabel(place: number): string {
-  switch (place) {
-    case 1: return "1st";
-    case 2: return "2nd";
-    case 3: return "3rd";
-    default: return `${place}th`;
-  }
 }
 
 export function SpectatorOverlay({ placement }: SpectatorOverlayProps) {

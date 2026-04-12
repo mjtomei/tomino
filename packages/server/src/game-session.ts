@@ -329,7 +329,6 @@ export class GameSession {
       type: "playerReconnected",
       roomId: this.roomId,
       playerId,
-      placement,
     });
     return true;
   }
@@ -343,9 +342,10 @@ export class GameSession {
     const engine = this.engines.get(playerId);
     if (!engine) return;
     this.disconnected.delete(playerId);
-    // Drop the engine so subsequent ticks and winner-checks treat the player as out.
+    // Capture stats before engine deletion (disconnect-specific)
+    this.capturePlayerStats(playerId);
     this.engines.delete(playerId);
-    this.handlePlayerGameOver(playerId);
+    this.eliminatePlayer(playerId, /* statsCaptured */ true);
   }
 
   // -------------------------------------------------------------------------
@@ -658,7 +658,12 @@ export class GameSession {
   // -------------------------------------------------------------------------
 
   private handlePlayerGameOver(playerId: PlayerId): void {
-    this.capturePlayerStats(playerId);
+    this.eliminatePlayer(playerId);
+  }
+
+  /** Common elimination path for both game-over and disconnect. */
+  private eliminatePlayer(playerId: PlayerId, statsCaptured = false): void {
+    if (!statsCaptured) this.capturePlayerStats(playerId);
     this.eliminations.push(playerId);
     this.garbageManager?.removePlayer(playerId);
     this.attackPower?.removePlayer(playerId);
@@ -776,8 +781,11 @@ export class GameSession {
         // Build placements: winner = 1st, eliminations in reverse = 2nd, 3rd, ...
         const placements: Record<PlayerId, number> = {};
         placements[winnerId] = 1;
+        let place = 2;
         for (let i = this.eliminations.length - 1; i >= 0; i--) {
-          placements[this.eliminations[i]!] = this.eliminations.length - i + 1;
+          const pid = this.eliminations[i]!;
+          if (pid === winnerId) continue; // winner already assigned 1st
+          placements[pid] = place++;
         }
 
         // Collect stats

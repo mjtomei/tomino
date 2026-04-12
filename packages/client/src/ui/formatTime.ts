@@ -1,3 +1,13 @@
+/** Format a 1-indexed placement as an ordinal string (1st, 2nd, 3rd, …). */
+export function placementLabel(place: number): string {
+  switch (place) {
+    case 1: return "1st";
+    case 2: return "2nd";
+    case 3: return "3rd";
+    default: return `${place}th`;
+  }
+}
+
 /** Format milliseconds as M:SS.cc (clamped to 0). */
 export function formatTime(ms: number): string {
   const clamped = Math.max(0, ms);
