@@ -8,6 +8,8 @@
 import type {
   Board,
   GameStateSnapshot,
+  HandicapMode,
+  HandicapModifiers,
   PlayerId,
   PlayerInfo,
   RoomId,
@@ -31,6 +33,10 @@ export interface GameSessionConfig {
   onGameStarted?: () => void;
   /** Called when the session is cancelled (e.g. player disconnect during countdown). */
   onCancelled?: () => void;
+  /** Serialized handicap modifier matrix to include in gameStarted. */
+  handicapModifiers?: Record<string, HandicapModifiers>;
+  /** Handicap mode to include in gameStarted. */
+  handicapMode?: HandicapMode;
 }
 
 export type GameSessionState = "countdown" | "playing" | "cancelled";
@@ -86,6 +92,8 @@ export class GameSession {
   private readonly broadcastToRoom: GameSessionConfig["broadcastToRoom"];
   private readonly onGameStarted?: () => void;
   private readonly onCancelled?: () => void;
+  private readonly handicapModifiers?: Record<string, HandicapModifiers>;
+  private readonly handicapMode?: HandicapMode;
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -93,6 +101,8 @@ export class GameSession {
     this.broadcastToRoom = config.broadcastToRoom;
     this.onGameStarted = config.onGameStarted;
     this.onCancelled = config.onCancelled;
+    this.handicapModifiers = config.handicapModifiers;
+    this.handicapMode = config.handicapMode;
 
     // Assign player indexes (0-based, room order)
     this.playerIndexes = {};
@@ -158,6 +168,8 @@ export class GameSession {
           initialStates: this.initialStates,
           seed: this.seed,
           playerIndexes: this.playerIndexes,
+          handicapModifiers: this.handicapModifiers,
+          handicapMode: this.handicapMode,
         });
 
         this.onGameStarted?.();

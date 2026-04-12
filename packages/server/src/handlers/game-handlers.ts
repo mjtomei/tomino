@@ -5,13 +5,14 @@
  * Integrates with lobby-handlers' handleStartGame.
  */
 
-import type { PlayerId, RoomId, ServerMessage } from "@tetris/shared";
+import type { HandicapModifiers, PlayerId, RoomId, ServerMessage } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
   getGameSession,
   removeGameSession,
 } from "../game-session.js";
+import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
@@ -21,6 +22,22 @@ export interface GameHandlerContext {
  * Initiate the game start countdown for a room.
  * Called after lobby validation (host check, player count, etc.) passes.
  */
+/** Default rating used when a player has no stored rating. */
+const DEFAULT_RATING = 1500;
+
+/**
+ * Serialize a ModifierMatrix (Map) to a plain Record for JSON transport.
+ */
+function serializeModifierMatrix(
+  matrix: Map<string, HandicapModifiers>,
+): Record<string, HandicapModifiers> {
+  const result: Record<string, HandicapModifiers> = {};
+  for (const [key, value] of matrix) {
+    result[key] = value;
+  }
+  return result;
+}
+
 export function startGameCountdown(
   roomId: RoomId,
   store: RoomStore,
@@ -29,10 +46,26 @@ export function startGameCountdown(
   const room = store.getRoom(roomId);
   if (!room) return;
 
+  // Compute handicap modifier matrix if handicap is enabled
+  let handicapModifiers: Record<string, HandicapModifiers> | undefined;
+  let handicapMode = room.handicapSettings?.mode;
+  const settings = room.handicapSettings;
+
+  if (settings && settings.intensity !== "off") {
+    const playerRatings: PlayerRating[] = room.players.map((p) => ({
+      username: p.name,
+      rating: room.playerRatings?.[p.id] ?? DEFAULT_RATING,
+    }));
+    const matrix = computeModifierMatrix(playerRatings, settings);
+    handicapModifiers = serializeModifierMatrix(matrix);
+  }
+
   const session = createGameSession({
     roomId,
     players: room.players,
     broadcastToRoom: ctx.broadcastToRoom,
+    handicapModifiers,
+    handicapMode,
     onGameStarted: () => {
       // Game is now running — future PRs will add tick processing here
     },

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { ServerMessage, RoomId } from "@tetris/shared";
+import type { ServerMessage, RoomId, HandicapSettings } from "@tetris/shared";
+import { modifierKey } from "@tetris/shared";
 import { RoomStore } from "../room-store.js";
 import {
   startGameCountdown,
@@ -70,6 +71,96 @@ describe("game-handlers", () => {
         "countdown",   // 0
         "gameStarted",
       ]);
+
+      removeGameSession(roomId);
+    });
+  });
+
+  describe("handicap modifiers in gameStarted", () => {
+    it("includes handicap modifiers in gameStarted when handicap is enabled", () => {
+      const roomId = setupRoom();
+      const spy = createBroadcastSpy();
+
+      // Configure handicap settings and ratings
+      const settings: HandicapSettings = {
+        intensity: "standard",
+        mode: "boost",
+        targetingBiasStrength: 0,
+      };
+      store.setHandicapSettings(roomId, settings, true);
+      store.setPlayerRating(roomId, "host", 1800);
+      store.setPlayerRating(roomId, "p2", 1200);
+
+      startGameCountdown(roomId, store, { broadcastToRoom: spy.broadcastToRoom });
+      vi.advanceTimersByTime(4000);
+
+      const gameStarted = spy.messages.find((m) => m.msg.type === "gameStarted");
+      expect(gameStarted).toBeDefined();
+      if (gameStarted?.msg.type === "gameStarted") {
+        expect(gameStarted.msg.handicapModifiers).toBeDefined();
+        expect(gameStarted.msg.handicapMode).toBe("boost");
+
+        // Host (1800) → P2 (1200): gap 600, should have reduced multiplier
+        const key = modifierKey("Host", "P2");
+        const mod = gameStarted.msg.handicapModifiers![key];
+        expect(mod).toBeDefined();
+        expect(mod!.garbageMultiplier).toBeLessThan(1.0);
+
+        // P2 → Host: gap -600, in boost mode weaker→stronger should be 1.0
+        const reverseKey = modifierKey("P2", "Host");
+        const reverseMod = gameStarted.msg.handicapModifiers![reverseKey];
+        expect(reverseMod).toBeDefined();
+        expect(reverseMod!.garbageMultiplier).toBe(1.0);
+      }
+
+      removeGameSession(roomId);
+    });
+
+    it("does not include handicap modifiers when intensity is off", () => {
+      const roomId = setupRoom();
+      const spy = createBroadcastSpy();
+
+      const settings: HandicapSettings = {
+        intensity: "off",
+        mode: "boost",
+        targetingBiasStrength: 0,
+      };
+      store.setHandicapSettings(roomId, settings, true);
+
+      startGameCountdown(roomId, store, { broadcastToRoom: spy.broadcastToRoom });
+      vi.advanceTimersByTime(4000);
+
+      const gameStarted = spy.messages.find((m) => m.msg.type === "gameStarted");
+      if (gameStarted?.msg.type === "gameStarted") {
+        expect(gameStarted.msg.handicapModifiers).toBeUndefined();
+      }
+
+      removeGameSession(roomId);
+    });
+
+    it("uses default rating (1500) for players without stored ratings", () => {
+      const roomId = setupRoom();
+      const spy = createBroadcastSpy();
+
+      const settings: HandicapSettings = {
+        intensity: "standard",
+        mode: "boost",
+        targetingBiasStrength: 0,
+      };
+      store.setHandicapSettings(roomId, settings, true);
+      // Only set one player's rating — the other defaults to 1500
+      store.setPlayerRating(roomId, "host", 1500);
+
+      startGameCountdown(roomId, store, { broadcastToRoom: spy.broadcastToRoom });
+      vi.advanceTimersByTime(4000);
+
+      const gameStarted = spy.messages.find((m) => m.msg.type === "gameStarted");
+      if (gameStarted?.msg.type === "gameStarted") {
+        // Equal ratings → both modifiers should be 1.0
+        const key = modifierKey("Host", "P2");
+        const mod = gameStarted.msg.handicapModifiers![key];
+        expect(mod?.garbageMultiplier).toBe(1.0);
+      }
 
       removeGameSession(roomId);
     });

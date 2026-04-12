@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLobby, makePlayerInfo } from "./net/lobby-client";
 import { PlayerNameInput } from "./ui/PlayerNameInput";
 import { Lobby } from "./ui/Lobby";
@@ -6,10 +6,27 @@ import { JoinDialog } from "./ui/JoinDialog";
 import { WaitingRoom } from "./ui/WaitingRoom";
 import { StatsScreen } from "./ui/StatsScreen";
 import { Countdown } from "./ui/Countdown";
+import { computeIndicatorData } from "./ui/handicap-indicator";
 
 function App() {
   const lobby = useLobby();
   const [showStats, setShowStats] = useState(false);
+
+  // Compute handicap indicator data (must be called unconditionally as a hook)
+  const currentPlayerId = makePlayerInfo(lobby.playerName).id;
+  const session = lobby.state.gameSession;
+  const handicapData = useMemo(() => {
+    if (!session?.handicapModifiers || !lobby.state.room) return undefined;
+    const opponents = lobby.state.room.players
+      .filter((p) => p.id !== currentPlayerId)
+      .map((p) => p.name);
+    return computeIndicatorData(
+      lobby.playerName,
+      opponents,
+      session.handicapModifiers,
+      session.handicapMode,
+    );
+  }, [session?.handicapModifiers, session?.handicapMode, lobby.state.room, currentPlayerId, lobby.playerName]);
 
   if (showStats) {
     return (
@@ -82,8 +99,6 @@ function App() {
       );
 
     case "playing": {
-      const session = lobby.state.gameSession;
-      const currentPlayerId = makePlayerInfo(lobby.playerName).id;
       const playerIndex = session?.playerIndexes[currentPlayerId] ?? 0;
       return (
         <div style={playingStyles.container}>
@@ -91,6 +106,12 @@ function App() {
           <p style={playingStyles.info}>
             Player #{playerIndex + 1} — Seed: {session?.seed}
           </p>
+          {handicapData && (
+            <p style={playingStyles.info}>
+              Handicap: {handicapData.incomingMultiplier.toFixed(1)}x incoming
+              {handicapData.outgoingMultiplier != null && `, ${handicapData.outgoingMultiplier.toFixed(1)}x outgoing`}
+            </p>
+          )}
           <p style={playingStyles.subtitle}>
             Game board will be implemented in a future PR.
           </p>
