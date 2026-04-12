@@ -38,7 +38,7 @@ export async function joinRoom(page: Page, roomId: string): Promise<void> {
   await expect(dialog).toBeVisible();
 
   // Fill in the room code and submit
-  await page.locator("#room-code").fill(roomId);
+  await dialog.locator("#room-code").fill(roomId);
   await dialog.getByRole("button", { name: "Join" }).click();
 
   // Wait for the waiting room to appear
