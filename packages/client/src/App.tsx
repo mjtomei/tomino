@@ -8,6 +8,7 @@ import { StatsScreen } from "./ui/StatsScreen";
 import { Countdown } from "./ui/Countdown";
 import { computeIndicatorData } from "./ui/handicap-indicator";
 import { GameShell } from "./ui/GameShell";
+import { GameMultiplayer } from "./ui/GameMultiplayer";
 
 function App() {
   const lobby = useLobby();
@@ -107,6 +108,7 @@ function App() {
       );
 
     case "playing": {
+      if (!lobby.state.room) return null;
       return (
         <>
           {handicapData && (
@@ -115,7 +117,12 @@ function App() {
               {handicapData.outgoingMultiplier != null && `, ${handicapData.outgoingMultiplier.toFixed(1)}x outgoing`}
             </div>
           )}
-          <GameShell seed={session?.seed} />
+          <GameMultiplayer
+            room={lobby.state.room}
+            currentPlayerId={currentPlayerId}
+            seed={session?.seed}
+            opponentSnapshots={lobby.state.opponentStates}
+          />
         </>
       );
     }
