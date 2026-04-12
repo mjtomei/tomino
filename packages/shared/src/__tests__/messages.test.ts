@@ -90,8 +90,17 @@ const validS2CMessages: ServerMessage[] = [
       isGameOver: false,
     },
   },
-  { type: "gameOver", roomId: "room-1", playerId: "p1" },
-  { type: "gameEnd", roomId: "room-1", winnerId: "p2" },
+  { type: "gameOver", roomId: "room-1", playerId: "p1", placement: 2 },
+  {
+    type: "gameEnd",
+    roomId: "room-1",
+    winnerId: "p2",
+    placements: { p1: 2, p2: 1 },
+    stats: {
+      p1: { linesSent: 0, linesReceived: 3, piecesPlaced: 10, survivalMs: 5000, score: 100, linesCleared: 2 },
+      p2: { linesSent: 3, linesReceived: 0, piecesPlaced: 15, survivalMs: 8000, score: 500, linesCleared: 5 },
+    },
+  },
   {
     type: "garbageReceived",
     roomId: "room-1",

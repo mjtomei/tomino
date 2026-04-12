@@ -147,6 +147,24 @@ export interface S2C_GameOver {
   roomId: RoomId;
   /** The player who topped out. */
   playerId: PlayerId;
+  /** 1-indexed placement (last place = highest number). */
+  placement: number;
+}
+
+/** Per-player stats included in the game-end summary. */
+export interface PlayerStats {
+  /** Lines of garbage sent to opponents (net, after cancellation). */
+  linesSent: number;
+  /** Lines of garbage received (inserted onto board). */
+  linesReceived: number;
+  /** Total pieces locked onto the board. */
+  piecesPlaced: number;
+  /** Milliseconds survived from game start. */
+  survivalMs: number;
+  /** Final score. */
+  score: number;
+  /** Total lines cleared. */
+  linesCleared: number;
 }
 
 export interface S2C_GameEnd {
@@ -154,6 +172,10 @@ export interface S2C_GameEnd {
   roomId: RoomId;
   /** The player who won (last one standing). */
   winnerId: PlayerId;
+  /** 1-indexed placements for all players. */
+  placements: Record<PlayerId, number>;
+  /** Per-player stats summary. */
+  stats: Record<PlayerId, PlayerStats>;
 }
 
 export interface S2C_GarbageReceived {
