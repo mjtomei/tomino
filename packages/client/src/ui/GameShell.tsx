@@ -17,6 +17,7 @@ import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
 import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
+import { ScreenEffects, type ScreenEffectsHandle } from "../atmosphere/ScreenEffects.js";
 import { ParticleSystem } from "../atmosphere/particle-system.js";
 import { ParticleCanvas } from "../atmosphere/ParticleCanvas.js";
 import { BoardEffects } from "../atmosphere/board-effects.js";
@@ -197,6 +198,7 @@ function MultiplayerGameShell({
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
   const atmosphereUpdate = useAtmosphereUpdater();
+  const screenEffectsRef = useRef<ScreenEffectsHandle | null>(null);
 
   const { genreId, theme } = useTheme();
   const themeRef = useRef(theme);
@@ -373,6 +375,7 @@ function MultiplayerGameShell({
         soundRef.current?.play("rotate");
       } else if (action === "hardDrop") {
         soundRef.current?.play("hardDrop");
+        screenEffectsRef.current?.triggerHardDropShake();
       }
     };
 
@@ -402,6 +405,7 @@ function MultiplayerGameShell({
 
   return (
     <div className="game-shell" data-testid="game-shell">
+      <ScreenEffects ref={screenEffectsRef}>
       <div className="game-layout">
         <div className="game-left-panel">
           <HoldDisplay hold={gameState.hold} holdUsed={gameState.holdUsed} ruleSet={mpRuleSet} />
@@ -426,6 +430,7 @@ function MultiplayerGameShell({
           <NextQueue queue={gameState.queue} ruleSet={mpRuleSet} />
         </div>
       </div>
+      </ScreenEffects>
     </div>
   );
 }
@@ -465,6 +470,7 @@ function SoloGameShell({
 
   const atmosphereUpdate = useAtmosphereUpdater();
   const atmosphereReset = useAtmosphereReset();
+  const screenEffectsRef = useRef<ScreenEffectsHandle | null>(null);
   const { genreId: soloGenreId, theme: soloTheme } = useTheme();
   const themeRef = useRef(soloTheme);
   themeRef.current = soloTheme;
@@ -704,6 +710,7 @@ function SoloGameShell({
         soundRef.current?.play("rotate");
       } else if (action === "hardDrop") {
         soundRef.current?.play("hardDrop");
+        screenEffectsRef.current?.triggerHardDropShake();
       }
     };
 
@@ -752,6 +759,7 @@ function SoloGameShell({
           &larr; Back
         </button>
       )}
+      <ScreenEffects ref={screenEffectsRef}>
       <div className="game-layout">
         <div className="game-left-panel">
           <HoldDisplay hold={gameState.hold} holdUsed={gameState.holdUsed} ruleSet={ruleSet} />
@@ -783,6 +791,7 @@ function SoloGameShell({
           <NextQueue queue={gameState.queue} ruleSet={ruleSet} />
         </div>
       </div>
+      </ScreenEffects>
     </div>
   );
 }
