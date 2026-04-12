@@ -20,7 +20,6 @@ import {
   createGameSession,
   getGameSession,
   removeGameSession,
-  type GameSessionState,
 } from "../game-session.js";
 import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
 import {
@@ -177,9 +176,10 @@ export function handleGameDisconnect(
     const s = getGameSession(roomId);
     if (!s) return;
     s.forfeitPlayer(playerId);
-    if ((s.state as GameSessionState) === "finished") {
+    if (s.state === "finished") {
       if (store) store.setStatus(roomId, "finished");
       removeGameSession(roomId);
+      registry.clearRoom(roomId);
     }
   });
 
