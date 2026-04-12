@@ -4,3 +4,6 @@ dist
 *.tsbuildinfo
 pm_prompt_*.txt
 data/ratings.json
+test-results/
+playwright-report/
+playwright/.cache/
