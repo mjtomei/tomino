@@ -212,6 +212,13 @@ export class MusicEngine {
   }
 
   private teardownLayers(): void {
+    for (const nodes of this.layers.values()) {
+      try {
+        nodes.gain.disconnect();
+      } catch {
+        // mock gain nodes may lack disconnect; safe to ignore.
+      }
+    }
     this.layers.clear();
   }
 
