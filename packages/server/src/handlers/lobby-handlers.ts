@@ -23,6 +23,7 @@ import type {
 import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import { startGameCountdown } from "./game-handlers.js";
+import { removeRematchVote, clearRematchVotes } from "./rematch-handlers.js";
 
 /** Context provided to each handler by the WebSocket layer. */
 export interface HandlerContext {
@@ -100,10 +101,22 @@ export function handleLeaveRoom(
   ctx: HandlerContext,
   store: RoomStore,
 ): void {
+  const roomId = store.getRoomIdForPlayer(ctx.playerId);
+
   const result = store.removePlayer(ctx.playerId);
   if (!result) {
     sendError(ctx, "NOT_IN_ROOM", "Not in a room");
     return;
+  }
+
+  // Clean up rematch votes for this player
+  if (roomId) {
+    if (result.room) {
+      removeRematchVote(roomId, ctx.playerId, ctx, store);
+    } else {
+      // Room was deleted (empty)
+      clearRematchVotes(roomId);
+    }
   }
 
   // Notify remaining players
@@ -261,8 +274,17 @@ export function handleDisconnect(
   ctx: Pick<HandlerContext, "broadcastToRoom">,
   store: RoomStore,
 ): void {
+  const roomId = store.getRoomIdForPlayer(playerId);
+
   const result = store.removePlayer(playerId);
-  if (!result || !result.room) return;
+  if (!result || !result.room) {
+    // Room was deleted (empty) — clean up votes
+    if (roomId) clearRematchVotes(roomId);
+    return;
+  }
+
+  // Clean up rematch votes for this player
+  removeRematchVote(result.roomId, playerId, ctx, store);
 
   ctx.broadcastToRoom(result.roomId, {
     type: "playerLeft",

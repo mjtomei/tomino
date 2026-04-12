@@ -86,6 +86,11 @@ export interface C2S_SetManualTarget {
   targetPlayerId: PlayerId;
 }
 
+export interface C2S_RequestRematch {
+  type: "requestRematch";
+  roomId: RoomId;
+}
+
 export type ClientMessage =
   | C2S_CreateRoom
   | C2S_JoinRoom
@@ -96,7 +101,8 @@ export type ClientMessage =
   | C2S_Ping
   | C2S_RejoinRoom
   | C2S_SetTargetingStrategy
-  | C2S_SetManualTarget;
+  | C2S_SetManualTarget
+  | C2S_RequestRematch;
 
 export type ClientMessageType = ClientMessage["type"];
 
@@ -111,6 +117,7 @@ export const CLIENT_MESSAGE_TYPES: readonly ClientMessageType[] = [
   "rejoinRoom",
   "setTargetingStrategy",
   "setManualTarget",
+  "requestRematch",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -281,6 +288,15 @@ export interface S2C_PlayerReconnected {
   playerId: PlayerId;
 }
 
+export interface S2C_RematchUpdate {
+  type: "rematchUpdate";
+  roomId: RoomId;
+  /** Player IDs who have voted for rematch so far. */
+  votes: PlayerId[];
+  /** Total number of players who need to vote. */
+  totalPlayers: number;
+}
+
 export interface S2C_GameRejoined {
   type: "gameRejoined";
   roomId: RoomId;
@@ -311,7 +327,8 @@ export type ServerMessage =
   | S2C_Disconnected
   | S2C_PlayerDisconnected
   | S2C_PlayerReconnected
-  | S2C_GameRejoined;
+  | S2C_GameRejoined
+  | S2C_RematchUpdate;
 
 export type ServerMessageType = ServerMessage["type"];
 
@@ -335,4 +352,5 @@ export const SERVER_MESSAGE_TYPES: readonly ServerMessageType[] = [
   "playerDisconnected",
   "playerReconnected",
   "gameRejoined",
+  "rematchUpdate",
 ] as const;

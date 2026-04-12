@@ -27,6 +27,7 @@ import {
   disconnectRegistry,
   DisconnectRegistry,
 } from "../disconnect-handler.js";
+import { clearRematchVotes } from "./rematch-handlers.js";
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
@@ -86,6 +87,9 @@ export function startGameCountdown(
     handicapModifiers = serializeModifierMatrix(matrix);
     handicapMode = settings.mode;
   }
+
+  // Clear any stale rematch votes from a previous game
+  clearRematchVotes(roomId);
 
   const session = createGameSession({
     roomId,
