@@ -6,7 +6,6 @@
  */
 
 import type {
-  Board,
   GameStateSnapshot,
   InputAction,
   PlayerId,
@@ -16,8 +15,6 @@ import type {
   ServerMessage,
 } from "@tetris/shared";
 import {
-  BOARD_TOTAL_HEIGHT,
-  BOARD_WIDTH,
   modernRuleSet,
 } from "@tetris/shared";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "./player-engine.js";
@@ -45,32 +42,9 @@ export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished
 // Helpers
 // ---------------------------------------------------------------------------
 
-function createEmptyBoard(): Board {
-  return Array.from({ length: BOARD_TOTAL_HEIGHT }, () =>
-    Array.from({ length: BOARD_WIDTH }, () => null),
-  );
-}
-
 function generateSeed(): number {
   // 32-bit integer seed
   return Math.floor(Math.random() * 0x7fffffff);
-}
-
-function createInitialSnapshot(): GameStateSnapshot {
-  return {
-    tick: 0,
-    board: createEmptyBoard(),
-    activePiece: null,
-    ghostY: null,
-    nextQueue: [],
-    holdPiece: null,
-    holdUsed: false,
-    score: 0,
-    level: 1,
-    linesCleared: 0,
-    pendingGarbage: [],
-    isGameOver: false,
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -87,7 +61,6 @@ export class GameSession {
   readonly roomId: RoomId;
   readonly seed: number;
   readonly playerIndexes: Record<PlayerId, number>;
-  readonly initialStates: Record<PlayerId, GameStateSnapshot>;
 
   private _state: GameSessionState = "countdown";
   private countdownTimer: ReturnType<typeof setTimeout> | null = null;
@@ -99,6 +72,8 @@ export class GameSession {
 
   // -- Gameplay state --
   private readonly engines = new Map<PlayerId, PlayerEngine>();
+  // Tracks last broadcast per player — used for delta compression once the
+  // protocol supports StateDelta in S2C_GameStateSnapshot.
   private readonly lastSentSnapshots = new Map<PlayerId, GameStateSnapshot>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
@@ -116,12 +91,6 @@ export class GameSession {
     config.players.forEach((player, index) => {
       this.playerIndexes[player.id] = index;
     });
-
-    // Generate initial states for each player
-    this.initialStates = {};
-    for (const player of config.players) {
-      this.initialStates[player.id] = createInitialSnapshot();
-    }
   }
 
   get state(): GameSessionState {
@@ -232,10 +201,16 @@ export class GameSession {
         // Create player engines
         this.initializeEngines();
 
+        // Build initial states from the real engine snapshots
+        const initialStates: Record<PlayerId, GameStateSnapshot> = {};
+        for (const [pid, engine] of this.engines) {
+          initialStates[pid] = engine.getSnapshot();
+        }
+
         this.broadcastToRoom(this.roomId, {
           type: "gameStarted",
           roomId: this.roomId,
-          initialStates: this.initialStates,
+          initialStates,
           seed: this.seed,
           playerIndexes: this.playerIndexes,
         });
@@ -359,7 +334,7 @@ export class GameSession {
         });
       }
       // All players done — transition to finished
-      this._state = "finished" as GameSessionState;
+      this._state = "finished";
     }
   }
 }

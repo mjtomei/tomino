@@ -17,6 +17,7 @@ import {
   createGameSession,
   getGameSession,
   removeGameSession,
+  type GameSessionState,
 } from "../game-session.js";
 
 export interface GameHandlerContext {
@@ -127,9 +128,9 @@ export function handleGameDisconnect(
     // Mark disconnected player as game over
     session.handlePlayerDisconnect(playerId);
 
-    // If game is finished after disconnect, clean up
-    const stateAfter = session.state;
-    if (stateAfter === "finished") {
+    // handlePlayerDisconnect may transition the session to "finished"
+    // (TS can't see the mutation through the method call, so re-read state)
+    if ((session.state as GameSessionState) === "finished") {
       if (store) {
         store.setStatus(roomId, "finished");
       }
