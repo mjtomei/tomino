@@ -72,28 +72,21 @@ function generateSeed(): number {
 }
 
 /**
- * Compute the "board height" for a snapshot — number of non-empty rows
- * from the bottom of the visible area. Used by KOs targeting strategy.
+ * Compute the "board height" for a snapshot — distance from the bottom to the
+ * topmost non-empty row. Used by KOs targeting strategy to find the player
+ * closest to topping out.
  */
 function computeBoardHeight(snapshot: GameStateSnapshot): number {
   const board = snapshot.board;
-  let height = 0;
-  for (let r = board.length - 1; r >= 0; r--) {
+  for (let r = 0; r < board.length; r++) {
     const row = board[r]!;
-    let hasCell = false;
     for (let c = 0; c < row.length; c++) {
       if (row[c] !== null) {
-        hasCell = true;
-        break;
+        return board.length - r;
       }
     }
-    if (hasCell) {
-      height = board.length - r;
-    } else {
-      break;
-    }
   }
-  return height;
+  return 0;
 }
 
 // ---------------------------------------------------------------------------
