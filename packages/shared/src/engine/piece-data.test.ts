@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import type { Rotation } from "./pieces.js";
 import { SRSRotation } from "./rotation-srs.js";
 import { NRSRotation } from "./rotation-nrs.js";
 
