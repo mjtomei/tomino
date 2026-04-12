@@ -52,11 +52,6 @@ function createBroadcastSpy() {
     broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => {
       messages.push({ roomId, msg });
     },
-    messagesOfType<T extends ServerMessage>(type: T["type"]): T[] {
-      return messages
-        .filter((m) => m.msg.type === type)
-        .map((m) => m.msg as T);
-    },
   };
 }
 
