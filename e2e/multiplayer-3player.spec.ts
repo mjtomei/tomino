@@ -61,11 +61,14 @@ test.describe("3-player multiplayer", () => {
   test("three players can join a room and see each other", async ({
     browser,
   }) => {
-    const player1 = await createPlayerContext(browser, "Alice");
-    const player2 = await createPlayerContext(browser, "Bob");
+    let player1: PlayerHandle | undefined;
+    let player2: PlayerHandle | undefined;
     let player3: PlayerHandle | undefined;
 
     try {
+      player1 = await createPlayerContext(browser, "Alice");
+      player2 = await createPlayerContext(browser, "Bob");
+
       const roomId = await createRoom(player1.page);
       await joinRoom(player2.page, roomId);
 
@@ -89,8 +92,8 @@ test.describe("3-player multiplayer", () => {
         player1.page.getByRole("button", { name: "Start Game" }),
       ).toBeEnabled();
     } finally {
-      await player1.context.close();
-      await player2.context.close();
+      await player1?.context.close();
+      await player2?.context.close();
       await player3?.context.close();
     }
   });
