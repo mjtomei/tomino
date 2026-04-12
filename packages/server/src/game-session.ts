@@ -15,14 +15,19 @@ import type {
   RoomId,
   RuleSet,
   ServerMessage,
-  TargetingStrategy,
+  TargetingSettings,
+  TargetingStrategyType,
+  TargetingContext,
 } from "@tetris/shared";
 import {
+  DEFAULT_TARGETING_SETTINGS,
   modernRuleSet,
 } from "@tetris/shared";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "./player-engine.js";
 import { GarbageManager } from "./garbage-manager.js";
 import { BalancingMiddleware } from "./balancing-middleware.js";
+import { AttackPowerTracker } from "./attack-power.js";
+import { getStrategy } from "./targeting.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,10 +52,12 @@ export interface GameSessionConfig {
   handicapMessinessEnabled?: boolean;
   /** Optional rule set override (defaults to modernRuleSet). */
   ruleSet?: RuleSet;
-  /** Optional targeting strategy override for garbage distribution. */
-  targetingStrategy?: TargetingStrategy;
+  /** Optional targeting strategy override for garbage distribution (legacy). */
+  targetingStrategy?: import("@tetris/shared").TargetingStrategy;
   /** Optional garbage delay override in milliseconds. */
   garbageDelayMs?: number;
+  /** Targeting settings from room configuration. */
+  targetingSettings?: TargetingSettings;
 }
 
 export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished";
@@ -62,6 +69,24 @@ export type GameSessionState = "countdown" | "playing" | "cancelled" | "finished
 function generateSeed(): number {
   // 32-bit integer seed
   return Math.floor(Math.random() * 0x7fffffff);
+}
+
+/**
+ * Compute the "board height" for a snapshot — distance from the bottom to the
+ * topmost non-empty row. Used by KOs targeting strategy to find the player
+ * closest to topping out.
+ */
+function computeBoardHeight(snapshot: GameStateSnapshot): number {
+  const board = snapshot.board;
+  for (let r = 0; r < board.length; r++) {
+    const row = board[r]!;
+    for (let c = 0; c < row.length; c++) {
+      if (row[c] !== null) {
+        return board.length - r;
+      }
+    }
+  }
+  return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -91,6 +116,7 @@ export class GameSession {
   private readonly handicapMessinessEnabled: boolean;
   private readonly playerNames: Record<PlayerId, string>;
   private readonly ruleSet: RuleSet;
+  private readonly targetingSettings: TargetingSettings;
 
   // -- Gameplay state --
   private readonly engines = new Map<PlayerId, PlayerEngine>();
@@ -98,9 +124,16 @@ export class GameSession {
   private readonly disconnected = new Set<PlayerId>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
-  private readonly targetingStrategy?: TargetingStrategy;
+  private readonly legacyTargetingStrategy?: import("@tetris/shared").TargetingStrategy;
   private readonly garbageDelayMs?: number;
   private garbageManager: GarbageManager | BalancingMiddleware | null = null;
+
+  // -- Targeting state --
+  private readonly playerStrategies = new Map<PlayerId, TargetingStrategyType>();
+  private readonly manualTargets = new Map<PlayerId, PlayerId>();
+  private attackPower: AttackPowerTracker | null = null;
+  /** Tracks who last sent garbage to each player, for KO attribution. */
+  private readonly lastGarbageSender = new Map<PlayerId, PlayerId>();
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -116,8 +149,9 @@ export class GameSession {
       config.players.map((p) => [p.id, p.name]),
     );
     this.ruleSet = config.ruleSet ?? modernRuleSet();
-    this.targetingStrategy = config.targetingStrategy;
+    this.legacyTargetingStrategy = config.targetingStrategy;
     this.garbageDelayMs = config.garbageDelayMs;
+    this.targetingSettings = config.targetingSettings ?? DEFAULT_TARGETING_SETTINGS;
 
     // Assign player indexes (0-based, room order)
     this.playerIndexes = {};
@@ -197,6 +231,64 @@ export class GameSession {
     }
 
     return snapshot;
+  }
+
+  /**
+   * Change a player's active targeting strategy.
+   */
+  setPlayerStrategy(playerId: PlayerId, strategy: TargetingStrategyType): boolean {
+    if (this._state !== "playing") return false;
+    if (!this.engines.has(playerId)) return false;
+    if (!this.targetingSettings.enabledStrategies.includes(strategy)) return false;
+
+    this.playerStrategies.set(playerId, strategy);
+
+    // If switching away from manual, clear manual target
+    if (strategy !== "manual") {
+      this.manualTargets.delete(playerId);
+    }
+
+    this.broadcastToRoom(this.roomId, {
+      type: "targetingUpdated",
+      roomId: this.roomId,
+      playerId,
+      strategy,
+      targetPlayerId: this.manualTargets.get(playerId),
+    });
+
+    return true;
+  }
+
+  /**
+   * Set a player's manual target.
+   */
+  setManualTarget(playerId: PlayerId, targetPlayerId: PlayerId): boolean {
+    if (this._state !== "playing") return false;
+    if (!this.engines.has(playerId)) return false;
+    if (targetPlayerId === playerId) return false; // can't target self
+    // Manual targeting requires the "manual" strategy to be enabled
+    if (!this.targetingSettings.enabledStrategies.includes("manual")) return false;
+
+    // Target must be alive
+    const targetEngine = this.engines.get(targetPlayerId);
+    if (!targetEngine || targetEngine.isGameOver) return false;
+
+    this.manualTargets.set(playerId, targetPlayerId);
+
+    // Auto-switch to manual strategy if not already
+    if (this.playerStrategies.get(playerId) !== "manual") {
+      this.playerStrategies.set(playerId, "manual");
+    }
+
+    this.broadcastToRoom(this.roomId, {
+      type: "targetingUpdated",
+      roomId: this.roomId,
+      playerId,
+      strategy: this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy,
+      targetPlayerId,
+    });
+
+    return true;
   }
 
   /**
@@ -293,7 +385,19 @@ export class GameSession {
           playerIndexes: this.playerIndexes,
           handicapModifiers: this.handicapModifiers,
           handicapMode: this.handicapMode,
+          targetingSettings: this.targetingSettings,
         });
+
+        // Broadcast initial targeting state for each player
+        for (const pid of this.getPlayerIds()) {
+          const strategy = this.playerStrategies.get(pid) ?? this.targetingSettings.defaultStrategy;
+          this.broadcastToRoom(this.roomId, {
+            type: "targetingUpdated",
+            roomId: this.roomId,
+            playerId: pid,
+            strategy,
+          });
+        }
 
         // Start the server tick loop
         this.startTickLoop();
@@ -309,6 +413,15 @@ export class GameSession {
 
   private initializeEngines(): void {
     const playerIds = Object.keys(this.playerIndexes);
+
+    // Initialize per-player targeting state
+    for (const pid of playerIds) {
+      this.playerStrategies.set(pid, this.targetingSettings.defaultStrategy);
+    }
+
+    // Initialize attack power tracker
+    this.attackPower = new AttackPowerTracker(playerIds);
+
     for (const playerId of playerIds) {
       const engine = new PlayerEngine({
         playerId,
@@ -325,8 +438,8 @@ export class GameSession {
       ...(this.handicapModifiers !== undefined
         ? { modifiers: this.handicapModifiers }
         : {}),
-      ...(this.targetingStrategy !== undefined
-        ? { targetingStrategy: this.targetingStrategy }
+      ...(this.legacyTargetingStrategy !== undefined
+        ? { targetingStrategy: this.legacyTargetingStrategy }
         : {}),
       ...(this.garbageDelayMs !== undefined
         ? { delayMs: this.garbageDelayMs }
@@ -398,8 +511,35 @@ export class GameSession {
     // 1. Any line clears from the player's latest action? → enqueue garbage.
     const event = engine.consumeLineClearEvent();
     if (event) {
+      // Build targeting context with per-player strategy dispatch
+      const senderStrategy = this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy;
+      const strategy = this.legacyTargetingStrategy ?? getStrategy(senderStrategy);
+      const targetingContext = this.buildTargetingContext(playerId);
+
+      // Apply attack power multiplier
+      const attackMultiplier = this.attackPower?.getMultiplier(playerId) ?? 1.0;
+
+      // Set the strategy on the garbage manager for this specific call
+      gm.setTargetingStrategy({
+        resolveTargets: (sender, players, ctx) => {
+          // Merge our extended context into the call
+          const extendedCtx: TargetingContext = {
+            ...ctx,
+            ...targetingContext,
+            // Apply attack power to the lines being sent
+            linesToSend: Math.floor(ctx.linesToSend * attackMultiplier),
+          };
+          return strategy.resolveTargets(sender, players, extendedCtx);
+        },
+      });
+
       const outcome = gm.onLinesCleared(playerId, event);
+
+      // Track last garbage sender for KO attribution
       for (const receiverId of outcome.affectedReceivers) {
+        if (receiverId !== playerId) {
+          this.lastGarbageSender.set(receiverId, playerId);
+        }
         this.syncPendingGarbage(receiverId);
       }
     }
@@ -418,6 +558,44 @@ export class GameSession {
       }
       this.syncPendingGarbage(playerId);
     }
+  }
+
+  /**
+   * Build the extended targeting context for a sender's strategy.
+   */
+  private buildTargetingContext(
+    senderId: PlayerId,
+  ): Partial<TargetingContext> {
+    // Board heights for KOs strategy
+    const boardHeights: Record<PlayerId, number> = {};
+    for (const [pid, engine] of this.engines) {
+      if (!engine.isGameOver) {
+        boardHeights[pid] = computeBoardHeight(engine.getSnapshot());
+      }
+    }
+
+    // Attacker graph: who stably targets whom
+    const attackerGraph: Record<PlayerId, PlayerId | null> = {};
+    for (const [pid, strat] of this.playerStrategies) {
+      const engine = this.engines.get(pid);
+      if (!engine || engine.isGameOver) continue;
+
+      if (strat === "manual") {
+        attackerGraph[pid] = this.manualTargets.get(pid) ?? null;
+      } else if (strat === "attackers") {
+        // Attackers strategy targets whoever targets them — this is resolved
+        // dynamically by the strategy itself, so mark as null in the graph
+        attackerGraph[pid] = null;
+      } else {
+        attackerGraph[pid] = null;
+      }
+    }
+
+    return {
+      boardHeights,
+      attackerGraph,
+      manualTarget: this.manualTargets.get(senderId) ?? null,
+    };
   }
 
   private syncPendingGarbage(playerId: PlayerId): void {
@@ -452,17 +630,71 @@ export class GameSession {
   }
 
   // -------------------------------------------------------------------------
-  // Game over / winner detection
+  // Game over / winner detection / KO attribution
   // -------------------------------------------------------------------------
 
   private handlePlayerGameOver(playerId: PlayerId): void {
     this.garbageManager?.removePlayer(playerId);
+    this.attackPower?.removePlayer(playerId);
+    this.cleanupTargetingForRemovedPlayer(playerId);
+
     this.broadcastToRoom(this.roomId, {
       type: "gameOver",
       roomId: this.roomId,
       playerId,
     });
+
+    this.attributeKO(playerId);
     this.checkForWinner(playerId);
+  }
+
+  /**
+   * Attribute a KO to the player who last sent garbage to the eliminated player.
+   */
+  private attributeKO(eliminatedPlayerId: PlayerId): void {
+    if (!this.attackPower) return;
+
+    const killer = this.lastGarbageSender.get(eliminatedPlayerId);
+    if (!killer) return;
+
+    const result = this.attackPower.recordKO(killer);
+    if (result) {
+      this.broadcastToRoom(this.roomId, {
+        type: "attackPowerUpdated",
+        roomId: this.roomId,
+        playerId: killer,
+        multiplier: result.multiplier,
+        koCount: result.koCount,
+      });
+    }
+  }
+
+  /**
+   * Clean up targeting state when a player is removed.
+   * Players with manual target pointing at the removed player get reset.
+   */
+  private cleanupTargetingForRemovedPlayer(removedId: PlayerId): void {
+    this.playerStrategies.delete(removedId);
+    this.manualTargets.delete(removedId);
+    this.lastGarbageSender.delete(removedId);
+
+    // Players manually targeting the removed player fall back to random
+    for (const [pid, target] of this.manualTargets) {
+      if (target === removedId) {
+        this.manualTargets.delete(pid);
+        // Switch to random if currently on manual
+        const currentStrategy = this.playerStrategies.get(pid);
+        if (currentStrategy === "manual") {
+          this.playerStrategies.set(pid, "random");
+          this.broadcastToRoom(this.roomId, {
+            type: "targetingUpdated",
+            roomId: this.roomId,
+            playerId: pid,
+            strategy: "random",
+          });
+        }
+      }
+    }
   }
 
   /**

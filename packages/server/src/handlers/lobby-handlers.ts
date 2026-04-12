@@ -17,7 +17,10 @@ import type {
   HandicapSettings,
   PlayerId,
   ServerMessage,
+  TargetingSettings,
+  TargetingStrategyType,
 } from "@tetris/shared";
+import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import { startGameCountdown } from "./game-handlers.js";
 
@@ -138,6 +141,22 @@ function isValidHandicapSettings(s: unknown): s is HandicapSettings {
   );
 }
 
+const VALID_STRATEGIES: ReadonlySet<string> = new Set<TargetingStrategyType>(ALL_TARGETING_STRATEGIES);
+
+function isValidTargetingSettings(s: unknown): s is TargetingSettings {
+  if (typeof s !== "object" || s === null) return false;
+  const obj = s as Record<string, unknown>;
+  if (!Array.isArray(obj.enabledStrategies)) return false;
+  if (obj.enabledStrategies.length === 0) return false;
+  for (const strat of obj.enabledStrategies) {
+    if (!VALID_STRATEGIES.has(strat as string)) return false;
+  }
+  if (typeof obj.defaultStrategy !== "string") return false;
+  if (!VALID_STRATEGIES.has(obj.defaultStrategy)) return false;
+  if (!(obj.enabledStrategies as string[]).includes(obj.defaultStrategy)) return false;
+  return true;
+}
+
 export function handleUpdateRoomSettings(
   msg: C2S_UpdateRoomSettings,
   ctx: HandlerContext,
@@ -169,7 +188,16 @@ export function handleUpdateRoomSettings(
     return;
   }
 
+  if (msg.targetingSettings !== undefined && !isValidTargetingSettings(msg.targetingSettings)) {
+    sendError(ctx, "INVALID_MESSAGE", "Invalid targeting settings");
+    return;
+  }
+
   store.setHandicapSettings(msg.roomId, msg.handicapSettings, msg.ratingVisible);
+
+  if (msg.targetingSettings !== undefined) {
+    store.setTargetingSettings(msg.roomId, msg.targetingSettings);
+  }
 
   ctx.broadcastToRoom(msg.roomId, {
     type: "roomUpdated",

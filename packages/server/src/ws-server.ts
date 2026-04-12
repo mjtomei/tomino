@@ -8,6 +8,7 @@ import {
   handleJoinRoom,
   handleLeaveRoom,
   handleStartGame,
+  handleUpdateRoomSettings,
   handleDisconnect,
   type HandlerContext,
 } from "./handlers/lobby-handlers.js";
@@ -15,6 +16,8 @@ import {
   handleGameDisconnect,
   handlePlayerInput,
   handleRejoinRoom,
+  handleSetTargetingStrategy,
+  handleSetManualTarget,
 } from "./handlers/game-handlers.js";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
@@ -202,6 +205,9 @@ export function createWebSocketServer(
         case "startGame":
           handleStartGame(msg, ctx, store);
           break;
+        case "updateRoomSettings":
+          handleUpdateRoomSettings(msg, ctx, store);
+          break;
         case "playerInput":
           handlePlayerInput(msg, client.playerId!, (code, message) => {
             ctx.send({ type: "error", code, message });
@@ -211,6 +217,16 @@ export function createWebSocketServer(
           handleRejoinRoom(msg, client.playerId!, {
             broadcastToRoom,
             send: ctx.send,
+          });
+          break;
+        case "setTargetingStrategy":
+          handleSetTargetingStrategy(msg, client.playerId!, (code, message) => {
+            ctx.send({ type: "error", code, message });
+          });
+          break;
+        case "setManualTarget":
+          handleSetManualTarget(msg, client.playerId!, (code, message) => {
+            ctx.send({ type: "error", code, message });
           });
           break;
       }

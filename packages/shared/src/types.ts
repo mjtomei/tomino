@@ -3,6 +3,7 @@
  */
 
 import type { HandicapSettings } from "./handicap-types.js";
+import type { TargetingSettings } from "./targeting-types.js";
 
 // ---------------------------------------------------------------------------
 // Pieces
@@ -75,6 +76,8 @@ export interface RoomState {
   hostId: PlayerId;
   /** Lobby-configurable handicap settings. */
   handicapSettings?: HandicapSettings;
+  /** Lobby-configurable targeting settings. */
+  targetingSettings?: TargetingSettings;
   /** Whether player ratings are visible in the waiting room. */
   ratingVisible?: boolean;
   /** Player ratings keyed by player ID (looked up from skill store on join). */

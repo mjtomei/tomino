@@ -14,7 +14,8 @@ import type {
   RoomId,
   ServerMessage,
 } from "@tetris/shared";
-import type { C2S_PlayerInput, C2S_RejoinRoom } from "@tetris/shared";
+import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
+import type { C2S_PlayerInput, C2S_RejoinRoom, C2S_SetTargetingStrategy, C2S_SetManualTarget } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
@@ -94,6 +95,7 @@ export function startGameCountdown(
     handicapMode,
     handicapDelayEnabled: settings?.delayEnabled ?? false,
     handicapMessinessEnabled: settings?.messinessEnabled ?? false,
+    targetingSettings: room.targetingSettings,
     onGameStarted: () => {
       // Engines and tick loop are now managed by GameSession itself
     },
@@ -141,6 +143,71 @@ export function handlePlayerInput(
 
   // Apply the input — the session handles broadcasting
   session.applyInput(playerId, msg.action);
+}
+
+/**
+ * Handle a setTargetingStrategy message from a client.
+ */
+export function handleSetTargetingStrategy(
+  msg: C2S_SetTargetingStrategy,
+  playerId: PlayerId,
+  sendError: (code: ErrorCode, message: string) => void,
+): void {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    sendError("ROOM_NOT_FOUND", "No active game session for this room");
+    return;
+  }
+
+  if (session.state !== "playing") {
+    sendError("INVALID_MESSAGE", "Game is not in progress");
+    return;
+  }
+
+  if (!session.getPlayerIds().includes(playerId)) {
+    sendError("NOT_IN_ROOM", "Player is not in this game session");
+    return;
+  }
+
+  if (!ALL_TARGETING_STRATEGIES.includes(msg.strategy)) {
+    sendError("INVALID_MESSAGE", `Invalid targeting strategy: ${msg.strategy}`);
+    return;
+  }
+
+  const ok = session.setPlayerStrategy(playerId, msg.strategy);
+  if (!ok) {
+    sendError("INVALID_MESSAGE", "Strategy not enabled for this game");
+  }
+}
+
+/**
+ * Handle a setManualTarget message from a client.
+ */
+export function handleSetManualTarget(
+  msg: C2S_SetManualTarget,
+  playerId: PlayerId,
+  sendError: (code: ErrorCode, message: string) => void,
+): void {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    sendError("ROOM_NOT_FOUND", "No active game session for this room");
+    return;
+  }
+
+  if (session.state !== "playing") {
+    sendError("INVALID_MESSAGE", "Game is not in progress");
+    return;
+  }
+
+  if (!session.getPlayerIds().includes(playerId)) {
+    sendError("NOT_IN_ROOM", "Player is not in this game session");
+    return;
+  }
+
+  const ok = session.setManualTarget(playerId, msg.targetPlayerId);
+  if (!ok) {
+    sendError("INVALID_MESSAGE", "Invalid target player");
+  }
 }
 
 /**
