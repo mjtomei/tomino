@@ -70,6 +70,8 @@ describe("game-handlers", () => {
         "countdown",   // 1
         "countdown",   // 0
         "gameStarted",
+        "targetingUpdated", // player A initial targeting
+        "targetingUpdated", // player B initial targeting
       ]);
 
       removeGameSession(roomId);
@@ -199,7 +201,7 @@ describe("game-handlers", () => {
       removeGameSession(roomId);
     });
 
-    it("does not cancel if game is already playing", () => {
+    it("opens a reconnect grace window on disconnect during playing (no immediate forfeit)", () => {
       const roomId = setupRoom();
       const spy = createBroadcastSpy();
 
@@ -210,14 +212,20 @@ describe("game-handlers", () => {
       const session = getGameSession(roomId);
       expect(session?.state).toBe("playing");
 
-      // Disconnect during playing should not cancel
+      // Disconnect during playing should NOT immediately mark game over —
+      // it starts the reconnect grace window instead.
       const msgCountBefore = spy.messages.length;
-      handleGameDisconnect("p2", roomId, { broadcastToRoom: spy.broadcastToRoom });
+      const result = handleGameDisconnect("p2", roomId, { broadcastToRoom: spy.broadcastToRoom }, store);
+      expect(result.pendingReconnect).toBe(true);
 
-      expect(session?.state).toBe("playing"); // Not cancelled
-      // No additional error message
+      // No error message — this is handled gracefully
       const errorMsgs = spy.messages.slice(msgCountBefore).filter((m) => m.msg.type === "error");
       expect(errorMsgs).toHaveLength(0);
+
+      // A playerDisconnected notice (not gameOver) should be broadcast.
+      const notices = spy.messages.slice(msgCountBefore);
+      expect(notices.some((m) => m.msg.type === "playerDisconnected")).toBe(true);
+      expect(notices.some((m) => m.msg.type === "gameOver")).toBe(false);
 
       removeGameSession(roomId);
     });

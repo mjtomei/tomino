@@ -37,6 +37,11 @@ export interface BoardCanvasProps {
   cellSize?: number;
   /** Handicap indicator data. If undefined, no indicator is shown. */
   handicap?: HandicapIndicatorData;
+  /**
+   * Draw the hold / next side panels inside the canvas. Default: true.
+   * Set to false when the surrounding UI provides DOM-based hold/next displays.
+   */
+  showSidePanels?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -235,11 +240,12 @@ export function renderBoard(
   state: GameState,
   cellSize: number,
   handicap?: HandicapIndicatorData,
+  showSidePanels = true,
 ): void {
-  const boardX = (SIDE_PANEL_CELLS + PANEL_GAP) * cellSize;
+  const boardX = showSidePanels ? (SIDE_PANEL_CELLS + PANEL_GAP) * cellSize : 0;
   const boardW = BOARD_WIDTH * cellSize;
   const boardH = VISIBLE_HEIGHT * cellSize;
-  const canvasW = TOTAL_WIDTH_CELLS * cellSize;
+  const canvasW = showSidePanels ? TOTAL_WIDTH_CELLS * cellSize : boardW;
   const canvasH = TOTAL_HEIGHT_CELLS * cellSize;
 
   // Clear
@@ -332,6 +338,8 @@ export function renderBoard(
   ctx.lineWidth = 2;
   ctx.strokeRect(boardX, 0, boardW, boardH);
 
+  if (!showSidePanels) return;
+
   // -- Hold panel (left) --
   const holdPanelX = 0;
   const holdPanelW = SIDE_PANEL_CELLS * cellSize;
@@ -391,7 +399,7 @@ export function renderBoard(
 // Component
 // ---------------------------------------------------------------------------
 
-export function BoardCanvas({ state, cellSize = 30, handicap }: BoardCanvasProps) {
+export function BoardCanvas({ state, cellSize = 30, showSidePanels = true, handicap }: BoardCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const stateRef = useRef(state);
@@ -409,8 +417,8 @@ export function BoardCanvas({ state, cellSize = 30, handicap }: BoardCanvasProps
     }
     const ctx = ctxRef.current;
     if (!ctx) return;
-    renderBoard(ctx, stateRef.current, cellSize, handicapRef.current);
-  }, [cellSize]);
+    renderBoard(ctx, stateRef.current, cellSize, handicapRef.current, showSidePanels);
+  }, [cellSize, showSidePanels]);
 
   // Schedule a draw on each state/handicap change
   useEffect(() => {
@@ -419,7 +427,9 @@ export function BoardCanvas({ state, cellSize = 30, handicap }: BoardCanvasProps
     return () => cancelAnimationFrame(rafRef.current);
   }, [state, handicap, draw]);
 
-  const canvasW = TOTAL_WIDTH_CELLS * cellSize;
+  const canvasW = showSidePanels
+    ? TOTAL_WIDTH_CELLS * cellSize
+    : BOARD_WIDTH * cellSize;
   const canvasH = TOTAL_HEIGHT_CELLS * cellSize;
 
   return (

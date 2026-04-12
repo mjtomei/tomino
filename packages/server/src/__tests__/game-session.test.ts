@@ -170,9 +170,12 @@ describe("GameSession", () => {
       }
 
       // After 4s: gameStarted (delayed so "Go!" is visible)
+      // Plus 2 targetingUpdated messages (one per player)
       vi.advanceTimersByTime(1000);
-      expect(spy.messages).toHaveLength(5);
+      expect(spy.messages).toHaveLength(7);
       expect(spy.messages[4].msg.type).toBe("gameStarted");
+      expect(spy.messages[5].msg.type).toBe("targetingUpdated");
+      expect(spy.messages[6].msg.type).toBe("targetingUpdated");
     });
 
     it("sends countdown messages to the correct room", () => {
@@ -223,7 +226,7 @@ describe("GameSession", () => {
       expect(onGameStarted).toHaveBeenCalledTimes(1);
     });
 
-    it("does not send extra messages after countdown completes", () => {
+    it("does not send extra countdown messages after countdown completes", () => {
       const spy = createBroadcastSpy();
       const session = new GameSession({
         roomId: "room-1",
@@ -234,9 +237,16 @@ describe("GameSession", () => {
       session.startCountdown();
       vi.advanceTimersByTime(4000);
 
-      const countAfter = spy.messages.length;
+      // After countdown completes, no more countdown messages should be sent
+      // (gameplay tick messages are expected — only checking no stray countdowns)
+      const countdownsBefore = spy.messages.filter(
+        (m) => m.msg.type === "countdown",
+      ).length;
       vi.advanceTimersByTime(5000);
-      expect(spy.messages.length).toBe(countAfter);
+      const countdownsAfter = spy.messages.filter(
+        (m) => m.msg.type === "countdown",
+      ).length;
+      expect(countdownsAfter).toBe(countdownsBefore);
     });
   });
 

@@ -29,6 +29,8 @@ export interface ScoringState {
   b2b: number;
   /** Starting level (needed for NES level-up threshold). */
   startLevel: number;
+  /** Total pieces locked onto the board. */
+  piecesPlaced: number;
 }
 
 /** Interface that both scoring systems implement. */
@@ -157,5 +159,6 @@ export function createScoringState(startLevel: number): ScoringState {
     combo: -1,
     b2b: -1,
     startLevel,
+    piecesPlaced: 0,
   };
 }

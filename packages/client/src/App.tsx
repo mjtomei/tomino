@@ -7,10 +7,16 @@ import { WaitingRoom } from "./ui/WaitingRoom";
 import { StatsScreen } from "./ui/StatsScreen";
 import { Countdown } from "./ui/Countdown";
 import { computeIndicatorData } from "./ui/handicap-indicator";
+import { GameShell } from "./ui/GameShell";
+import { LatencyIndicator } from "./ui/LatencyIndicator";
+import { useLatency } from "./net/latency";
+import { GameMultiplayer } from "./ui/GameMultiplayer";
+import { GameResults } from "./ui/GameResults";
 
 function App() {
   const lobby = useLobby();
   const [showStats, setShowStats] = useState(false);
+  const [showSolo, setShowSolo] = useState(false);
 
   // Compute handicap indicator data (must be called unconditionally as a hook)
   const currentPlayerId = makePlayerInfo(lobby.playerName).id;
@@ -28,12 +34,18 @@ function App() {
     );
   }, [session?.handicapModifiers, session?.handicapMode, lobby.state.room, currentPlayerId, lobby.playerName]);
 
+  const latencyMs = useLatency(lobby.socket, lobby.state.view === "playing");
+
   if (showStats) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e" }}>
         <StatsScreen username={lobby.playerName} onBack={() => setShowStats(false)} />
       </div>
     );
+  }
+
+  if (showSolo) {
+    return <GameShell onBack={() => setShowSolo(false)} />;
   }
 
   switch (lobby.state.view) {
@@ -55,6 +67,7 @@ function App() {
           error={lobby.state.error}
           onCreateRoom={lobby.createRoom}
           onJoinRoom={lobby.openJoinDialog}
+          onSoloPlay={() => setShowSolo(true)}
           onViewStats={() => setShowStats(true)}
           onClearError={lobby.clearError}
         />
@@ -69,6 +82,7 @@ function App() {
             error={null}
             onCreateRoom={lobby.createRoom}
             onJoinRoom={lobby.openJoinDialog}
+            onSoloPlay={() => setShowSolo(true)}
             onViewStats={() => setShowStats(true)}
             onClearError={lobby.clearError}
           />
@@ -88,6 +102,8 @@ function App() {
           currentPlayerId={makePlayerInfo(lobby.playerName).id}
           handicapSettings={lobby.handicapSettings}
           onHandicapSettingsChange={lobby.updateHandicapSettings}
+          targetingSettings={lobby.lobbyTargetingSettings}
+          onTargetingSettingsChange={lobby.updateTargetingSettings}
           onLeave={lobby.leaveRoom}
           onStart={lobby.startGame}
         />
@@ -99,52 +115,66 @@ function App() {
       );
 
     case "playing": {
-      const playerIndex = session?.playerIndexes[currentPlayerId] ?? 0;
+      if (!lobby.state.room) return null;
       return (
-        <div style={playingStyles.container}>
-          <h1 style={playingStyles.title}>Game Active</h1>
-          <p style={playingStyles.info}>
-            Player #{playerIndex + 1} — Seed: {session?.seed}
-          </p>
+        <>
           {handicapData && (
-            <p style={playingStyles.info}>
+            <div style={handicapBannerStyle}>
               Handicap: {handicapData.incomingMultiplier.toFixed(1)}x incoming
               {handicapData.outgoingMultiplier != null && `, ${handicapData.outgoingMultiplier.toFixed(1)}x outgoing`}
-            </p>
+            </div>
           )}
-          <p style={playingStyles.subtitle}>
-            Game board will be implemented in a future PR.
-          </p>
+          <GameMultiplayer
+            room={lobby.state.room}
+            currentPlayerId={currentPlayerId}
+            seed={session?.seed}
+            opponentSnapshots={lobby.state.opponentStates}
+            localPendingGarbage={lobby.state.localPendingGarbage}
+            localElimination={lobby.state.localElimination}
+            targetingStates={lobby.state.targetingStates}
+            attackPowers={lobby.state.attackPowers}
+            targetingSettings={lobby.state.targetingSettings}
+            onStrategyChange={lobby.setTargetingStrategy}
+            onManualTarget={lobby.setManualTarget}
+          />
+          <LatencyIndicator latencyMs={latencyMs} />
+        </>
+      );
+    }
+
+    case "results": {
+      if (!lobby.state.room || !lobby.state.gameEndData) return null;
+      const playerNames: Record<string, string> = {};
+      for (const p of lobby.state.room.players) {
+        playerNames[p.id] = p.name;
+      }
+      return (
+        <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e", color: "#e0e0e0", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <GameResults
+            localPlayerId={currentPlayerId}
+            winnerId={lobby.state.gameEndData.winnerId}
+            placements={lobby.state.gameEndData.placements}
+            stats={lobby.state.gameEndData.stats}
+            playerNames={playerNames}
+            onBackToLobby={lobby.leaveRoom}
+          />
         </div>
       );
     }
   }
 }
 
-const playingStyles = {
-  container: {
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    fontFamily: "system-ui, sans-serif",
-    backgroundColor: "#1a1a2e",
-    color: "#e0e0e0",
-  },
-  title: {
-    fontSize: "2.5rem",
-    marginBottom: "1rem",
-  },
-  info: {
-    fontSize: "1.2rem",
-    color: "#aaa",
-    marginBottom: "0.5rem",
-  },
-  subtitle: {
-    fontSize: "1rem",
-    color: "#666",
-  },
+const handicapBannerStyle = {
+  position: "fixed" as const,
+  top: 0,
+  left: 0,
+  right: 0,
+  padding: "0.25rem 0.5rem",
+  fontSize: "0.9rem",
+  color: "#aaa",
+  backgroundColor: "rgba(26, 26, 46, 0.85)",
+  textAlign: "center" as const,
+  zIndex: 10,
 };
 
 export default App;

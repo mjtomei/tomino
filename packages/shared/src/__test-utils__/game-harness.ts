@@ -174,6 +174,9 @@ function createInternalEngine(
       linesCleared > 0 &&
       es.grid.every((r) => r.every((cell) => cell === null));
 
+    // Track piece placement
+    es.scoring.piecesPlaced++;
+
     // Update scoring
     scoringSystem.onLineClear(es.scoring, linesCleared, tSpin, isPerfectClear);
 
@@ -228,6 +231,7 @@ function createInternalEngine(
       score: es.scoring.score,
       level: es.scoring.level,
       linesCleared: es.scoring.lines,
+      piecesPlaced: es.scoring.piecesPlaced,
       pendingGarbage: [...es.pendingGarbage],
       isGameOver: es.isGameOver,
     };
