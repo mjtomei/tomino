@@ -1,8 +1,17 @@
 import { useRef, useEffect, useCallback } from "react";
 import type { GameState, PieceType, PieceShape } from "@tetris/shared";
 import { BOARD_WIDTH, VISIBLE_HEIGHT, BUFFER_HEIGHT, SRSRotation } from "@tetris/shared";
-import { PIECE_COLORS, darken, lighten, BOARD_BG, GRID_LINE_COLOR, PANEL_BG } from "./colors.js";
+import { PIECE_COLORS, darken, lighten, BOARD_BG, PANEL_BG } from "./colors.js";
 import { PieceAnimator, type AnimatedRenderState } from "./piece-animation.js";
+import type { ThemePalette } from "../atmosphere/themes.js";
+import {
+  computeShimmer,
+  computeGridPulse,
+  computeBreathe,
+  computeGlint,
+  glintContribution,
+  type GlintState,
+} from "../atmosphere/board-life.js";
 
 // ---------------------------------------------------------------------------
 // Layout constants
@@ -34,6 +43,19 @@ export interface BoardCanvasProps {
    * Set to false when the surrounding UI provides DOM-based hold/next displays.
    */
   showSidePanels?: boolean;
+  /** Atmosphere intensity (0..1) — drives idle animation strength. */
+  atmosphereIntensity?: number;
+  /** Theme palette — drives shimmer hue and grid line color. */
+  themePalette?: ThemePalette;
+}
+
+export interface BoardLifeFrame {
+  now: number;
+  intensity: number;
+  palette?: ThemePalette;
+  glint: GlintState;
+  breathe: number;
+  gridAlpha: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -46,6 +68,8 @@ function drawCell(
   y: number,
   size: number,
   color: string,
+  highlightMul = 1,
+  glintBoost = 0,
 ): void {
   const border = Math.max(1, size * 0.06);
 
@@ -53,8 +77,9 @@ function drawCell(
   ctx.fillStyle = color;
   ctx.fillRect(x, y, size, size);
 
-  // Top + left highlight
-  ctx.fillStyle = lighten(color, 0.35);
+  // Top + left highlight (breathes with idle animation)
+  const hi = Math.max(0, Math.min(1, 0.35 * highlightMul + glintBoost * 0.35));
+  ctx.fillStyle = lighten(color, hi);
   ctx.fillRect(x, y, size, border);           // top
   ctx.fillRect(x, y, border, size);            // left
 
@@ -144,6 +169,7 @@ export function renderBoard(
   cellSize: number,
   showSidePanels = true,
   anim?: AnimatedRenderState,
+  life?: BoardLifeFrame,
 ): void {
   const boardX = showSidePanels ? (SIDE_PANEL_CELLS + PANEL_GAP) * cellSize : 0;
   const boardW = BOARD_WIDTH * cellSize;
@@ -160,6 +186,8 @@ export function renderBoard(
   ctx.fillRect(boardX, 0, boardW, boardH);
 
   // -- Placed cells --
+  const breathe = life ? life.breathe : 1;
+  const accent = life?.palette?.accent;
   for (let visRow = 0; visRow < VISIBLE_HEIGHT; visRow++) {
     const boardRow = visRow + BUFFER_HEIGHT;
     const row = state.board[boardRow];
@@ -167,7 +195,20 @@ export function renderBoard(
     for (let col = 0; col < BOARD_WIDTH; col++) {
       const cell = row[col];
       if (cell) {
-        drawCell(ctx, boardX + col * cellSize, visRow * cellSize, cellSize, PIECE_COLORS[cell]);
+        const base = PIECE_COLORS[cell];
+        const color = life
+          ? computeShimmer(base, life.now, life.intensity, visRow * 31 + col, accent)
+          : base;
+        const glintAmt = life ? glintContribution(life.glint, col, visRow) : 0;
+        drawCell(
+          ctx,
+          boardX + col * cellSize,
+          visRow * cellSize,
+          cellSize,
+          color,
+          breathe,
+          glintAmt,
+        );
       }
     }
   }
@@ -232,7 +273,7 @@ export function renderBoard(
           // spawn (inside the buffer) are not drawn.
           const logicalVisRow = row + r - BUFFER_HEIGHT;
           if (logicalVisRow >= -1 && logicalVisRow < VISIBLE_HEIGHT) {
-            drawCell(ctx, cellX, cellY, cellSize, PIECE_COLORS[type]);
+            drawCell(ctx, cellX, cellY, cellSize, PIECE_COLORS[type], breathe);
           }
         }
       }
@@ -243,7 +284,8 @@ export function renderBoard(
   }
 
   // -- Grid lines --
-  ctx.strokeStyle = GRID_LINE_COLOR;
+  const gridAlpha = life ? life.gridAlpha : 0.06;
+  ctx.strokeStyle = `rgba(255, 255, 255, ${gridAlpha})`;
   ctx.lineWidth = 1;
   for (let r = 1; r < VISIBLE_HEIGHT; r++) {
     const y = r * cellSize + 0.5;
@@ -322,14 +364,24 @@ export function renderBoard(
 // Component
 // ---------------------------------------------------------------------------
 
-export function BoardCanvas({ state, cellSize = 30, showSidePanels = true }: BoardCanvasProps) {
+export function BoardCanvas({
+  state,
+  cellSize = 30,
+  showSidePanels = true,
+  atmosphereIntensity = 0,
+  themePalette,
+}: BoardCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const stateRef = useRef(state);
   const rafRef = useRef<number>(0);
   const animatorRef = useRef<PieceAnimator>(new PieceAnimator());
+  const intensityRef = useRef(atmosphereIntensity);
+  const paletteRef = useRef(themePalette);
 
   stateRef.current = state;
+  intensityRef.current = atmosphereIntensity;
+  paletteRef.current = themePalette;
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -342,15 +394,23 @@ export function BoardCanvas({ state, cellSize = 30, showSidePanels = true }: Boa
     const now =
       typeof performance !== "undefined" ? performance.now() : Date.now();
     const anim = animatorRef.current.update(stateRef.current.currentPiece, now);
-    renderBoard(ctx, stateRef.current, cellSize, showSidePanels, anim);
+    const intensity = intensityRef.current;
+    const glint = computeGlint(now, BOARD_WIDTH, VISIBLE_HEIGHT);
+    const life: BoardLifeFrame = {
+      now,
+      intensity,
+      palette: paletteRef.current,
+      glint,
+      breathe: computeBreathe(now, intensity),
+      gridAlpha: computeGridPulse(now, intensity).alpha,
+    };
+    renderBoard(ctx, stateRef.current, cellSize, showSidePanels, anim, life);
 
-    // Keep ticking while animations are in progress.
-    if (anim.animating) {
-      rafRef.current = requestAnimationFrame(draw);
-    }
+    // Idle animations need a continuous rAF tick.
+    rafRef.current = requestAnimationFrame(draw);
   }, [cellSize, showSidePanels]);
 
-  // Schedule a draw on each state change (and start a loop if needed).
+  // Kick the loop on mount / state change; the loop self-reschedules.
   useEffect(() => {
     cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(draw);

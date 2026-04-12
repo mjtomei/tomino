@@ -14,7 +14,7 @@ import { SoundManager } from "../audio/sounds.js";
 import type { SoundEvent } from "../audio/sounds.js";
 import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
-import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
+import { useAtmosphere, useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
@@ -172,8 +172,9 @@ function MultiplayerGameShell({
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
   const atmosphereUpdate = useAtmosphereUpdater();
+  const atmosphereState = useAtmosphere();
 
-  const { genreId } = useTheme();
+  const { genreId, theme } = useTheme();
 
   const mpRuleSet = useMemo(() => modernRuleSet(), []);
   const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
@@ -349,7 +350,12 @@ function MultiplayerGameShell({
           {pendingGarbage && pendingGarbage.length > 0 && (
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
-          <BoardCanvas state={gameState} showSidePanels={false} />
+          <BoardCanvas
+            state={gameState}
+            showSidePanels={false}
+            atmosphereIntensity={atmosphereState.intensity}
+            themePalette={theme.palette}
+          />
         </div>
 
         <div className="game-right-panel">
@@ -395,7 +401,8 @@ function SoloGameShell({
 
   const atmosphereUpdate = useAtmosphereUpdater();
   const atmosphereReset = useAtmosphereReset();
-  const { genreId: soloGenreId } = useTheme();
+  const soloAtmosphereState = useAtmosphere();
+  const { genreId: soloGenreId, theme: soloTheme } = useTheme();
 
   // Initialize sound manager
   useEffect(() => {
@@ -655,7 +662,12 @@ function SoloGameShell({
           {pendingGarbage && pendingGarbage.length > 0 && (
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
-          <BoardCanvas state={gameState} showSidePanels={false} />
+          <BoardCanvas
+            state={gameState}
+            showSidePanels={false}
+            atmosphereIntensity={soloAtmosphereState.intensity}
+            themePalette={soloTheme.palette}
+          />
           <Overlay
             state={gameState}
             modeConfig={modeConfig}
