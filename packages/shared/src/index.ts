@@ -80,6 +80,9 @@ export { createRandomizer, seededRng } from "./engine/randomizer.js";
 export { SevenBagRandomizer } from "./engine/randomizer-7bag.js";
 export { PureRandomRandomizer } from "./engine/randomizer-pure.js";
 
+export type { RNG } from "./engine/rng.js";
+export { createRNG } from "./engine/rng.js";
+
 export type { HoldState, HoldResult } from "./engine/hold.js";
 export { createHoldState, holdPiece, resetHoldFlag } from "./engine/hold.js";
 
