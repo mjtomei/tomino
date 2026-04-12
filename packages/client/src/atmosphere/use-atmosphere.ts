@@ -72,7 +72,9 @@ export function AtmosphereProvider({ children }: AtmosphereProviderProps) {
       next.events.length > 0 ||
       Math.abs(next.intensity - prev.intensity) > 0.001 ||
       Math.abs(next.danger - prev.danger) > 0.001 ||
-      Math.abs(next.momentum - prev.momentum) > 0.001;
+      Math.abs(next.momentum - prev.momentum) > 0.001 ||
+      next.flow.active !== prev.flow.active ||
+      Math.abs(next.flow.level - prev.flow.level) > 0.01;
 
     if (isDevOrTest() && typeof window !== "undefined") {
       window.__atmosphere__ = next;

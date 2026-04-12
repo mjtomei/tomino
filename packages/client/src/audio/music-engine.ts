@@ -78,6 +78,8 @@ export class MusicEngine {
   private intensity = 0;
   private danger = 0;
   private momentum = 0;
+  private flowActive = false;
+  private flowLevel = 0;
 
   // Level-up flourish: remaining steps to use a lifted root.
   private flourishStepsLeft = 0;
@@ -123,6 +125,8 @@ export class MusicEngine {
     this.intensity = atmosphere.intensity;
     this.danger = atmosphere.danger;
     this.momentum = atmosphere.momentum;
+    this.flowActive = atmosphere.flow.active;
+    this.flowLevel = atmosphere.flow.level;
 
     for (const ev of atmosphere.events) {
       this.onEvent(ev);
@@ -227,8 +231,11 @@ export class MusicEngine {
     this.ensureLayerNodes();
     const t = this.ctx.currentTime;
     for (const nodes of this.layers.values()) {
-      const active = isLayerActive(nodes.layer, this.intensity);
-      const target = active ? nodes.layer.instrument.gain : 0;
+      // Flow state unlocks every harmonic layer unconditionally and
+      // adds a small gain boost for a richer Zone groove.
+      const active = this.flowActive || isLayerActive(nodes.layer, this.intensity);
+      const boost = 1 + this.flowLevel * 0.2;
+      const target = active ? nodes.layer.instrument.gain * boost : 0;
       if (Math.abs(target - nodes.targetGain) < 1e-6) continue;
       nodes.targetGain = target;
       nodes.gain.gain.cancelScheduledValues(t);
@@ -271,7 +278,9 @@ export class MusicEngine {
 
   private scheduleStep(when: number): void {
     if (!this.ctx) return;
-    const scale = shiftScale(this.genre.scaleDegrees, this.danger);
+    // Flow mutes the danger-driven scale darkening — Zone stays bright.
+    const scaleDanger = this.flowActive ? 0 : this.danger;
+    const scale = shiftScale(this.genre.scaleDegrees, scaleDanger);
     const root = this.currentRoot();
     const useFills = this.momentum > 0.5;
 

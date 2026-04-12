@@ -80,6 +80,7 @@ function atmosphere(partial: Partial<AtmosphereState> = {}): AtmosphereState {
     intensity: 0,
     danger: 0,
     momentum: 0,
+    flow: { active: false, level: 0, sustainedMs: 0 },
     events: [],
     ...partial,
   };
