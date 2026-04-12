@@ -16,9 +16,9 @@ test.describe("single-player game modes", () => {
     await setupSoloGame(page, { preset: "modern", mode: "marathon" });
 
     const stats = await readScoreDisplay(page);
-    expect(typeof stats.score).toBe("number");
-    expect(typeof stats.level).toBe("number");
-    expect(typeof stats.lines).toBe("number");
+    expect(stats.score).toBeGreaterThanOrEqual(0);
+    expect(stats.level).toBeGreaterThanOrEqual(0);
+    expect(stats.lines).toBeGreaterThanOrEqual(0);
   });
 
   test("sprint mode shows timer and lines remaining", async ({ page }) => {
