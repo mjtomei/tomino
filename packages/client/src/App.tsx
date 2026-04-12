@@ -54,7 +54,11 @@ function AppInner() {
   // Solo play hands the music engine off to GameShell's useMusicSync;
   // stats screen is visually over the menu so keep ambient on there.
   const musicView = showSolo ? "playing" : showStats ? "menu" : currentView;
-  useMenuMusic(musicView);
+  const localPlayerIdForMusic = makePlayerInfo(lobby.playerName).id;
+  const winnerBurst =
+    currentView === "results" &&
+    lobby.state.gameEndData?.winnerId === localPlayerIdForMusic;
+  useMenuMusic(musicView, winnerBurst);
 
   // Compute handicap indicator data (must be called unconditionally as a hook)
   const currentPlayerId = makePlayerInfo(lobby.playerName).id;

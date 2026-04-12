@@ -24,7 +24,7 @@ import {
 import { MusicEngine, type MusicEngineReadout } from "./music-engine.js";
 import { useAtmosphere } from "../atmosphere/use-atmosphere.js";
 import { useTheme } from "../atmosphere/theme-context.js";
-import type { AtmosphereState } from "../atmosphere/types.js";
+import type { AtmosphereState, AtmosphereEvent } from "../atmosphere/types.js";
 
 const VOLUME_KEY = "tetris.music.volume";
 const MUTED_KEY = "tetris.music.muted";
@@ -181,7 +181,10 @@ const MENU_ATMOSPHERE_STATE: AtmosphereState = {
   events: [],
 };
 
-export function useMenuMusic(view: string | undefined): void {
+export function useMenuMusic(
+  view: string | undefined,
+  winnerBurst: boolean = false,
+): void {
   const ctx = useContext(MusicContext);
 
   useEffect(() => {
@@ -195,7 +198,15 @@ export function useMenuMusic(view: string | undefined): void {
     if (isMenu) {
       ctx.engine.setAmbient(true);
       ctx.engine.start();
-      ctx.engine.sync(1, MENU_ATMOSPHERE_STATE);
+      const entryEvents: AtmosphereEvent[] =
+        view === "results" && winnerBurst
+          ? [{ type: "tetris", magnitude: 4 }]
+          : [];
+      const state: AtmosphereState =
+        entryEvents.length > 0
+          ? { ...MENU_ATMOSPHERE_STATE, events: entryEvents }
+          : MENU_ATMOSPHERE_STATE;
+      ctx.engine.sync(1, state);
       if (isDevOrTest() && typeof window !== "undefined") {
         window.__music__ = ctx.engine.getReadout();
       }
@@ -203,7 +214,7 @@ export function useMenuMusic(view: string | undefined): void {
       ctx.engine.setAmbient(false);
       ctx.engine.stop();
     }
-  }, [ctx, view]);
+  }, [ctx, view, winnerBurst]);
 }
 
 /**
