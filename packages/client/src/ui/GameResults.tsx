@@ -1,5 +1,5 @@
 import type { PlayerId, PlayerStats } from "@tetris/shared";
-import { formatTime } from "./formatTime.js";
+import { formatTime, placementLabel } from "./formatTime.js";
 import "./GameResults.css";
 
 export interface GameResultsProps {
@@ -9,15 +9,6 @@ export interface GameResultsProps {
   stats: Record<PlayerId, PlayerStats>;
   playerNames: Record<PlayerId, string>;
   onBackToLobby: () => void;
-}
-
-function placementLabel(place: number): string {
-  switch (place) {
-    case 1: return "1st";
-    case 2: return "2nd";
-    case 3: return "3rd";
-    default: return `${place}th`;
-  }
 }
 
 export function GameResults({
