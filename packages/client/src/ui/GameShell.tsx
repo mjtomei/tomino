@@ -16,6 +16,7 @@ import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
 import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
+import { EventBurstCanvas } from "../atmosphere/EventBurstCanvas.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
@@ -350,6 +351,7 @@ function MultiplayerGameShell({
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
           <BoardCanvas state={gameState} showSidePanels={false} />
+          <EventBurstCanvas width={300} height={600} />
         </div>
 
         <div className="game-right-panel">
@@ -656,6 +658,7 @@ function SoloGameShell({
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
           <BoardCanvas state={gameState} showSidePanels={false} />
+          <EventBurstCanvas width={300} height={600} />
           <Overlay
             state={gameState}
             modeConfig={modeConfig}
