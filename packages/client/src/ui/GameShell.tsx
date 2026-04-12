@@ -15,6 +15,7 @@ import type { SoundEvent } from "../audio/sounds.js";
 import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
 import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
+import { useMusicSync } from "../audio/use-music.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
@@ -172,6 +173,7 @@ function MultiplayerGameShell({
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
   const atmosphereUpdate = useAtmosphereUpdater();
+  useMusicSync(gameState.scoring.level, gameState.status);
 
   const { genreId } = useTheme();
 
@@ -395,6 +397,7 @@ function SoloGameShell({
 
   const atmosphereUpdate = useAtmosphereUpdater();
   const atmosphereReset = useAtmosphereReset();
+  useMusicSync(gameState?.scoring.level ?? 1, gameState?.status);
   const { genreId: soloGenreId } = useTheme();
 
   // Initialize sound manager
