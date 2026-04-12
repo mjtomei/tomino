@@ -441,7 +441,7 @@ export class GameTestHarness {
   private readonly engine: GameEngine;
 
   constructor(options: GameTestHarnessOptions) {
-    const { seed, ruleSet = modernRuleSet(), startLevel = 1 } = options;
+    const { seed, ruleSet = modernRuleSet(), startLevel = ruleSet.startLevel } = options;
 
     const rng = createRNG(seed);
     const randomizer = createRandomizer(ruleSet.randomizer, ruleSet.previewCount, rng.next);
