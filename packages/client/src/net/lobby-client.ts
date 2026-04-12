@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type {
+  GameStateSnapshot,
+  PlayerId,
   PlayerInfo,
   RoomState,
   RoomId,
@@ -27,6 +29,8 @@ export interface LobbyState {
   countdownValue: number | null;
   /** Game session data, set when gameStarted is received. */
   gameSession: GameSessionData | null;
+  /** Latest snapshots for remote players, keyed by playerId. */
+  opponentStates: Record<PlayerId, GameStateSnapshot>;
 }
 
 // ---------------------------------------------------------------------------
@@ -106,6 +110,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     connectionState: "disconnected",
     countdownValue: null,
     gameSession: null,
+    opponentStates: {},
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
@@ -138,6 +143,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             error: "Disconnected from server",
             countdownValue: null,
             gameSession: null,
+            opponentStates: {},
           }));
         }
       }
@@ -179,12 +185,15 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     socket.on("playerLeft", (msg) => {
       setState((prev) => {
         if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        const nextOpponents = { ...prev.opponentStates };
+        delete nextOpponents[msg.playerId];
         return {
           ...prev,
           room: {
             ...prev.room,
             players: prev.room.players.filter((p) => p.id !== msg.playerId),
           },
+          opponentStates: nextOpponents,
         };
       });
     });
@@ -197,6 +206,11 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     });
 
     socket.on("gameStarted", (msg) => {
+      const localId = getSessionPlayerId();
+      const initialOpponentStates: Record<PlayerId, GameStateSnapshot> = {};
+      for (const [pid, state] of Object.entries(msg.initialStates)) {
+        if (pid !== localId) initialOpponentStates[pid] = state;
+      }
       setState((prev) => {
         if (!prev.room || prev.room.id !== msg.roomId) return prev;
         return {
@@ -209,6 +223,22 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             initialStates: msg.initialStates,
             handicapModifiers: msg.handicapModifiers,
             handicapMode: msg.handicapMode,
+          },
+          opponentStates: initialOpponentStates,
+        };
+      });
+    });
+
+    socket.on("gameStateSnapshot", (msg) => {
+      const localId = getSessionPlayerId();
+      if (msg.playerId === localId) return;
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          opponentStates: {
+            ...prev.opponentStates,
+            [msg.playerId]: msg.state,
           },
         };
       });
@@ -237,6 +267,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         error: "Server disconnected",
         countdownValue: null,
         gameSession: null,
+        opponentStates: {},
       }));
     });
 
@@ -287,7 +318,13 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     const room = stateRef.current.room;
     if (!socket || !room) return;
     socket.send({ type: "leaveRoom", roomId: room.id });
-    setState((prev) => ({ ...prev, view: "menu", room: null, error: null }));
+    setState((prev) => ({
+      ...prev,
+      view: "menu",
+      room: null,
+      error: null,
+      opponentStates: {},
+    }));
     setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
   }, []);
 
