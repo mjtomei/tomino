@@ -32,8 +32,5 @@ export function lighten(hex: string, amount = 0.3): string {
 /** Background color for the board. */
 export const BOARD_BG = "#0A0A0A";
 
-/** Grid line color. */
-export const GRID_LINE_COLOR = "rgba(255, 255, 255, 0.06)";
-
 /** Side panel background. */
 export const PANEL_BG = "#111111";
