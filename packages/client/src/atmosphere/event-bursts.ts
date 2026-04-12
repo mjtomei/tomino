@@ -118,7 +118,9 @@ export function createBursts(
       break;
     }
     case "garbageReceived":
-      // No dedicated burst — handled by particle system.
+    case "garbageSent":
+    case "opponentEliminated":
+      // No dedicated full-screen burst — handled by multiplayer-effects.
       break;
   }
   return out;

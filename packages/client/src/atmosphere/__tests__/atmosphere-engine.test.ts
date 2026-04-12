@@ -114,6 +114,68 @@ describe("AtmosphereEngine — events", () => {
     expect(events.find((ev) => ev.type === "levelUp")?.magnitude).toBe(2);
   });
 
+  it("fires garbageSent on multiplayer cumulative delta", () => {
+    const e = new AtmosphereEngine();
+    const mp = (sent: number) => ({
+      opponentCount: 1,
+      eliminations: 0,
+      garbageSent: sent,
+      garbageReceivedTotal: 0,
+    });
+    e.update(base({ multiplayer: mp(0) }));
+    const { events } = e.update(base({ multiplayer: mp(4) }));
+    expect(events.find((ev) => ev.type === "garbageSent")?.magnitude).toBe(4);
+  });
+
+  it("fires opponentEliminated when eliminations count increments", () => {
+    const e = new AtmosphereEngine();
+    const mp = (elim: number) => ({
+      opponentCount: 3,
+      eliminations: elim,
+      garbageSent: 0,
+      garbageReceivedTotal: 0,
+    });
+    e.update(base({ multiplayer: mp(0) }));
+    const { events } = e.update(base({ multiplayer: mp(1) }));
+    expect(events.find((ev) => ev.type === "opponentEliminated")?.magnitude).toBe(
+      1,
+    );
+  });
+
+  it("does not fire opponentEliminated on initial tick", () => {
+    const e = new AtmosphereEngine();
+    const { events } = e.update(
+      base({
+        multiplayer: {
+          opponentCount: 2,
+          eliminations: 1,
+          garbageSent: 0,
+          garbageReceivedTotal: 0,
+        },
+      }),
+    );
+    expect(events).toEqual([]);
+  });
+
+  it("multiplayer signals boost intensity via match-intensity blend", () => {
+    const e1 = new AtmosphereEngine();
+    const e2 = new AtmosphereEngine();
+    const plain = e1.update(base({ level: 5, stackHeight: 5 })).intensity;
+    const withMp = e2.update(
+      base({
+        level: 5,
+        stackHeight: 5,
+        multiplayer: {
+          opponentCount: 8,
+          eliminations: 3,
+          garbageSent: 20,
+          garbageReceivedTotal: 20,
+        },
+      }),
+    ).intensity;
+    expect(withMp).toBeGreaterThan(plain);
+  });
+
   it("fires garbageReceived on multiplayer cumulative delta", () => {
     const e = new AtmosphereEngine();
     const mp = (total: number) => ({

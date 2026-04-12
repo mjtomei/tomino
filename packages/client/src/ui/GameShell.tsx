@@ -23,6 +23,11 @@ import { ParticleSystem } from "../atmosphere/particle-system.js";
 import { ParticleCanvas } from "../atmosphere/ParticleCanvas.js";
 import { BoardEffects } from "../atmosphere/board-effects.js";
 import { EventBurstCanvas } from "../atmosphere/EventBurstCanvas.js";
+import type { MultiplayerSignals } from "../atmosphere/types.js";
+import {
+  playMultiplayerEffect,
+  type MultiplayerEffectContext,
+} from "../atmosphere/multiplayer-effects.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
@@ -144,9 +149,26 @@ export interface GameShellProps {
   handicap?: HandicapIndicatorData;
   /** Multiplayer game client. When provided, GameShell runs in multiplayer mode. */
   gameClient?: GameClient;
+  /**
+   * Optional accessor for live multiplayer atmosphere signals and the
+   * spatial context used by multiplayer-effects. Read every tick.
+   */
+  multiplayerAtmosphere?: MultiplayerAtmosphereHook;
 }
 
-export function GameShell({ seed, onBack, pendingGarbage, handicap, gameClient }: GameShellProps) {
+export interface MultiplayerAtmosphereHook {
+  getSignals: () => MultiplayerSignals | undefined;
+  getContext: () => MultiplayerEffectContext;
+}
+
+export function GameShell({
+  seed,
+  onBack,
+  pendingGarbage,
+  handicap,
+  gameClient,
+  multiplayerAtmosphere,
+}: GameShellProps) {
   // ---------------------------------------------------------------------------
   // Multiplayer mode — delegates to GameClient for input + state
   // ---------------------------------------------------------------------------
@@ -156,6 +178,7 @@ export function GameShell({ seed, onBack, pendingGarbage, handicap, gameClient }
         gameClient={gameClient}
         pendingGarbage={pendingGarbage}
         handicap={handicap}
+        multiplayerAtmosphere={multiplayerAtmosphere}
       />
     );
   }
@@ -181,10 +204,12 @@ function MultiplayerGameShell({
   gameClient,
   pendingGarbage,
   handicap,
+  multiplayerAtmosphere,
 }: {
   gameClient: GameClient;
   pendingGarbage?: GarbageBatch[];
   handicap?: HandicapIndicatorData;
+  multiplayerAtmosphere?: MultiplayerAtmosphereHook;
 }) {
   const [gameState, setGameState] = useState<GameState>(() =>
     snapshotToGameState(gameClient.getRenderSnapshot(), 0),
@@ -315,9 +340,24 @@ function MultiplayerGameShell({
 
       prevStateRef.current = state;
 
-      atmosphereUpdate(
-        gameStateToSignals(state, { pendingGarbage: snapshot.pendingGarbage }),
+      const mpSignals = multiplayerAtmosphere?.getSignals();
+      const atmState = atmosphereUpdate(
+        gameStateToSignals(state, {
+          pendingGarbage: snapshot.pendingGarbage,
+          multiplayer: mpSignals,
+        }),
       );
+
+      // Dispatch multiplayer spatial effects for any events emitted this tick.
+      if (multiplayerAtmosphere && atmState.events.length > 0) {
+        const ctx = multiplayerAtmosphere.getContext();
+        const system = particleSystemRef.current;
+        if (system) {
+          for (const ev of atmState.events) {
+            playMultiplayerEffect(system, ev, ctx);
+          }
+        }
+      }
 
       setGameState(state);
 

@@ -34,6 +34,25 @@ function computeIntensity(level: number, stackHeight: number): number {
 }
 
 /**
+ * Aggregate match-wide pressure: number of live opponents, volume of
+ * garbage flying in both directions, and eliminations so far. 0..1.
+ * Exported for reuse by multiplayer-effects and tests.
+ */
+export function computeMatchIntensity(mp: {
+  opponentCount: number;
+  eliminations: number;
+  garbageSent: number;
+  garbageReceivedTotal: number;
+}): number {
+  const opponents = clamp01(mp.opponentCount / 8) * 0.3;
+  const garbage = clamp01((mp.garbageSent + mp.garbageReceivedTotal) / 40) * 0.4;
+  const elim =
+    clamp01(mp.eliminations / Math.max(1, mp.opponentCount + mp.eliminations)) *
+    0.3;
+  return clamp01(opponents + garbage + elim);
+}
+
+/**
  * Danger: quadratic ramp on stack height so it stays low until the stack is
  * past mid-board, plus a small contribution from pending garbage (each line
  * of pending garbage effectively raises the stack).
@@ -82,6 +101,10 @@ export class AtmosphereEngine {
     let momentum: number;
     if (signals.status === "playing") {
       intensity = computeIntensity(signals.level, signals.stackHeight);
+      if (signals.multiplayer) {
+        const match = computeMatchIntensity(signals.multiplayer);
+        intensity = clamp01(intensity * 0.75 + match * 0.25);
+      }
       danger = computeDanger(signals.stackHeight, signals.pendingGarbage);
       momentum = computeMomentum(signals.combo, signals.b2b);
     } else {
@@ -119,6 +142,23 @@ export class AtmosphereEngine {
         events.push({
           type: "garbageReceived",
           magnitude: currGarb - prevGarb,
+        });
+      }
+
+      // Multiplayer garbage sent.
+      const prevSent = prev.multiplayer?.garbageSent ?? 0;
+      const currSent = signals.multiplayer?.garbageSent ?? 0;
+      if (currSent > prevSent) {
+        events.push({ type: "garbageSent", magnitude: currSent - prevSent });
+      }
+
+      // Opponent eliminated.
+      const prevElim = prev.multiplayer?.eliminations ?? 0;
+      const currElim = signals.multiplayer?.eliminations ?? 0;
+      if (currElim > prevElim) {
+        events.push({
+          type: "opponentEliminated",
+          magnitude: currElim - prevElim,
         });
       }
     }
