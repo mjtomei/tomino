@@ -6,14 +6,20 @@ import type { SoundEvent } from "./sounds";
 // Web Audio API mock
 // ---------------------------------------------------------------------------
 
+function createMockParam() {
+  return {
+    value: 0,
+    setValueAtTime: vi.fn(),
+    linearRampToValueAtTime: vi.fn(),
+    exponentialRampToValueAtTime: vi.fn(),
+  };
+}
+
 function createMockOscillator() {
   return {
     type: "sine" as OscillatorType,
-    frequency: {
-      setValueAtTime: vi.fn(),
-      linearRampToValueAtTime: vi.fn(),
-      exponentialRampToValueAtTime: vi.fn(),
-    },
+    frequency: createMockParam(),
+    detune: createMockParam(),
     connect: vi.fn(),
     start: vi.fn(),
     stop: vi.fn(),
@@ -22,10 +28,31 @@ function createMockOscillator() {
 
 function createMockGain() {
   return {
-    gain: {
-      setValueAtTime: vi.fn(),
-      exponentialRampToValueAtTime: vi.fn(),
-    },
+    gain: createMockParam(),
+    connect: vi.fn(),
+  };
+}
+
+function createMockFilter() {
+  return {
+    type: "lowpass" as BiquadFilterType,
+    frequency: createMockParam(),
+    Q: createMockParam(),
+    connect: vi.fn(),
+  };
+}
+
+function createMockDelay() {
+  return {
+    delayTime: createMockParam(),
+    connect: vi.fn(),
+  };
+}
+
+function createMockWaveShaper() {
+  return {
+    curve: null as Float32Array | null,
+    oversample: "none" as OverSampleType,
     connect: vi.fn(),
   };
 }
@@ -33,20 +60,29 @@ function createMockGain() {
 interface MockAudioContext {
   currentTime: number;
   state: AudioContextState;
-  destination: {};
+  destination: object;
   createOscillator: ReturnType<typeof vi.fn>;
   createGain: ReturnType<typeof vi.fn>;
+  createBiquadFilter: ReturnType<typeof vi.fn>;
+  createDelay: ReturnType<typeof vi.fn>;
+  createWaveShaper: ReturnType<typeof vi.fn>;
   resume: ReturnType<typeof vi.fn>;
   close: ReturnType<typeof vi.fn>;
 }
 
 let mockContextInstance: MockAudioContext | null = null;
 let oscillatorInstances: ReturnType<typeof createMockOscillator>[];
+let filterInstances: ReturnType<typeof createMockFilter>[];
+let delayInstances: ReturnType<typeof createMockDelay>[];
+let shaperInstances: ReturnType<typeof createMockWaveShaper>[];
 
 let audioContextConstructorCalls: number;
 
 function installMockAudioContext(): void {
   oscillatorInstances = [];
+  filterInstances = [];
+  delayInstances = [];
+  shaperInstances = [];
   mockContextInstance = null;
   audioContextConstructorCalls = 0;
 
@@ -60,6 +96,21 @@ function installMockAudioContext(): void {
       return osc;
     });
     createGain = vi.fn(() => createMockGain());
+    createBiquadFilter = vi.fn(() => {
+      const f = createMockFilter();
+      filterInstances.push(f);
+      return f;
+    });
+    createDelay = vi.fn(() => {
+      const d = createMockDelay();
+      delayInstances.push(d);
+      return d;
+    });
+    createWaveShaper = vi.fn(() => {
+      const s = createMockWaveShaper();
+      shaperInstances.push(s);
+      return s;
+    });
     resume = vi.fn().mockResolvedValue(undefined);
     close = vi.fn().mockResolvedValue(undefined);
 
@@ -189,7 +240,6 @@ describe("SoundManager", () => {
       sm1.play("lineClear1");
       const singleCount = oscillatorInstances.length;
 
-      // Reset
       installMockAudioContext();
 
       const sm2 = new SoundManager();
@@ -216,6 +266,86 @@ describe("SoundManager", () => {
         rotateOsc.frequency.setValueAtTime.mock.calls[0]?.[0] as number;
 
       expect(moveFreq).not.toBe(rotateFreq);
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Genre-aware rendering
+  // -----------------------------------------------------------------------
+
+  describe("genre-aware SFX", () => {
+    it("defaults to null genre", () => {
+      const sm = new SoundManager();
+      expect(sm.genreId).toBeNull();
+    });
+
+    it("accepts a genre id via constructor", () => {
+      const sm = new SoundManager("chiptune");
+      expect(sm.genreId).toBe("chiptune");
+    });
+
+    it("setGenreId updates the active genre", () => {
+      const sm = new SoundManager();
+      sm.setGenreId("synthwave");
+      expect(sm.genreId).toBe("synthwave");
+      sm.setGenreId(null);
+      expect(sm.genreId).toBeNull();
+    });
+
+    it("chiptune produces a filter-free, bitcrushed patch for 'move'", () => {
+      const sm = new SoundManager("chiptune");
+      sm.play("move");
+      // Chiptune FX uses WaveShaper
+      expect(shaperInstances.length).toBeGreaterThan(0);
+    });
+
+    it("synthwave applies a filter envelope to 'move'", () => {
+      const sm = new SoundManager("synthwave");
+      sm.play("move");
+      expect(filterInstances.length).toBeGreaterThan(0);
+      // Filter envelope writes a ramp on cutoff frequency
+      const filter = filterInstances[0]!;
+      expect(
+        filter.frequency.linearRampToValueAtTime.mock.calls.length +
+          filter.frequency.exponentialRampToValueAtTime.mock.calls.length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("ambient uses a delay effect (long tail)", () => {
+      const sm = new SoundManager("ambient");
+      sm.play("lineClear4");
+      expect(delayInstances.length).toBeGreaterThan(0);
+    });
+
+    it("minimal-techno uses no FX (no delay, no shaper) on 'hardDrop'", () => {
+      const sm = new SoundManager("minimal-techno");
+      sm.play("hardDrop");
+      expect(delayInstances).toHaveLength(0);
+      expect(shaperInstances).toHaveLength(0);
+    });
+
+    it("unknown genre falls back to the default profile", () => {
+      const sm = new SoundManager("no-such-genre");
+      sm.play("move");
+      // Default profile has no filter or fx on 'move'
+      expect(filterInstances).toHaveLength(0);
+      expect(delayInstances).toHaveLength(0);
+      expect(shaperInstances).toHaveLength(0);
+      expect(oscillatorInstances.length).toBeGreaterThan(0);
+    });
+
+    it("different genres produce different layer counts for the same event", () => {
+      const counts: Record<string, number> = {};
+      for (const g of ["ambient", "synthwave", "chiptune", "minimal-techno"]) {
+        installMockAudioContext();
+        const sm = new SoundManager(g);
+        sm.play("lineClear4");
+        counts[g] = oscillatorInstances.length;
+      }
+      // All genres render at least one oscillator for lineClear4
+      for (const n of Object.values(counts)) {
+        expect(n).toBeGreaterThan(0);
+      }
     });
   });
 

@@ -12,6 +12,7 @@ import { Overlay } from "./Overlay.js";
 import { StartScreen } from "./StartScreen.js";
 import { SoundManager } from "../audio/sounds.js";
 import type { SoundEvent } from "../audio/sounds.js";
+import { useTheme } from "../atmosphere/theme-context.js";
 import type { GameClient } from "../net/game-client.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
@@ -169,17 +170,26 @@ function MultiplayerGameShell({
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
 
+  const { genreId } = useTheme();
+
   const mpRuleSet = useMemo(() => modernRuleSet(), []);
   const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
 
   // Sound manager
   useEffect(() => {
-    soundRef.current = new SoundManager();
+    soundRef.current = new SoundManager(genreId);
     return () => {
       soundRef.current?.dispose();
       soundRef.current = null;
     };
+    // Genre changes are propagated via the effect below so we don't recreate
+    // the AudioContext on every theme switch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    soundRef.current?.setGenreId(genreId);
+  }, [genreId]);
 
   const sendAction = useCallback((action: string) => {
     if (VALID_INPUT_ACTIONS.has(action)) {
@@ -376,14 +386,21 @@ function SoloGameShell({
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
 
+  const { genreId: soloGenreId } = useTheme();
+
   // Initialize sound manager
   useEffect(() => {
-    soundRef.current = new SoundManager();
+    soundRef.current = new SoundManager(soloGenreId);
     return () => {
       soundRef.current?.dispose();
       soundRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    soundRef.current?.setGenreId(soloGenreId);
+  }, [soloGenreId]);
 
   // Start a new game
   const startGame = useCallback((rs: RuleSet, mc: GameModeConfig) => {
