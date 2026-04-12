@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback } from "react";
 import type { GameState, PieceType, PieceShape } from "@tetris/shared";
 import { BOARD_WIDTH, VISIBLE_HEIGHT, BUFFER_HEIGHT, SRSRotation } from "@tetris/shared";
 import { PIECE_COLORS, darken, lighten, BOARD_BG, GRID_LINE_COLOR, PANEL_BG } from "./colors.js";
+import { PieceAnimator, type AnimatedRenderState } from "./piece-animation.js";
 
 // ---------------------------------------------------------------------------
 // Layout constants
@@ -142,6 +143,7 @@ export function renderBoard(
   state: GameState,
   cellSize: number,
   showSidePanels = true,
+  anim?: AnimatedRenderState,
 ): void {
   const boardX = showSidePanels ? (SIDE_PANEL_CELLS + PANEL_GAP) * cellSize : 0;
   const boardW = BOARD_WIDTH * cellSize;
@@ -198,22 +200,46 @@ export function renderBoard(
   // -- Active piece --
   if (state.currentPiece) {
     const { shape, row, col, type } = state.currentPiece;
-    for (let r = 0; r < shape.length; r++) {
-      for (let c = 0; c < shape[r]!.length; c++) {
+    const renderRow = anim ? anim.renderRow : row;
+    const renderCol = anim ? anim.renderCol : col;
+    const alpha = anim ? anim.alpha : 1;
+    const rotationOffset = anim ? anim.rotationOffset : 0;
+
+    const prevAlpha = ctx.globalAlpha;
+    ctx.globalAlpha = prevAlpha * alpha;
+
+    const rows = shape.length;
+    const cols = shape[0]?.length ?? 0;
+    const pieceOriginX = boardX + renderCol * cellSize;
+    const pieceOriginY = (renderRow - BUFFER_HEIGHT) * cellSize;
+    const centerX = pieceOriginX + (cols * cellSize) / 2;
+    const centerY = pieceOriginY + (rows * cellSize) / 2;
+
+    const needsTransform = rotationOffset !== 0;
+    if (needsTransform) {
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(rotationOffset);
+      ctx.translate(-centerX, -centerY);
+    }
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < (shape[r]?.length ?? 0); c++) {
         if (shape[r]![c]) {
-          const visRow = row + r - BUFFER_HEIGHT;
-          if (visRow >= 0 && visRow < VISIBLE_HEIGHT) {
-            drawCell(
-              ctx,
-              boardX + (col + c) * cellSize,
-              visRow * cellSize,
-              cellSize,
-              PIECE_COLORS[type],
-            );
+          const cellX = pieceOriginX + c * cellSize;
+          const cellY = pieceOriginY + r * cellSize;
+          // Visible row check uses the logical row so pieces fading in at
+          // spawn (inside the buffer) are not drawn.
+          const logicalVisRow = row + r - BUFFER_HEIGHT;
+          if (logicalVisRow >= -1 && logicalVisRow < VISIBLE_HEIGHT) {
+            drawCell(ctx, cellX, cellY, cellSize, PIECE_COLORS[type]);
           }
         }
       }
     }
+
+    if (needsTransform) ctx.restore();
+    ctx.globalAlpha = prevAlpha;
   }
 
   // -- Grid lines --
@@ -301,6 +327,7 @@ export function BoardCanvas({ state, cellSize = 30, showSidePanels = true }: Boa
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const stateRef = useRef(state);
   const rafRef = useRef<number>(0);
+  const animatorRef = useRef<PieceAnimator>(new PieceAnimator());
 
   stateRef.current = state;
 
@@ -312,10 +339,18 @@ export function BoardCanvas({ state, cellSize = 30, showSidePanels = true }: Boa
     }
     const ctx = ctxRef.current;
     if (!ctx) return;
-    renderBoard(ctx, stateRef.current, cellSize, showSidePanels);
+    const now =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+    const anim = animatorRef.current.update(stateRef.current.currentPiece, now);
+    renderBoard(ctx, stateRef.current, cellSize, showSidePanels, anim);
+
+    // Keep ticking while animations are in progress.
+    if (anim.animating) {
+      rafRef.current = requestAnimationFrame(draw);
+    }
   }, [cellSize, showSidePanels]);
 
-  // Schedule a draw on each state change
+  // Schedule a draw on each state change (and start a loop if needed).
   useEffect(() => {
     cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(draw);
