@@ -1,13 +1,18 @@
+import { useEffect, useState } from "react";
 import type {
   GarbageBatch,
   GameStateSnapshot,
   PlayerId,
+  RoomId,
   RoomState,
   TargetingStrategyType,
   TargetingSettings,
 } from "@tetris/shared";
 import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 import type { EliminationData, PlayerTargetingState, PlayerAttackPower } from "../net/lobby-client.js";
+import type { GameSessionData } from "../net/game-client.js";
+import type { ClientSocket } from "../net/client-socket.js";
+import { GameClient } from "../net/game-client.js";
 import { GameShell } from "./GameShell.js";
 import { OpponentBoard, opponentCellSize } from "./OpponentBoard.js";
 import { SpectatorOverlay } from "./SpectatorOverlay.js";
@@ -28,6 +33,10 @@ export interface GameMultiplayerProps {
   handicap?: HandicapIndicatorData;
   onStrategyChange?: (strategy: TargetingStrategyType) => void;
   onManualTarget?: (targetPlayerId: PlayerId) => void;
+  /** Socket for constructing GameClient. */
+  socket?: ClientSocket | null;
+  /** Game session data from the server. */
+  gameSession?: GameSessionData | null;
 }
 
 export function GameMultiplayer({
@@ -43,6 +52,8 @@ export function GameMultiplayer({
   handicap,
   onStrategyChange,
   onManualTarget,
+  socket,
+  gameSession,
 }: GameMultiplayerProps) {
   const opponents = room.players.filter((p) => p.id !== currentPlayerId);
   const cellSize = opponentCellSize(opponents.length);
@@ -63,13 +74,46 @@ export function GameMultiplayer({
     }
   }
 
+  // -- GameClient lifecycle --
+  // GameClient subscribes to socket events in its constructor (side effect),
+  // so we must use useEffect for correct cleanup — not useMemo.
+  const [gameClient, setGameClient] = useState<GameClient | null>(null);
+
+  useEffect(() => {
+    if (!socket || !gameSession) {
+      setGameClient(null);
+      return;
+    }
+    const client = new GameClient({
+      socket,
+      roomId: room.id as RoomId,
+      localPlayerId: currentPlayerId,
+      session: gameSession,
+    });
+    setGameClient(client);
+    return () => {
+      client.dispose();
+    };
+  }, [socket, gameSession, room.id, currentPlayerId]);
+
+  // Wait for GameClient to be ready before rendering (avoids flash of
+  // SoloGameShell StartScreen while the effect constructs the client).
+  if (socket && gameSession && !gameClient) {
+    return null;
+  }
+
   return (
     <div
       data-testid="game-multiplayer"
       style={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}
     >
       <div style={{ flex: "1 1 auto", position: "relative" }}>
-        <GameShell seed={seed} pendingGarbage={localPendingGarbage} handicap={handicap} />
+        <GameShell
+          seed={seed}
+          pendingGarbage={localPendingGarbage}
+          handicap={handicap}
+          gameClient={gameClient ?? undefined}
+        />
         {localElimination && (
           <SpectatorOverlay placement={localElimination.placement} />
         )}
