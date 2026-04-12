@@ -22,6 +22,7 @@ import {
 } from "@tetris/shared";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "./player-engine.js";
 import { GarbageManager } from "./garbage-manager.js";
+import { BalancingMiddleware } from "./balancing-middleware.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,6 +41,10 @@ export interface GameSessionConfig {
   handicapModifiers?: Record<string, HandicapModifiers>;
   /** Handicap mode to include in gameStarted. */
   handicapMode?: HandicapMode;
+  /** Whether to apply the delayModifier field of the modifier matrix. */
+  handicapDelayEnabled?: boolean;
+  /** Whether to apply the messinessFactor field of the modifier matrix. */
+  handicapMessinessEnabled?: boolean;
   /** Optional rule set override (defaults to modernRuleSet). */
   ruleSet?: RuleSet;
   /** Optional targeting strategy override for garbage distribution. */
@@ -82,6 +87,9 @@ export class GameSession {
   private readonly onCancelled?: () => void;
   private readonly handicapModifiers?: Record<string, HandicapModifiers>;
   private readonly handicapMode?: HandicapMode;
+  private readonly handicapDelayEnabled: boolean;
+  private readonly handicapMessinessEnabled: boolean;
+  private readonly playerNames: Record<PlayerId, string>;
   private readonly ruleSet: RuleSet;
 
   // -- Gameplay state --
@@ -90,7 +98,7 @@ export class GameSession {
   private lastTickTime: number = 0;
   private readonly targetingStrategy?: TargetingStrategy;
   private readonly garbageDelayMs?: number;
-  private garbageManager: GarbageManager | null = null;
+  private garbageManager: GarbageManager | BalancingMiddleware | null = null;
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -100,6 +108,11 @@ export class GameSession {
     this.onCancelled = config.onCancelled;
     this.handicapModifiers = config.handicapModifiers;
     this.handicapMode = config.handicapMode;
+    this.handicapDelayEnabled = config.handicapDelayEnabled ?? false;
+    this.handicapMessinessEnabled = config.handicapMessinessEnabled ?? false;
+    this.playerNames = Object.fromEntries(
+      config.players.map((p) => [p.id, p.name]),
+    );
     this.ruleSet = config.ruleSet ?? modernRuleSet();
     this.targetingStrategy = config.targetingStrategy;
     this.garbageDelayMs = config.garbageDelayMs;
@@ -259,14 +272,20 @@ export class GameSession {
       this.engines.set(playerId, engine);
     }
 
-    this.garbageManager = new GarbageManager({
+    this.garbageManager = new BalancingMiddleware({
       playerIds,
+      playerNames: this.playerNames,
+      ...(this.handicapModifiers !== undefined
+        ? { modifiers: this.handicapModifiers }
+        : {}),
       ...(this.targetingStrategy !== undefined
         ? { targetingStrategy: this.targetingStrategy }
         : {}),
       ...(this.garbageDelayMs !== undefined
         ? { delayMs: this.garbageDelayMs }
         : {}),
+      delayEnabled: this.handicapDelayEnabled,
+      messinessEnabled: this.handicapMessinessEnabled,
     });
   }
 

@@ -89,6 +89,8 @@ export function startGameCountdown(
     broadcastToRoom: ctx.broadcastToRoom,
     handicapModifiers,
     handicapMode,
+    handicapDelayEnabled: settings?.delayEnabled ?? false,
+    handicapMessinessEnabled: settings?.messinessEnabled ?? false,
     onGameStarted: () => {
       // Engines and tick loop are now managed by GameSession itself
     },
