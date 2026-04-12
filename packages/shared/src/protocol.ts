@@ -16,7 +16,7 @@ import type {
   RoomState,
 } from "./types.js";
 
-import type { HandicapSettings } from "./handicap-types.js";
+import type { HandicapSettings, HandicapMode, HandicapModifiers } from "./handicap-types.js";
 
 // ---------------------------------------------------------------------------
 // Client → Server (C2S)
@@ -129,6 +129,10 @@ export interface S2C_GameStarted {
   seed: number;
   /** Maps each player ID to their 0-based player index. */
   playerIndexes: Record<PlayerId, number>;
+  /** Serialized modifier matrix for handicap indicators (key: "sender→receiver"). */
+  handicapModifiers?: Record<string, HandicapModifiers>;
+  /** Handicap mode so clients know whether to show outgoing multipliers. */
+  handicapMode?: HandicapMode;
 }
 
 export interface S2C_GameStateSnapshot {

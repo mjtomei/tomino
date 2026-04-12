@@ -7,6 +7,8 @@
 
 import type {
   GameStateSnapshot,
+  HandicapMode,
+  HandicapModifiers,
   PlayerId,
 } from "@tetris/shared";
 
@@ -17,4 +19,8 @@ export interface GameSessionData {
   playerIndexes: Record<PlayerId, number>;
   /** Per-player initial snapshots keyed by player ID. */
   initialStates: Record<PlayerId, GameStateSnapshot>;
+  /** Serialized modifier matrix (key: "sender→receiver"). */
+  handicapModifiers?: Record<string, HandicapModifiers>;
+  /** Handicap mode (boost or symmetric). */
+  handicapMode?: HandicapMode;
 }

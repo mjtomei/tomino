@@ -24,10 +24,19 @@ const TOTAL_HEIGHT_CELLS = VISIBLE_HEIGHT;
 // Props
 // ---------------------------------------------------------------------------
 
+export interface HandicapIndicatorData {
+  /** Effective incoming garbage multiplier (e.g. 0.6 for protection). */
+  incomingMultiplier: number;
+  /** Effective outgoing garbage multiplier (symmetric mode only). */
+  outgoingMultiplier?: number;
+}
+
 export interface BoardCanvasProps {
   state: GameState;
   /** Pixel size of each cell. Default: 30. */
   cellSize?: number;
+  /** Handicap indicator data. If undefined, no indicator is shown. */
+  handicap?: HandicapIndicatorData;
 }
 
 // ---------------------------------------------------------------------------
@@ -129,6 +138,95 @@ function drawMiniPiece(
 }
 
 // ---------------------------------------------------------------------------
+// Handicap indicator
+// ---------------------------------------------------------------------------
+
+/** Color for protected multiplier (< 1.0). */
+const HANDICAP_GREEN = "#4CAF50";
+/** Color for neutral multiplier (= 1.0). */
+const HANDICAP_GRAY = "#888888";
+
+/** Return the color for a given multiplier value. */
+function multiplierColor(multiplier: number): string {
+  return multiplier < 1.0 - 1e-6 ? HANDICAP_GREEN : HANDICAP_GRAY;
+}
+
+/** Draw a small shield icon. */
+function drawShield(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+  color: string,
+): void {
+  const hw = size * 0.5;
+  const hh = size * 0.6;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - hh);           // top center
+  ctx.lineTo(cx + hw, cy - hh * 0.5); // top right
+  ctx.lineTo(cx + hw, cy + hh * 0.1); // mid right
+  ctx.lineTo(cx, cy + hh);                          // bottom point
+  ctx.lineTo(cx - hw, cy + hh * 0.1);               // bottom-left edge
+  ctx.lineTo(cx - hw, cy - hh * 0.5); // top left
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.8;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+}
+
+/** Draw the handicap indicator in the hold panel area. */
+export function drawHandicapIndicator(
+  ctx: CanvasRenderingContext2D,
+  handicap: HandicapIndicatorData,
+  cellSize: number,
+): void {
+  const panelW = SIDE_PANEL_CELLS * cellSize;
+  const holdBoxH = 3 * cellSize;
+  // Position below the hold panel (hold panel occupies ~4 cells tall)
+  const startY = holdBoxH + cellSize + cellSize * 0.8;
+  const centerX = panelW / 2;
+
+  const fontSize = Math.max(10, cellSize * 0.4);
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // -- Incoming multiplier --
+  const inColor = multiplierColor(handicap.incomingMultiplier);
+  const inText = `${handicap.incomingMultiplier.toFixed(1)}x`;
+  const lineH = fontSize * 1.6;
+
+  // Shield icon for protection
+  if (handicap.incomingMultiplier < 1.0 - 1e-6) {
+    const shieldSize = fontSize * 1.0;
+    const textWidth = ctx.measureText(inText).width;
+    const totalW = shieldSize + 4 + textWidth;
+    const shieldX = centerX - totalW / 2 + shieldSize / 2;
+    drawShield(ctx, shieldX, startY, shieldSize, inColor);
+    ctx.fillStyle = inColor;
+    ctx.fillText(inText, shieldX + shieldSize / 2 + 4 + textWidth / 2, startY);
+  } else {
+    ctx.fillStyle = inColor;
+    ctx.fillText(inText, centerX, startY);
+  }
+
+  // -- Outgoing multiplier (symmetric mode) --
+  if (handicap.outgoingMultiplier != null) {
+    const outY = startY + lineH;
+    const outColor = multiplierColor(handicap.outgoingMultiplier);
+    const outText = `Out: ${handicap.outgoingMultiplier.toFixed(1)}x`;
+    ctx.font = `${fontSize * 0.85}px sans-serif`;
+    ctx.fillStyle = outColor;
+    ctx.fillText(outText, centerX, outY);
+  }
+
+  // Restore textBaseline to canvas default so subsequent frames' HOLD/NEXT
+  // labels (which rely on the default "alphabetic" baseline) render correctly.
+  ctx.textBaseline = "alphabetic";
+}
+
+// ---------------------------------------------------------------------------
 // Main render function
 // ---------------------------------------------------------------------------
 
@@ -136,6 +234,7 @@ export function renderBoard(
   ctx: CanvasRenderingContext2D,
   state: GameState,
   cellSize: number,
+  handicap?: HandicapIndicatorData,
 ): void {
   const boardX = (SIDE_PANEL_CELLS + PANEL_GAP) * cellSize;
   const boardW = BOARD_WIDTH * cellSize;
@@ -281,19 +380,26 @@ export function renderBoard(
     const miniSize = i === 0 ? cellSize * 0.7 : cellSize * 0.55;
     drawMiniPiece(ctx, pieceType, previewPanelX, slotY, previewPanelW, previewSlotH, miniSize);
   }
+
+  // -- Handicap indicator --
+  if (handicap) {
+    drawHandicapIndicator(ctx, handicap, cellSize);
+  }
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function BoardCanvas({ state, cellSize = 30 }: BoardCanvasProps) {
+export function BoardCanvas({ state, cellSize = 30, handicap }: BoardCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const stateRef = useRef(state);
+  const handicapRef = useRef(handicap);
   const rafRef = useRef<number>(0);
 
   stateRef.current = state;
+  handicapRef.current = handicap;
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -303,15 +409,15 @@ export function BoardCanvas({ state, cellSize = 30 }: BoardCanvasProps) {
     }
     const ctx = ctxRef.current;
     if (!ctx) return;
-    renderBoard(ctx, stateRef.current, cellSize);
+    renderBoard(ctx, stateRef.current, cellSize, handicapRef.current);
   }, [cellSize]);
 
-  // Schedule a draw on each state change
+  // Schedule a draw on each state/handicap change
   useEffect(() => {
     cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [state, draw]);
+  }, [state, handicap, draw]);
 
   const canvasW = TOTAL_WIDTH_CELLS * cellSize;
   const canvasH = TOTAL_HEIGHT_CELLS * cellSize;

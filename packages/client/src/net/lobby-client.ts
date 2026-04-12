@@ -204,6 +204,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             seed: msg.seed,
             playerIndexes: msg.playerIndexes,
             initialStates: msg.initialStates,
+            handicapModifiers: msg.handicapModifiers,
+            handicapMode: msg.handicapMode,
           },
         };
       });
