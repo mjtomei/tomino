@@ -102,9 +102,14 @@ describe("shiftScale", () => {
     expect(shifted[4]).toBe(6);
   });
 
-  it("passes pentatonic through (too short for safe flatten)", () => {
+  it("flattens 3rd and 5th on a length-5 pentatonic at high danger", () => {
     const pent = [0, 2, 4, 7, 9];
     expect(shiftScale(pent, 0.9)).toEqual([0, 2, 3, 7, 8]);
+  });
+
+  it("passes scales shorter than 5 degrees through unchanged", () => {
+    const tetrad = [0, 4, 7];
+    expect(shiftScale(tetrad, 0.9)).toEqual(tetrad);
   });
 });
 
