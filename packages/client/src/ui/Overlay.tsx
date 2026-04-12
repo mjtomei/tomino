@@ -49,27 +49,32 @@ function GameOverOverlay({
 }) {
   const title = endReasonText(state.endReason, modeConfig.mode);
 
+  const isSprintComplete = modeConfig.mode === "sprint" && state.endReason === "goalReached";
+  const isUltra = modeConfig.mode === "ultra";
+
   return (
     <div className="overlay" data-testid="gameover-overlay">
       <div className="overlay-content">
         <h2 className="overlay-title">{title}</h2>
         <div className="overlay-stats">
-          {modeConfig.mode === "sprint" && state.endReason === "goalReached" && (
+          {isSprintComplete && (
             <div className="overlay-stat highlight">
               <span className="stat-label">TIME</span>
               <span className="stat-value">{formatTime(state.elapsedMs)}</span>
             </div>
           )}
-          {modeConfig.mode === "ultra" && (
+          {isUltra && (
             <div className="overlay-stat highlight">
               <span className="stat-label">SCORE</span>
               <span className="stat-value">{state.scoring.score.toLocaleString()}</span>
             </div>
           )}
-          <div className="overlay-stat">
-            <span className="stat-label">SCORE</span>
-            <span className="stat-value">{state.scoring.score.toLocaleString()}</span>
-          </div>
+          {!isUltra && (
+            <div className="overlay-stat">
+              <span className="stat-label">SCORE</span>
+              <span className="stat-value">{state.scoring.score.toLocaleString()}</span>
+            </div>
+          )}
           <div className="overlay-stat">
             <span className="stat-label">LINES</span>
             <span className="stat-value">{state.scoring.lines}</span>
@@ -78,10 +83,12 @@ function GameOverOverlay({
             <span className="stat-label">LEVEL</span>
             <span className="stat-value">{state.scoring.level}</span>
           </div>
-          <div className="overlay-stat">
-            <span className="stat-label">TIME</span>
-            <span className="stat-value">{formatTime(state.elapsedMs)}</span>
-          </div>
+          {!isSprintComplete && (
+            <div className="overlay-stat">
+              <span className="stat-label">TIME</span>
+              <span className="stat-value">{formatTime(state.elapsedMs)}</span>
+            </div>
+          )}
         </div>
         <div className="overlay-buttons">
           <button className="overlay-btn" onClick={onPlayAgain}>PLAY AGAIN</button>

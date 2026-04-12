@@ -55,6 +55,15 @@ function detectSoundEvents(prev: GameState | null, curr: GameState): SoundEvent[
     events.push("levelUp");
   }
 
+  // Piece lock: previous piece existed and is now gone or a different type spawned
+  if (
+    prev.currentPiece != null &&
+    linesDiff === 0 &&
+    (curr.currentPiece == null || curr.currentPiece.type !== prev.currentPiece.type)
+  ) {
+    events.push("lock");
+  }
+
   // Hold used
   if (curr.hold !== prev.hold && curr.hold != null) {
     events.push("hold");
