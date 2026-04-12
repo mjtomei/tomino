@@ -3,6 +3,7 @@ import type {
   GameStateSnapshot,
   PlayerId,
   PlayerInfo,
+  PlayerStats,
   RoomState,
   RoomId,
   ErrorCode,
@@ -18,7 +19,19 @@ import type { GameSessionData } from "./game-client";
 // Types
 // ---------------------------------------------------------------------------
 
-export type LobbyView = "name-input" | "menu" | "joining" | "waiting" | "countdown" | "playing";
+export type LobbyView = "name-input" | "menu" | "joining" | "waiting" | "countdown" | "playing" | "results";
+
+/** Data stored when the local player is eliminated. */
+export interface EliminationData {
+  placement: number;
+}
+
+/** Data stored when the game ends. */
+export interface GameEndData {
+  winnerId: PlayerId;
+  placements: Record<PlayerId, number>;
+  stats: Record<PlayerId, PlayerStats>;
+}
 
 export interface LobbyState {
   view: LobbyView;
@@ -31,6 +44,10 @@ export interface LobbyState {
   gameSession: GameSessionData | null;
   /** Latest snapshots for remote players, keyed by playerId. */
   opponentStates: Record<PlayerId, GameStateSnapshot>;
+  /** Set when the local player is eliminated but game continues. */
+  localElimination: EliminationData | null;
+  /** Set when the game ends (all but one eliminated). */
+  gameEndData: GameEndData | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -111,6 +128,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     countdownValue: null,
     gameSession: null,
     opponentStates: {},
+    localElimination: null,
+    gameEndData: null,
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
@@ -135,7 +154,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       setState((prev) => ({ ...prev, connectionState: connState }));
       if (connState === "disconnected") {
         const view = stateRef.current.view;
-        if (view === "waiting" || view === "countdown" || view === "playing") {
+        if (view === "waiting" || view === "countdown" || view === "playing" || view === "results") {
           setState((prev) => ({
             ...prev,
             view: "menu",
@@ -144,6 +163,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             countdownValue: null,
             gameSession: null,
             opponentStates: {},
+            localElimination: null,
+            gameEndData: null,
           }));
         }
       }
@@ -225,6 +246,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             handicapMode: msg.handicapMode,
           },
           opponentStates: initialOpponentStates,
+          localElimination: null,
+          gameEndData: null,
         };
       });
     });
@@ -239,6 +262,33 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           opponentStates: {
             ...prev.opponentStates,
             [msg.playerId]: msg.state,
+          },
+        };
+      });
+    });
+
+    socket.on("gameOver", (msg) => {
+      const localId = getSessionPlayerId();
+      if (msg.playerId !== localId) return;
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          localElimination: { placement: msg.placement },
+        };
+      });
+    });
+
+    socket.on("gameEnd", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          view: "results",
+          gameEndData: {
+            winnerId: msg.winnerId,
+            placements: msg.placements,
+            stats: msg.stats,
           },
         };
       });
@@ -268,6 +318,8 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         countdownValue: null,
         gameSession: null,
         opponentStates: {},
+        localElimination: null,
+        gameEndData: null,
       }));
     });
 
@@ -324,6 +376,9 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       room: null,
       error: null,
       opponentStates: {},
+      localElimination: null,
+      gameEndData: null,
+      gameSession: null,
     }));
     setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
   }, []);

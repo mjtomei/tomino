@@ -1,12 +1,15 @@
 import type { GameStateSnapshot, PlayerId, RoomState } from "@tetris/shared";
+import type { EliminationData } from "../net/lobby-client.js";
 import { GameShell } from "./GameShell.js";
 import { OpponentBoard, opponentCellSize } from "./OpponentBoard.js";
+import { SpectatorOverlay } from "./SpectatorOverlay.js";
 
 export interface GameMultiplayerProps {
   room: RoomState;
   currentPlayerId: PlayerId;
   seed?: number;
   opponentSnapshots: Record<PlayerId, GameStateSnapshot>;
+  localElimination: EliminationData | null;
 }
 
 export function GameMultiplayer({
@@ -14,6 +17,7 @@ export function GameMultiplayer({
   currentPlayerId,
   seed,
   opponentSnapshots,
+  localElimination,
 }: GameMultiplayerProps) {
   const opponents = room.players.filter((p) => p.id !== currentPlayerId);
   const cellSize = opponentCellSize(opponents.length);
@@ -23,8 +27,11 @@ export function GameMultiplayer({
       data-testid="game-multiplayer"
       style={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}
     >
-      <div style={{ flex: "1 1 auto" }}>
+      <div style={{ flex: "1 1 auto", position: "relative" }}>
         <GameShell seed={seed} />
+        {localElimination && (
+          <SpectatorOverlay placement={localElimination.placement} />
+        )}
       </div>
       <div
         data-testid="opponent-boards"

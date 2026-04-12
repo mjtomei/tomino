@@ -11,6 +11,7 @@ import { GameShell } from "./ui/GameShell";
 import { LatencyIndicator } from "./ui/LatencyIndicator";
 import { useLatency } from "./net/latency";
 import { GameMultiplayer } from "./ui/GameMultiplayer";
+import { GameResults } from "./ui/GameResults";
 
 function App() {
   const lobby = useLobby();
@@ -126,9 +127,30 @@ function App() {
             currentPlayerId={currentPlayerId}
             seed={session?.seed}
             opponentSnapshots={lobby.state.opponentStates}
+            localElimination={lobby.state.localElimination}
           />
           <LatencyIndicator latencyMs={latencyMs} />
         </>
+      );
+    }
+
+    case "results": {
+      if (!lobby.state.room || !lobby.state.gameEndData) return null;
+      const playerNames: Record<string, string> = {};
+      for (const p of lobby.state.room.players) {
+        playerNames[p.id] = p.name;
+      }
+      return (
+        <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e", color: "#e0e0e0", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <GameResults
+            localPlayerId={currentPlayerId}
+            winnerId={lobby.state.gameEndData.winnerId}
+            placements={lobby.state.gameEndData.placements}
+            stats={lobby.state.gameEndData.stats}
+            playerNames={playerNames}
+            onBackToLobby={lobby.leaveRoom}
+          />
+        </div>
       );
     }
   }
