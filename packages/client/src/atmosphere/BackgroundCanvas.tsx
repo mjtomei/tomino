@@ -88,28 +88,30 @@ export function BackgroundCanvas({ className, override }: BackgroundCanvasProps)
   const { theme } = useTheme();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const effective = override ?? atmosphere;
-  const atmosphereRef = useRef<AtmosphereState>(effective);
+  const atmosphereRef = useRef<AtmosphereState>(override ?? atmosphere);
+  const overrideRef = useRef<AtmosphereState | null | undefined>(override);
   const themeRef = useRef<Theme>(theme);
 
-  // Crossfade bookkeeping: on any change to effective/theme inputs,
-  // snapshot the previous rendered params and ramp to the new params
-  // over CROSSFADE_MS. The render loop reads these refs each frame.
+  // Crossfade bookkeeping: we only start a fade on screen transitions
+  // (override identity change) or theme change. While in live game
+  // mode (no override) the RAF loop reads atmosphereRef.current each
+  // frame so gameplay visuals remain live, not lagged.
   const fromParamsRef = useRef<BackgroundParams | null>(null);
-  const toParamsRef = useRef<BackgroundParams | null>(null);
   const fadeStartRef = useRef<number>(0);
+  const lastRenderedRef = useRef<BackgroundParams | null>(null);
+
+  atmosphereRef.current = override ?? atmosphere;
+  overrideRef.current = override;
+  themeRef.current = theme;
 
   useEffect(() => {
-    const next = computeBackgroundParams(effective, theme);
-    const prev = toParamsRef.current ?? next;
-    fromParamsRef.current = prev;
-    toParamsRef.current = next;
+    // Snapshot whatever we last rendered and start a fade toward the
+    // new source. The RAF loop computes the target each frame from
+    // the current ref values.
+    fromParamsRef.current = lastRenderedRef.current;
     fadeStartRef.current =
       typeof performance !== "undefined" ? performance.now() : 0;
-  }, [effective, theme]);
-
-  atmosphereRef.current = effective;
-  themeRef.current = theme;
+  }, [override, theme]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -145,13 +147,16 @@ export function BackgroundCanvas({ className, override }: BackgroundCanvasProps)
         themeRef.current,
       );
       const from = fromParamsRef.current;
-      const to = toParamsRef.current ?? target;
-      let t = 1;
-      if (from && to) {
+      let params: BackgroundParams;
+      if (from) {
         const elapsed = tMs - fadeStartRef.current;
-        t = Math.max(0, Math.min(1, elapsed / CROSSFADE_MS));
+        const t = Math.max(0, Math.min(1, elapsed / CROSSFADE_MS));
+        params = lerpParams(from, target, t);
+        if (t >= 1) fromParamsRef.current = null;
+      } else {
+        params = target;
       }
-      const params = from ? lerpParams(from, to, t) : target;
+      lastRenderedRef.current = params;
       if (ctx.clearRect) ctx.clearRect(0, 0, size.width, size.height);
       renderBackground(ctx, params, themeRef.current, size, tMs);
       rafId = requestAnimationFrame(loop);
