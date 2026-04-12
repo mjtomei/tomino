@@ -116,6 +116,8 @@ export interface GameStateSnapshot {
   linesCleared: number;
   /** Pending garbage that will be inserted after the current piece locks. */
   pendingGarbage: GarbageBatch[];
+  /** Total pieces locked onto the board. */
+  piecesPlaced: number;
   /** True if this player has topped out. */
   isGameOver: boolean;
 }

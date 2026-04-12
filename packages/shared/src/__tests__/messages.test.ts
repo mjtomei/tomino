@@ -85,6 +85,7 @@ const validS2CMessages: ServerMessage[] = [
       score: 0,
       level: 1,
       linesCleared: 0,
+      piecesPlaced: 0,
       pendingGarbage: [],
       isGameOver: false,
     },

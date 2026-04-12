@@ -743,6 +743,7 @@ function snapshotsEqual(a: GameStateSnapshot, b: GameStateSnapshot): boolean {
   if (a.score !== b.score) return false;
   if (a.level !== b.level) return false;
   if (a.linesCleared !== b.linesCleared) return false;
+  if (a.piecesPlaced !== b.piecesPlaced) return false;
   if (a.isGameOver !== b.isGameOver) return false;
   if (a.holdPiece !== b.holdPiece) return false;
   if (a.holdUsed !== b.holdUsed) return false;

@@ -50,6 +50,7 @@ export function engineStateToSnapshot(
     score: engineState.scoring.score,
     level: engineState.scoring.level,
     linesCleared: engineState.scoring.lines,
+    piecesPlaced: engineState.scoring.piecesPlaced,
     pendingGarbage: [],
     isGameOver: engineState.status === "gameOver",
   };
@@ -77,6 +78,7 @@ export interface StateDelta {
   score?: number;
   level?: number;
   linesCleared?: number;
+  piecesPlaced?: number;
   pendingGarbage?: GameStateSnapshot["pendingGarbage"];
   isGameOver?: boolean;
 }
@@ -167,6 +169,7 @@ export function computeStateDelta(
       score: curr.score,
       level: curr.level,
       linesCleared: curr.linesCleared,
+      piecesPlaced: curr.piecesPlaced,
       pendingGarbage:
         curr.pendingGarbage.length > 0 ? curr.pendingGarbage : undefined,
       isGameOver: curr.isGameOver,
@@ -200,6 +203,9 @@ export function computeStateDelta(
   if (prev.level !== curr.level) delta.level = curr.level;
   if (prev.linesCleared !== curr.linesCleared)
     delta.linesCleared = curr.linesCleared;
+
+  if (prev.piecesPlaced !== curr.piecesPlaced)
+    delta.piecesPlaced = curr.piecesPlaced;
 
   if (!garbageEqual(prev.pendingGarbage, curr.pendingGarbage))
     delta.pendingGarbage = curr.pendingGarbage;
@@ -245,6 +251,10 @@ export function applyStateDelta(
       delta.linesCleared !== undefined
         ? delta.linesCleared
         : prev.linesCleared,
+    piecesPlaced:
+      delta.piecesPlaced !== undefined
+        ? delta.piecesPlaced
+        : prev.piecesPlaced,
     pendingGarbage:
       delta.pendingGarbage !== undefined
         ? [...delta.pendingGarbage]

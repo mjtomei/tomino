@@ -564,6 +564,9 @@ export class TetrisEngine {
       linesCleared > 0 &&
       this.grid.every((row) => row.every((cell) => cell === null));
 
+    // Track piece placement
+    this.scoringState.piecesPlaced++;
+
     // Update scoring
     this.scoringSystem.onLineClear(
       this.scoringState,
