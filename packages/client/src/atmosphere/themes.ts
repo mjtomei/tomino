@@ -1,4 +1,5 @@
-export type ParticleShape = "circle" | "square" | "triangle" | "star";
+import type { ParticleShape } from "./particle-system";
+export type { ParticleShape };
 export type GeometryPattern = "none" | "grid" | "hexagons" | "waves" | "stars";
 
 export interface ThemePalette {
