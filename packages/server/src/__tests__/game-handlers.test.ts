@@ -70,6 +70,8 @@ describe("game-handlers", () => {
         "countdown",   // 1
         "countdown",   // 0
         "gameStarted",
+        "targetingUpdated", // player A initial targeting
+        "targetingUpdated", // player B initial targeting
       ]);
 
       removeGameSession(roomId);

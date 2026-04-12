@@ -101,6 +101,8 @@ function App() {
           currentPlayerId={makePlayerInfo(lobby.playerName).id}
           handicapSettings={lobby.handicapSettings}
           onHandicapSettingsChange={lobby.updateHandicapSettings}
+          targetingSettings={lobby.lobbyTargetingSettings}
+          onTargetingSettingsChange={lobby.updateTargetingSettings}
           onLeave={lobby.leaveRoom}
           onStart={lobby.startGame}
         />
@@ -126,6 +128,11 @@ function App() {
             currentPlayerId={currentPlayerId}
             seed={session?.seed}
             opponentSnapshots={lobby.state.opponentStates}
+            targetingStates={lobby.state.targetingStates}
+            attackPowers={lobby.state.attackPowers}
+            targetingSettings={lobby.state.targetingSettings}
+            onStrategyChange={lobby.setTargetingStrategy}
+            onManualTarget={lobby.setManualTarget}
           />
           <LatencyIndicator latencyMs={latencyMs} />
         </>

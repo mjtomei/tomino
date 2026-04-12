@@ -1,11 +1,14 @@
-import type { RoomState } from "@tetris/shared";
+import type { RoomState, TargetingSettings } from "@tetris/shared";
 import { HandicapSettings, type HandicapSettingsValues } from "./HandicapSettings";
+import { TargetingSettingsPanel, DEFAULT_TARGETING_SETTINGS } from "./TargetingSettingsPanel";
 
 interface WaitingRoomProps {
   room: RoomState;
   currentPlayerId: string;
   handicapSettings: HandicapSettingsValues;
   onHandicapSettingsChange: (settings: HandicapSettingsValues) => void;
+  targetingSettings?: TargetingSettings;
+  onTargetingSettingsChange?: (settings: TargetingSettings) => void;
   onLeave: () => void;
   onStart: () => void;
 }
@@ -15,6 +18,8 @@ export function WaitingRoom({
   currentPlayerId,
   handicapSettings,
   onHandicapSettingsChange,
+  targetingSettings,
+  onTargetingSettingsChange,
   onLeave,
   onStart,
 }: WaitingRoomProps) {
@@ -67,6 +72,12 @@ export function WaitingRoom({
       <HandicapSettings
         settings={handicapSettings}
         onChange={onHandicapSettingsChange}
+        disabled={!isHost}
+      />
+
+      <TargetingSettingsPanel
+        settings={targetingSettings ?? DEFAULT_TARGETING_SETTINGS}
+        onChange={(s) => onTargetingSettingsChange?.(s)}
         disabled={!isHost}
       />
 

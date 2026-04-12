@@ -9,6 +9,37 @@
 
 import type { PlayerId } from "./types.js";
 
+// ---------------------------------------------------------------------------
+// Player-selectable targeting strategy types
+// ---------------------------------------------------------------------------
+
+/** The four player-selectable targeting strategy types. */
+export type TargetingStrategyType = "random" | "attackers" | "kos" | "manual";
+
+export const ALL_TARGETING_STRATEGIES: readonly TargetingStrategyType[] = [
+  "random",
+  "attackers",
+  "kos",
+  "manual",
+] as const;
+
+/** Room-level targeting configuration. */
+export interface TargetingSettings {
+  /** Which strategies players may select. Must contain at least one. */
+  enabledStrategies: TargetingStrategyType[];
+  /** Initial strategy for all players. Must be in enabledStrategies. */
+  defaultStrategy: TargetingStrategyType;
+}
+
+export const DEFAULT_TARGETING_SETTINGS: TargetingSettings = {
+  enabledStrategies: ["random", "attackers", "kos", "manual"],
+  defaultStrategy: "random",
+};
+
+// ---------------------------------------------------------------------------
+// Strategy interface
+// ---------------------------------------------------------------------------
+
 /** One line-allocation output from a targeting strategy. */
 export interface TargetAllocation {
   playerId: PlayerId;
@@ -21,6 +52,15 @@ export interface TargetingContext {
   linesToSend: number;
   /** Optional RNG hook for non-deterministic strategies. */
   rng?: () => number;
+  /** Board height (number of non-empty rows) per player, for KOs strategy. */
+  boardHeights?: Record<PlayerId, number>;
+  /**
+   * Who each player is "stably" targeting (manual targets + attackers
+   * retaliations). Used by the attackers strategy.
+   */
+  attackerGraph?: Record<PlayerId, PlayerId | null>;
+  /** Explicit manual target for the sender, if set. */
+  manualTarget?: PlayerId | null;
 }
 
 /**
