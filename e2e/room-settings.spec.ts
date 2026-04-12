@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { createPlayerContext, createRoom, joinRoom, type PlayerHandle } from "./helpers";
+import { createPlayerContext, createRoom, joinRoom } from "./helpers";
 
 // ---------------------------------------------------------------------------
 // Helpers
