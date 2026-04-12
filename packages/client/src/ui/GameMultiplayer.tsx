@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
+  EmoteKind,
   GarbageBatch,
   GameStateSnapshot,
   PlayerId,
@@ -9,7 +10,17 @@ import type {
   TargetingSettings,
 } from "@tetris/shared";
 import type { HandicapIndicatorData } from "./HandicapIndicator.js";
-import type { EliminationData, PlayerTargetingState, PlayerAttackPower } from "../net/lobby-client.js";
+import type {
+  ActiveEmote,
+  EliminationData,
+  PlayerTargetingState,
+  PlayerAttackPower,
+} from "../net/lobby-client.js";
+import {
+  detectReactions,
+  type OpponentReaction,
+} from "../atmosphere/opponent-reactions.js";
+import { EmotePicker } from "./EmotePicker.js";
 import type { GameSessionData } from "../net/game-client.js";
 import type { ClientSocket } from "../net/client-socket.js";
 import { GameClient } from "../net/game-client.js";
@@ -37,6 +48,10 @@ export interface GameMultiplayerProps {
   socket?: ClientSocket | null;
   /** Game session data from the server. */
   gameSession?: GameSessionData | null;
+  /** Latest emote per player from the lobby state. */
+  recentEmotes?: Record<PlayerId, ActiveEmote>;
+  /** Called when the local player triggers an emote. */
+  onSendEmote?: (emote: EmoteKind) => void;
 }
 
 export function GameMultiplayer({
@@ -54,6 +69,8 @@ export function GameMultiplayer({
   onManualTarget,
   socket,
   gameSession,
+  recentEmotes,
+  onSendEmote,
 }: GameMultiplayerProps) {
   const opponents = room.players.filter((p) => p.id !== currentPlayerId);
   const cellSize = opponentCellSize(opponents.length);
@@ -73,6 +90,39 @@ export function GameMultiplayer({
       }
     }
   }
+
+  // -- Opponent reaction detection --
+  // Track previous snapshots to diff against on each update; emit reaction
+  // pulses that child OpponentBoards render as flashes + particle bursts.
+  const prevSnapshotsRef = useRef<Record<PlayerId, GameStateSnapshot>>({});
+  const [reactionPulses, setReactionPulses] = useState<
+    Record<PlayerId, { reaction: OpponentReaction; at: number }>
+  >({});
+
+  useEffect(() => {
+    const prev = prevSnapshotsRef.current;
+    const updates: Record<PlayerId, { reaction: OpponentReaction; at: number }> = {};
+    const now = Date.now();
+    for (const [pid, snap] of Object.entries(opponentSnapshots)) {
+      const events = detectReactions(prev[pid] ?? null, snap, pid, now);
+      if (events.length > 0) {
+        // Prefer the "biggest" reaction; elimination > tetris > heavyGarbage
+        const priority: Record<OpponentReaction, number> = {
+          eliminated: 3,
+          tetris: 2,
+          heavyGarbage: 1,
+        };
+        const chosen = events.reduce((a, b) =>
+          priority[b.reaction] > priority[a.reaction] ? b : a,
+        );
+        updates[pid] = { reaction: chosen.reaction, at: chosen.at };
+      }
+    }
+    prevSnapshotsRef.current = opponentSnapshots;
+    if (Object.keys(updates).length > 0) {
+      setReactionPulses((prevPulses) => ({ ...prevPulses, ...updates }));
+    }
+  }, [opponentSnapshots]);
 
   // -- GameClient lifecycle --
   // GameClient subscribes to socket events in its constructor (side effect),
@@ -117,6 +167,11 @@ export function GameMultiplayer({
         {localElimination && (
           <SpectatorOverlay placement={localElimination.placement} />
         )}
+        {onSendEmote && (
+          <div style={emotePickerStyle}>
+            <EmotePicker onEmote={onSendEmote} />
+          </div>
+        )}
         {targetingSettings && (
           <div style={selectorStyle}>
             <TargetingSelector
@@ -147,6 +202,8 @@ export function GameMultiplayer({
             isTargeted={myManualTarget === p.id}
             isAttackingYou={attackersSet.has(p.id)}
             onSelect={onManualTarget}
+            activeEmote={recentEmotes?.[p.id] ?? null}
+            reactionPulse={reactionPulses[p.id] ?? null}
           />
         ))}
       </div>
@@ -158,5 +215,12 @@ const selectorStyle = {
   position: "absolute" as const,
   bottom: "8px",
   left: "8px",
+  zIndex: 5,
+};
+
+const emotePickerStyle = {
+  position: "absolute" as const,
+  bottom: "8px",
+  right: "8px",
   zIndex: 5,
 };

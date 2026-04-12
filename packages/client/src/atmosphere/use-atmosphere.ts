@@ -27,6 +27,7 @@ interface AtmosphereContextValue {
   state: AtmosphereState;
   update: (signals: GameSignals) => void;
   reset: () => void;
+  signalsRef: { current: GameSignals | null };
 }
 
 const AtmosphereContext = createContext<AtmosphereContextValue | null>(null);
@@ -59,11 +60,13 @@ export function AtmosphereProvider({ children }: AtmosphereProviderProps) {
     engineRef.current = new AtmosphereEngine();
   }
   const [state, setState] = useState<AtmosphereState>(INITIAL_ATMOSPHERE_STATE);
+  const signalsRef = useRef<GameSignals | null>(null);
 
   const update = useCallback((signals: GameSignals) => {
     const engine = engineRef.current!;
     const prev = engine.getState();
     const next = engine.update(signals);
+    signalsRef.current = signals;
 
     const changed =
       next.events.length > 0 ||
@@ -82,6 +85,7 @@ export function AtmosphereProvider({ children }: AtmosphereProviderProps) {
 
   const reset = useCallback(() => {
     engineRef.current!.reset();
+    signalsRef.current = null;
     setState(INITIAL_ATMOSPHERE_STATE);
     if (isDevOrTest() && typeof window !== "undefined") {
       window.__atmosphere__ = INITIAL_ATMOSPHERE_STATE;
@@ -89,7 +93,7 @@ export function AtmosphereProvider({ children }: AtmosphereProviderProps) {
   }, []);
 
   const value = useMemo<AtmosphereContextValue>(
-    () => ({ state, update, reset }),
+    () => ({ state, update, reset, signalsRef }),
     [state, update, reset],
   );
 
@@ -122,6 +126,16 @@ export function useAtmosphereUpdater(): (signals: GameSignals) => void {
     );
   }
   return ctx.update;
+}
+
+export function useLatestSignalsRef(): { current: GameSignals | null } {
+  const ctx = useContext(AtmosphereContext);
+  if (!ctx) {
+    throw new Error(
+      "useLatestSignalsRef must be used inside <AtmosphereProvider>",
+    );
+  }
+  return ctx.signalsRef;
 }
 
 export function useAtmosphereReset(): () => void {

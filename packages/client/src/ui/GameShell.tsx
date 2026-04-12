@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { BOARD_WIDTH, VISIBLE_HEIGHT } from "@tetris/shared";
 import type { RuleSet, GameModeConfig, GameState, GarbageBatch, InputAction } from "@tetris/shared";
 import { TetrisEngine, modernRuleSet } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
@@ -17,9 +18,33 @@ import type { GameClient } from "../net/game-client.js";
 import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
 import { useMusicSync } from "../audio/use-music.js";
 import { gameStateToSignals } from "../atmosphere/signals.js";
+import { ParticleSystem } from "../atmosphere/particle-system.js";
+import { ParticleCanvas } from "../atmosphere/ParticleCanvas.js";
+import { BoardEffects } from "../atmosphere/board-effects.js";
+import { EventBurstCanvas } from "../atmosphere/EventBurstCanvas.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
+
+const BOARD_EFFECTS_CELL_SIZE = 30;
+const BOARD_EFFECTS_WIDTH = BOARD_WIDTH * BOARD_EFFECTS_CELL_SIZE;
+const BOARD_EFFECTS_HEIGHT = VISIBLE_HEIGHT * BOARD_EFFECTS_CELL_SIZE;
+
+declare global {
+  interface Window {
+    __boardEffects__?: { count: number; lastEvents: unknown[] };
+  }
+}
+
+function isBoardEffectsDev(): boolean {
+  try {
+    const env = (import.meta as unknown as { env?: Record<string, unknown> }).env;
+    if (!env) return false;
+    return env.DEV === true || env.MODE === "test";
+  } catch {
+    return false;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Key bindings
@@ -175,7 +200,29 @@ function MultiplayerGameShell({
   const atmosphereUpdate = useAtmosphereUpdater();
   useMusicSync(gameState.scoring.level, gameState.status);
 
-  const { genreId } = useTheme();
+  const { genreId, theme } = useTheme();
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
+
+  const particleSystemRef = useRef<ParticleSystem | null>(null);
+  if (particleSystemRef.current == null) {
+    particleSystemRef.current = new ParticleSystem({
+      bounds: {
+        minX: -BOARD_EFFECTS_CELL_SIZE,
+        minY: -BOARD_EFFECTS_CELL_SIZE,
+        maxX: BOARD_EFFECTS_WIDTH + BOARD_EFFECTS_CELL_SIZE,
+        maxY: BOARD_EFFECTS_HEIGHT + BOARD_EFFECTS_CELL_SIZE,
+      },
+    });
+  }
+  const boardEffectsRef = useRef<BoardEffects | null>(null);
+  if (boardEffectsRef.current == null) {
+    boardEffectsRef.current = new BoardEffects({
+      system: particleSystemRef.current,
+      cellSize: BOARD_EFFECTS_CELL_SIZE,
+      getTheme: () => themeRef.current,
+    });
+  }
 
   const mpRuleSet = useMemo(() => modernRuleSet(), []);
   const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
@@ -253,6 +300,16 @@ function MultiplayerGameShell({
       for (const s of sounds) {
         soundRef.current?.play(s);
       }
+
+      // Board visual effects (line clear / lock / tetris)
+      boardEffectsRef.current?.onFrame(prevStateRef.current, state);
+      if (isBoardEffectsDev() && typeof window !== "undefined") {
+        window.__boardEffects__ = {
+          count: particleSystemRef.current?.count() ?? 0,
+          lastEvents: boardEffectsRef.current?.debug.lastEvents ?? [],
+        };
+      }
+
       prevStateRef.current = state;
 
       atmosphereUpdate(
@@ -300,6 +357,13 @@ function MultiplayerGameShell({
           arrTimer: 0,
           dasTriggered: false,
         };
+      }
+
+      // Board effect: capture hard drop intent before sending.
+      if (action === "hardDrop") {
+        boardEffectsRef.current?.onHardDropIntent(
+          snapshotToGameState(clientRef.current.getRenderSnapshot(), 0),
+        );
       }
 
       sendAction(action);
@@ -352,6 +416,12 @@ function MultiplayerGameShell({
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
           <BoardCanvas state={gameState} showSidePanels={false} />
+          <ParticleCanvas
+            system={particleSystemRef.current!}
+            width={BOARD_EFFECTS_WIDTH}
+            height={BOARD_EFFECTS_HEIGHT}
+          />
+          <EventBurstCanvas width={BOARD_EFFECTS_WIDTH} height={BOARD_EFFECTS_HEIGHT} />
         </div>
 
         <div className="game-right-panel">
@@ -398,7 +468,29 @@ function SoloGameShell({
   const atmosphereUpdate = useAtmosphereUpdater();
   const atmosphereReset = useAtmosphereReset();
   useMusicSync(gameState?.scoring.level ?? 1, gameState?.status);
-  const { genreId: soloGenreId } = useTheme();
+  const { genreId: soloGenreId, theme: soloTheme } = useTheme();
+  const themeRef = useRef(soloTheme);
+  themeRef.current = soloTheme;
+
+  const particleSystemRef = useRef<ParticleSystem | null>(null);
+  if (particleSystemRef.current == null) {
+    particleSystemRef.current = new ParticleSystem({
+      bounds: {
+        minX: -BOARD_EFFECTS_CELL_SIZE,
+        minY: -BOARD_EFFECTS_CELL_SIZE,
+        maxX: BOARD_EFFECTS_WIDTH + BOARD_EFFECTS_CELL_SIZE,
+        maxY: BOARD_EFFECTS_HEIGHT + BOARD_EFFECTS_CELL_SIZE,
+      },
+    });
+  }
+  const boardEffectsRef = useRef<BoardEffects | null>(null);
+  if (boardEffectsRef.current == null) {
+    boardEffectsRef.current = new BoardEffects({
+      system: particleSystemRef.current,
+      cellSize: BOARD_EFFECTS_CELL_SIZE,
+      getTheme: () => themeRef.current,
+    });
+  }
 
   // Initialize sound manager
   useEffect(() => {
@@ -430,6 +522,7 @@ function SoloGameShell({
     dasRef.current = resetDAS();
     firedKeysRef.current.clear();
     atmosphereReset();
+    boardEffectsRef.current?.clear();
 
     setGameState(engine.getState());
   }, [seed, atmosphereReset]);
@@ -479,6 +572,16 @@ function SoloGameShell({
       for (const s of sounds) {
         soundRef.current?.play(s);
       }
+
+      // Board visual effects (line clear / lock / tetris)
+      boardEffectsRef.current?.onFrame(prevStateRef.current, state);
+      if (isBoardEffectsDev() && typeof window !== "undefined") {
+        window.__boardEffects__ = {
+          count: particleSystemRef.current?.count() ?? 0,
+          lastEvents: boardEffectsRef.current?.debug.lastEvents ?? [],
+        };
+      }
+
       prevStateRef.current = state;
 
       // Atmosphere engine feed (solo mode).
@@ -589,6 +692,11 @@ function SoloGameShell({
         };
       }
 
+      // Board effect: capture hard drop intent before executing.
+      if (action === "hardDrop") {
+        boardEffectsRef.current?.onHardDropIntent(engine.getState());
+      }
+
       // Execute immediately
       executeAction(engine, action);
 
@@ -659,6 +767,12 @@ function SoloGameShell({
             <GarbageMeter pendingGarbage={pendingGarbage} cellSize={30} />
           )}
           <BoardCanvas state={gameState} showSidePanels={false} />
+          <ParticleCanvas
+            system={particleSystemRef.current!}
+            width={BOARD_EFFECTS_WIDTH}
+            height={BOARD_EFFECTS_HEIGHT}
+          />
+          <EventBurstCanvas width={BOARD_EFFECTS_WIDTH} height={BOARD_EFFECTS_HEIGHT} />
           <Overlay
             state={gameState}
             modeConfig={modeConfig}
