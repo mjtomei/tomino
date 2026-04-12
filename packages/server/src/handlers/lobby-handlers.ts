@@ -12,7 +12,6 @@ import type {
   C2S_StartGame,
   C2S_UpdateRoomSettings,
   ErrorCode,
-  GameStateSnapshot,
   HandicapIntensity,
   HandicapMode,
   HandicapSettings,
@@ -94,7 +93,7 @@ export function handleJoinRoom(
 }
 
 export function handleLeaveRoom(
-  msg: C2S_LeaveRoom,
+  _msg: C2S_LeaveRoom,
   ctx: HandlerContext,
   store: RoomStore,
 ): void {

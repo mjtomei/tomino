@@ -126,7 +126,7 @@ export class RoomStore {
     // Host transfer if needed
     let hostChanged = false;
     if (room.hostId === playerId) {
-      room.hostId = room.players[0].id;
+      room.hostId = room.players[0]!.id;
       hostChanged = true;
     }
 
