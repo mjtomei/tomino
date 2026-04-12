@@ -14,7 +14,7 @@ import type {
   RoomId,
   ServerMessage,
 } from "@tetris/shared";
-import type { C2S_PlayerInput } from "@tetris/shared";
+import type { C2S_PlayerInput, C2S_RejoinRoom } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
@@ -23,6 +23,10 @@ import {
   type GameSessionState,
 } from "../game-session.js";
 import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
+import {
+  disconnectRegistry,
+  DisconnectRegistry,
+} from "../disconnect-handler.js";
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
@@ -140,38 +144,102 @@ export function handlePlayerInput(
 
 /**
  * Handle a player disconnecting during an active game session.
- * If in countdown, cancel the session.
- * If playing, mark the player as game over.
+ *
+ * - countdown → cancel the session
+ * - playing → start a reconnect grace window; on timeout the player forfeits
  */
 export function handleGameDisconnect(
   playerId: PlayerId,
   roomId: RoomId,
   ctx: GameHandlerContext,
   store?: RoomStore,
-): void {
+  registry: DisconnectRegistry = disconnectRegistry,
+): { pendingReconnect: boolean } {
   const session = getGameSession(roomId);
-  if (!session) return;
+  if (!session) return { pendingReconnect: false };
 
   if (session.state === "countdown") {
-    // Cancel the game — can't start with missing players
     session.cancel();
-
     ctx.broadcastToRoom(roomId, {
       type: "error",
       code: "INTERNAL_ERROR",
       message: "Game cancelled — a player disconnected during countdown",
     });
-  } else if (session.state === "playing") {
-    // Mark disconnected player as game over
-    session.handlePlayerDisconnect(playerId);
+    return { pendingReconnect: false };
+  }
 
-    // handlePlayerDisconnect may transition the session to "finished"
-    // (TS can't see the mutation through the method call, so re-read state)
-    if ((session.state as GameSessionState) === "finished") {
-      if (store) {
-        store.setStatus(roomId, "finished");
-      }
+  if (session.state !== "playing") return { pendingReconnect: false };
+
+  const marked = session.markDisconnected(playerId, registry.timeoutMs);
+  if (!marked) return { pendingReconnect: false };
+
+  registry.register(roomId, playerId, () => {
+    const s = getGameSession(roomId);
+    if (!s) return;
+    s.forfeitPlayer(playerId);
+    if ((s.state as GameSessionState) === "finished") {
+      if (store) store.setStatus(roomId, "finished");
       removeGameSession(roomId);
     }
+  });
+
+  return { pendingReconnect: true };
+}
+
+/**
+ * Handle a player reconnecting within the grace window. Clears the pending
+ * forfeit, broadcasts `playerReconnected`, and sends the reconnecting player
+ * a full `gameRejoined` payload so they can rehydrate their client state.
+ *
+ * Returns true on successful rejoin, false if the rejoin was rejected (no
+ * session, not eligible, etc.).
+ */
+export function handleRejoinRoom(
+  msg: C2S_RejoinRoom,
+  playerId: PlayerId,
+  ctx: GameHandlerContext & { send: (m: ServerMessage) => void },
+  registry: DisconnectRegistry = disconnectRegistry,
+): boolean {
+  const session = getGameSession(msg.roomId);
+  if (!session) {
+    ctx.send({
+      type: "error",
+      code: "ROOM_NOT_FOUND",
+      message: "No active game session for this room",
+    });
+    return false;
   }
+
+  if (session.state !== "playing") {
+    ctx.send({
+      type: "error",
+      code: "GAME_IN_PROGRESS",
+      message: "Session is not in a rejoinable state",
+    });
+    return false;
+  }
+
+  if (!session.isDisconnected(playerId)) {
+    ctx.send({
+      type: "error",
+      code: "NOT_IN_ROOM",
+      message: "Player is not pending reconnect",
+    });
+    return false;
+  }
+
+  registry.clear(msg.roomId, playerId);
+  session.markReconnected(playerId);
+
+  ctx.send({
+    type: "gameRejoined",
+    roomId: msg.roomId,
+    seed: session.seed,
+    playerIndexes: session.playerIndexes,
+    currentStates: session.getCurrentSnapshots(),
+    handicapModifiers: session.handicapModifiers,
+    handicapMode: session.handicapMode,
+  });
+
+  return true;
 }

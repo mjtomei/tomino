@@ -276,7 +276,7 @@ describe("GameSession gameplay", () => {
       const spy = createBroadcastSpy();
       const session = startSession(spy);
 
-      session.handlePlayerDisconnect("p1");
+      session.forfeitPlayer("p1");
 
       const gameOverMsgs = getMessagesByType(spy.messages, "gameOver");
       const p1GameOver = gameOverMsgs.find(
@@ -289,7 +289,7 @@ describe("GameSession gameplay", () => {
       const spy = createBroadcastSpy();
       const session = startSession(spy);
 
-      session.handlePlayerDisconnect("p1");
+      session.forfeitPlayer("p1");
 
       const gameEndMsgs = getMessagesByType(spy.messages, "gameEnd");
       expect(gameEndMsgs.length).toBe(1);
@@ -308,7 +308,7 @@ describe("GameSession gameplay", () => {
       }
 
       const msgCountBefore = spy.messages.length;
-      session.handlePlayerDisconnect("p1");
+      session.forfeitPlayer("p1");
 
       // No additional gameOver message for already finished player
       const newGameOverMsgs = spy.messages

@@ -11,7 +11,11 @@ import {
   handleDisconnect,
   type HandlerContext,
 } from "./handlers/lobby-handlers.js";
-import { handleGameDisconnect, handlePlayerInput } from "./handlers/game-handlers.js";
+import {
+  handleGameDisconnect,
+  handlePlayerInput,
+  handleRejoinRoom,
+} from "./handlers/game-handlers.js";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const PONG_TIMEOUT_MS = 10_000;
@@ -169,7 +173,11 @@ export function createWebSocketServer(
       }
 
       // Register player ID from messages that carry it
-      if (msg.type === "createRoom" || msg.type === "joinRoom") {
+      if (
+        msg.type === "createRoom" ||
+        msg.type === "joinRoom" ||
+        msg.type === "rejoinRoom"
+      ) {
         registerPlayer(client, msg.player.id);
       }
 
@@ -199,16 +207,33 @@ export function createWebSocketServer(
             ctx.send({ type: "error", code, message });
           });
           break;
+        case "rejoinRoom":
+          handleRejoinRoom(msg, client.playerId!, {
+            broadcastToRoom,
+            send: ctx.send,
+          });
+          break;
       }
     });
 
     function handleClientDisconnect(client: ClientInfo): void {
       if (client.playerId) {
         const roomId = store.getRoomIdForPlayer(client.playerId);
+        let pendingReconnect = false;
         if (roomId) {
-          handleGameDisconnect(client.playerId, roomId, { broadcastToRoom }, store);
+          const result = handleGameDisconnect(
+            client.playerId,
+            roomId,
+            { broadcastToRoom },
+            store,
+          );
+          pendingReconnect = result.pendingReconnect;
         }
-        handleDisconnect(client.playerId, { broadcastToRoom }, store);
+        // If the player is in a reconnect grace window, keep them in the
+        // room so they can rejoin on a fresh socket. Otherwise remove.
+        if (!pendingReconnect) {
+          handleDisconnect(client.playerId, { broadcastToRoom }, store);
+        }
         playerConnections.delete(client.playerId);
       }
       cleanup(client);
