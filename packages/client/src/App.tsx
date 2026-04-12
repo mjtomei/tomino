@@ -8,6 +8,8 @@ import { StatsScreen } from "./ui/StatsScreen";
 import { Countdown } from "./ui/Countdown";
 import { computeIndicatorData } from "./ui/handicap-indicator";
 import { GameShell } from "./ui/GameShell";
+import { LatencyIndicator } from "./ui/LatencyIndicator";
+import { useLatency } from "./net/latency";
 
 function App() {
   const lobby = useLobby();
@@ -29,6 +31,8 @@ function App() {
       session.handicapMode,
     );
   }, [session?.handicapModifiers, session?.handicapMode, lobby.state.room, currentPlayerId, lobby.playerName]);
+
+  const latencyMs = useLatency(lobby.socket, lobby.state.view === "playing");
 
   if (showStats) {
     return (
@@ -116,6 +120,7 @@ function App() {
             </div>
           )}
           <GameShell seed={session?.seed} />
+          <LatencyIndicator latencyMs={latencyMs} />
         </>
       );
     }

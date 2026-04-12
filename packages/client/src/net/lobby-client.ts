@@ -90,11 +90,13 @@ export interface UseLobbyResult {
   clearError: () => void;
   handicapSettings: HandicapSettingsValues;
   updateHandicapSettings: (settings: HandicapSettingsValues) => void;
+  socket: ClientSocket | null;
 }
 
 export function useLobby(serverUrl?: string): UseLobbyResult {
   const url = serverUrl ?? getDefaultServerUrl();
   const socketRef = useRef<ClientSocket | null>(null);
+  const [socket, setSocket] = useState<ClientSocket | null>(null);
 
   const [playerName, setPlayerNameRaw] = useState(loadPlayerName);
   const [state, setState] = useState<LobbyState>({
@@ -122,6 +124,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
   useEffect(() => {
     const socket = new ClientSocket();
     socketRef.current = socket;
+    setSocket(socket);
 
     socket.onConnection((connState) => {
       setState((prev) => ({ ...prev, connectionState: connState }));
@@ -242,6 +245,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     return () => {
       socket.disconnect();
       socketRef.current = null;
+      setSocket(null);
     };
   }, [url]);
 
@@ -339,6 +343,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     clearError,
     handicapSettings,
     updateHandicapSettings,
+    socket,
   };
 }
 
