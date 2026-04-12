@@ -143,6 +143,8 @@ export class GameSession {
   private readonly lastGarbageSender = new Map<PlayerId, PlayerId>();
   /** Skill-aware targeting bias config (null when no ratings available or 2-player). */
   private skillBiasConfig: TargetingBiasConfig | null = null;
+  /** Cached skill-bias strategy (rebuilt when config changes, e.g. player eliminated). */
+  private skillBiasStrategy: import("@tetris/shared").TargetingStrategy | null = null;
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -437,8 +439,9 @@ export class GameSession {
     if (this.playerRatings && playerIds.length >= 3 && this.targetingBiasStrength > 0) {
       this.skillBiasConfig = {
         ratings: { ...this.playerRatings },
-        biasStrength: this.targetingBiasStrength,
+        biasStrength: Math.max(0, Math.min(1, this.targetingBiasStrength)),
       };
+      this.skillBiasStrategy = createSkillBiasStrategy(this.skillBiasConfig);
     }
 
     for (const playerId of playerIds) {
@@ -534,8 +537,8 @@ export class GameSession {
       const senderStrategy = this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy;
       const baseStrategy = this.legacyTargetingStrategy ?? getStrategy(senderStrategy);
       // Apply skill-aware targeting bias for non-manual strategies in 3+ player games
-      const strategy = (senderStrategy !== "manual" && this.skillBiasConfig)
-        ? createSkillBiasStrategy(this.skillBiasConfig)
+      const strategy = (senderStrategy !== "manual" && this.skillBiasStrategy)
+        ? this.skillBiasStrategy
         : baseStrategy;
       const targetingContext = this.buildTargetingContext(playerId);
 
@@ -661,6 +664,7 @@ export class GameSession {
     this.attackPower?.removePlayer(playerId);
     if (this.skillBiasConfig) {
       delete this.skillBiasConfig.ratings[playerId];
+      this.skillBiasStrategy = createSkillBiasStrategy(this.skillBiasConfig);
     }
     this.cleanupTargetingForRemovedPlayer(playerId);
 
