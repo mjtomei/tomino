@@ -87,6 +87,10 @@ export class SoundManager {
       case "gameOver":
         this.playGameOver(ctx);
         break;
+      default: {
+        const _exhaustive: never = event;
+        void _exhaustive;
+      }
     }
   }
 
@@ -133,7 +137,7 @@ export class SoundManager {
     gain: number,
     duration: number,
     startTime?: number,
-  ): { oscillator: OscillatorNode; gainNode: GainNode } {
+  ): OscillatorNode {
     const t = startTime ?? ctx.currentTime;
 
     const oscillator = ctx.createOscillator();
@@ -151,7 +155,7 @@ export class SoundManager {
     oscillator.start(t);
     oscillator.stop(t + duration);
 
-    return { oscillator, gainNode };
+    return oscillator;
   }
 
   // -------------------------------------------------------------------------
@@ -166,7 +170,7 @@ export class SoundManager {
   /** Quick ascending blip for rotation. */
   private playRotate(ctx: AudioContext): void {
     const t = ctx.currentTime;
-    const { oscillator } = this.osc(ctx, "square", 400, 0.1, 0.08);
+    const oscillator = this.osc(ctx, "square", 400, 0.1, 0.08);
     oscillator.frequency.linearRampToValueAtTime(600, t + 0.08);
   }
 
@@ -178,7 +182,7 @@ export class SoundManager {
   /** Impact slam for hard drop. */
   private playHardDrop(ctx: AudioContext): void {
     const t = ctx.currentTime;
-    const { oscillator } = this.osc(ctx, "sawtooth", 200, 0.2, 0.15);
+    const oscillator = this.osc(ctx, "sawtooth", 200, 0.2, 0.15);
     oscillator.frequency.exponentialRampToValueAtTime(60, t + 0.15);
     // Add a noise-like hit
     this.osc(ctx, "square", 80, 0.12, 0.08);
@@ -204,8 +208,7 @@ export class SoundManager {
   /** Distinctive warbling tone for T-spin. */
   private playTSpin(ctx: AudioContext): void {
     const t = ctx.currentTime;
-    const { oscillator } = this.osc(ctx, "sine", 500, 0.15, 0.3);
-    oscillator.frequency.setValueAtTime(500, t);
+    const oscillator = this.osc(ctx, "sine", 500, 0.15, 0.3);
     oscillator.frequency.linearRampToValueAtTime(800, t + 0.1);
     oscillator.frequency.linearRampToValueAtTime(600, t + 0.2);
     oscillator.frequency.linearRampToValueAtTime(900, t + 0.3);
@@ -214,7 +217,7 @@ export class SoundManager {
   /** Swap/whoosh sound for hold. */
   private playHold(ctx: AudioContext): void {
     const t = ctx.currentTime;
-    const { oscillator } = this.osc(ctx, "sine", 600, 0.1, 0.1);
+    const oscillator = this.osc(ctx, "sine", 600, 0.1, 0.1);
     oscillator.frequency.linearRampToValueAtTime(400, t + 0.1);
   }
 
