@@ -12,6 +12,7 @@ import type {
   InputAction,
   PlayerId,
   PlayerInfo,
+  PlayerStats,
   RoomId,
   RuleSet,
   ServerMessage,
@@ -99,6 +100,11 @@ export class GameSession {
   private readonly targetingStrategy?: TargetingStrategy;
   private readonly garbageDelayMs?: number;
   private garbageManager: GarbageManager | BalancingMiddleware | null = null;
+
+  // -- Stats & elimination tracking --
+  private gameStartTime: number = 0;
+  private readonly playerStats = new Map<PlayerId, PlayerStats>();
+  private readonly eliminations: PlayerId[] = [];
 
   constructor(config: GameSessionConfig) {
     this.roomId = config.roomId;
@@ -191,13 +197,21 @@ export class GameSession {
     const engine = this.engines.get(playerId);
     if (!engine || engine.isGameOver) return;
 
+    this.capturePlayerStats(playerId);
+    this.eliminations.push(playerId);
+
     // We can't force game-over on the engine, but we remove it from active play
     this.engines.delete(playerId);
     this.garbageManager?.removePlayer(playerId);
+
+    const totalPlayers = Object.keys(this.playerIndexes).length;
+    const placement = totalPlayers - this.eliminations.indexOf(playerId);
+
     this.broadcastToRoom(this.roomId, {
       type: "gameOver",
       roomId: this.roomId,
       playerId,
+      placement,
     });
     this.checkForWinner(playerId);
   }
@@ -262,6 +276,7 @@ export class GameSession {
 
   private initializeEngines(): void {
     const playerIds = Object.keys(this.playerIndexes);
+    this.gameStartTime = Date.now();
     for (const playerId of playerIds) {
       const engine = new PlayerEngine({
         playerId,
@@ -270,6 +285,14 @@ export class GameSession {
         modeConfig: MULTIPLAYER_MODE_CONFIG,
       });
       this.engines.set(playerId, engine);
+      this.playerStats.set(playerId, {
+        linesSent: 0,
+        linesReceived: 0,
+        piecesPlaced: 0,
+        survivalMs: 0,
+        score: 0,
+        linesCleared: 0,
+      });
     }
 
     this.garbageManager = new BalancingMiddleware({
@@ -349,6 +372,10 @@ export class GameSession {
     const event = engine.consumeLineClearEvent();
     if (event) {
       const outcome = gm.onLinesCleared(playerId, event);
+      if (outcome.residualSent > 0) {
+        const stats = this.playerStats.get(playerId);
+        if (stats) stats.linesSent += outcome.residualSent;
+      }
       for (const receiverId of outcome.affectedReceivers) {
         this.syncPendingGarbage(receiverId);
       }
@@ -357,6 +384,10 @@ export class GameSession {
     // 2. Drain any ready incoming garbage and apply to this player's board.
     const ready = gm.drainReady(playerId);
     if (ready.length > 0) {
+      const stats = this.playerStats.get(playerId);
+      if (stats) {
+        for (const batch of ready) stats.linesReceived += batch.lines;
+      }
       engine.applyGarbage(ready);
       for (const batch of ready) {
         this.broadcastToRoom(this.roomId, {
@@ -406,13 +437,38 @@ export class GameSession {
   // -------------------------------------------------------------------------
 
   private handlePlayerGameOver(playerId: PlayerId): void {
+    this.capturePlayerStats(playerId);
+    this.eliminations.push(playerId);
     this.garbageManager?.removePlayer(playerId);
+
+    const totalPlayers = Object.keys(this.playerIndexes).length;
+    const placement = totalPlayers - this.eliminations.indexOf(playerId);
+
     this.broadcastToRoom(this.roomId, {
       type: "gameOver",
       roomId: this.roomId,
       playerId,
+      placement,
     });
     this.checkForWinner(playerId);
+  }
+
+  /**
+   * Snapshot a player's current engine stats into playerStats.
+   * Called at elimination time (before engine may be deleted).
+   */
+  private capturePlayerStats(playerId: PlayerId): void {
+    const stats = this.playerStats.get(playerId);
+    if (!stats) return;
+
+    const engine = this.engines.get(playerId);
+    if (engine) {
+      const snapshot = engine.getSnapshot();
+      stats.piecesPlaced = snapshot.piecesPlaced;
+      stats.score = snapshot.score;
+      stats.linesCleared = snapshot.linesCleared;
+    }
+    stats.survivalMs = Date.now() - this.gameStartTime;
   }
 
   /**
@@ -440,10 +496,28 @@ export class GameSession {
       }
 
       if (winnerId !== undefined) {
+        // Capture winner's stats (they weren't eliminated)
+        this.capturePlayerStats(winnerId);
+
+        // Build placements: winner = 1st, eliminations in reverse = 2nd, 3rd, ...
+        const placements: Record<PlayerId, number> = {};
+        placements[winnerId] = 1;
+        for (let i = this.eliminations.length - 1; i >= 0; i--) {
+          placements[this.eliminations[i]!] = this.eliminations.length - i + 1;
+        }
+
+        // Collect stats
+        const stats: Record<PlayerId, PlayerStats> = {};
+        for (const [pid, s] of this.playerStats) {
+          stats[pid] = { ...s };
+        }
+
         this.broadcastToRoom(this.roomId, {
           type: "gameEnd",
           roomId: this.roomId,
           winnerId,
+          placements,
+          stats,
         });
       }
       this._state = "finished";
