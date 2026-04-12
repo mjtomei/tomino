@@ -178,6 +178,7 @@ const MENU_ATMOSPHERE_STATE: AtmosphereState = {
   intensity: 0.15,
   danger: 0,
   momentum: 0.05,
+  flow: { active: false, level: 0, sustainedMs: 0 },
   events: [],
 };
 

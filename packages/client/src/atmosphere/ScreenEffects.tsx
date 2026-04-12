@@ -202,6 +202,25 @@ export const ScreenEffects = forwardRef<ScreenEffectsHandle, ScreenEffectsProps>
             }}
           />
 
+          {/* Flow-state aura — soft glow around content when in Zone. */}
+          <div
+            className="screen-effects-flow-aura"
+            aria-hidden="true"
+            data-flow-active={atmosphere.flow.active ? "true" : "false"}
+            data-flow-level={atmosphere.flow.level.toFixed(3)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              pointerEvents: "none",
+              opacity: atmosphere.flow.level * 0.8,
+              background: `radial-gradient(ellipse at center, ${theme.palette.accent}33 0%, transparent 55%)`,
+              boxShadow: atmosphere.flow.active
+                ? `inset 0 0 ${80 + atmosphere.flow.level * 120}px ${theme.palette.accent}`
+                : undefined,
+              transition: "opacity 300ms ease-out, box-shadow 300ms ease-out",
+            }}
+          />
+
           {/* White flash overlay — fades out on line clear. */}
           <div
             className="screen-effects-flash"

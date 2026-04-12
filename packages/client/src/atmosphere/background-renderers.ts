@@ -95,16 +95,23 @@ export function computeBackgroundParams(
   theme: Theme,
 ): BackgroundParams {
   const intensity = clamp01(atmosphere.intensity);
-  const danger = clamp01(atmosphere.danger);
+  // Flow suppresses danger visuals — Zone should feel triumphant, not tense.
+  const flowLevel = clamp01(atmosphere.flow?.level ?? 0);
+  const danger = clamp01(atmosphere.danger) * (1 - flowLevel);
   const momentum = clamp01(atmosphere.momentum);
 
   const baseDensity = theme.geometry.density;
   const baseMovement = theme.geometry.movement;
 
   // Density grows with intensity; movement with intensity + momentum.
-  const density = clamp01(baseDensity * (0.4 + intensity * 0.8) + intensity * 0.15);
-  const speed = clamp01(baseMovement * (0.3 + intensity * 0.9) + momentum * 0.3);
-  const warmth = clamp01(intensity * 0.6 + danger * 0.5);
+  // Flow opens the background up: +40% density, +30% speed at full flow.
+  const density = clamp01(
+    baseDensity * (0.4 + intensity * 0.8) + intensity * 0.15 + flowLevel * 0.4,
+  );
+  const speed = clamp01(
+    baseMovement * (0.3 + intensity * 0.9) + momentum * 0.3 + flowLevel * 0.3,
+  );
+  const warmth = clamp01(intensity * 0.6 + danger * 0.5 + flowLevel * 0.2);
   const agitation = clamp01(danger * 0.9 + momentum * 0.2);
 
   const gradient = theme.palette.backgroundGradient.map((c) =>

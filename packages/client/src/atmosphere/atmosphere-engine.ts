@@ -9,9 +9,15 @@
 import type {
   AtmosphereEvent,
   AtmosphereState,
+  FlowState,
   GameSignals,
 } from "./types.js";
-import { BOARD_VISIBLE_HEIGHT, INITIAL_ATMOSPHERE_STATE } from "./types.js";
+import {
+  BOARD_VISIBLE_HEIGHT,
+  INITIAL_ATMOSPHERE_STATE,
+  INITIAL_FLOW_STATE,
+} from "./types.js";
+import { FlowDetector } from "./flow-detection.js";
 
 function clamp01(n: number): number {
   if (n < 0) return 0;
@@ -31,6 +37,25 @@ function computeIntensity(level: number, stackHeight: number): number {
   const levelNorm = clamp01(Math.max(0, level - 1) / (SPEED_LEVEL_CAP - 1));
   const stackNorm = clamp01(stackHeight / BOARD_VISIBLE_HEIGHT);
   return clamp01(levelNorm * 0.6 + stackNorm * 0.4);
+}
+
+/**
+ * Aggregate match-wide pressure: number of live opponents, volume of
+ * garbage flying in both directions, and eliminations so far. 0..1.
+ * Exported for reuse by multiplayer-effects and tests.
+ */
+export function computeMatchIntensity(mp: {
+  opponentCount: number;
+  eliminations: number;
+  garbageSent: number;
+  garbageReceivedTotal: number;
+}): number {
+  const opponents = clamp01(mp.opponentCount / 8) * 0.3;
+  const garbage = clamp01((mp.garbageSent + mp.garbageReceivedTotal) / 40) * 0.4;
+  const elim =
+    clamp01(mp.eliminations / Math.max(1, mp.opponentCount + mp.eliminations)) *
+    0.3;
+  return clamp01(opponents + garbage + elim);
 }
 
 /**
@@ -54,9 +79,20 @@ function computeMomentum(combo: number, b2b: number): number {
   return clamp01(c * 0.12 + b * 0.15);
 }
 
+export interface AtmosphereEngineOptions {
+  /** Injectable clock for deterministic tests. Defaults to Date.now. */
+  now?: () => number;
+}
+
 export class AtmosphereEngine {
   private prev: GameSignals | null = null;
   private state: AtmosphereState = INITIAL_ATMOSPHERE_STATE;
+  private readonly flow = new FlowDetector();
+  private readonly now: () => number;
+
+  constructor(opts: AtmosphereEngineOptions = {}) {
+    this.now = opts.now ?? (() => Date.now());
+  }
 
   getState(): AtmosphereState {
     return this.state;
@@ -66,6 +102,7 @@ export class AtmosphereEngine {
   reset(): void {
     this.prev = null;
     this.state = INITIAL_ATMOSPHERE_STATE;
+    this.flow.reset();
   }
 
   /**
@@ -82,6 +119,10 @@ export class AtmosphereEngine {
     let momentum: number;
     if (signals.status === "playing") {
       intensity = computeIntensity(signals.level, signals.stackHeight);
+      if (signals.multiplayer) {
+        const match = computeMatchIntensity(signals.multiplayer);
+        intensity = clamp01(intensity * 0.75 + match * 0.25);
+      }
       danger = computeDanger(signals.stackHeight, signals.pendingGarbage);
       momentum = computeMomentum(signals.combo, signals.b2b);
     } else {
@@ -121,10 +162,37 @@ export class AtmosphereEngine {
           magnitude: currGarb - prevGarb,
         });
       }
+
+      // Multiplayer garbage sent.
+      const prevSent = prev.multiplayer?.garbageSent ?? 0;
+      const currSent = signals.multiplayer?.garbageSent ?? 0;
+      if (currSent > prevSent) {
+        events.push({ type: "garbageSent", magnitude: currSent - prevSent });
+      }
+
+      // Opponent eliminated.
+      const prevElim = prev.multiplayer?.eliminations ?? 0;
+      const currElim = signals.multiplayer?.eliminations ?? 0;
+      if (currElim > prevElim) {
+        events.push({
+          type: "opponentEliminated",
+          magnitude: currElim - prevElim,
+        });
+      }
     }
 
+    const flowReadout = this.flow.update(signals, this.now());
+    const flow: FlowState = {
+      active: flowReadout.active,
+      level: flowReadout.level,
+      sustainedMs: flowReadout.sustainedMs,
+    };
+
     this.prev = signals;
-    this.state = { intensity, danger, momentum, events };
+    this.state = { intensity, danger, momentum, flow, events };
     return this.state;
   }
 }
+
+// Re-export so consumers can import from the same module.
+export { INITIAL_FLOW_STATE };

@@ -43,6 +43,7 @@ export type SoundEvent =
 export class SoundManager {
   private ctx: AudioContext | null = null;
   private _muted = false;
+  private _volume = 1;
   private _genreId: string | null;
 
   constructor(genreId?: string | null) {
@@ -58,6 +59,16 @@ export class SoundManager {
     this._muted = value;
   }
 
+  /** Master SFX volume, 0..1. Applied as a multiplier on each rendered patch. */
+  get volume(): number {
+    return this._volume;
+  }
+
+  set volume(value: number) {
+    if (!Number.isFinite(value)) return;
+    this._volume = Math.max(0, Math.min(1, value));
+  }
+
   /** Current genre id, or null if default profile is in use. */
   get genreId(): string | null {
     return this._genreId;
@@ -70,7 +81,7 @@ export class SoundManager {
 
   /** Play a sound event. No-op if muted or Web Audio API is unavailable. */
   play(event: SoundEvent): void {
-    if (this._muted) return;
+    if (this._muted || this._volume <= 0) return;
 
     const ctx = this.ensureContext();
     if (!ctx) return;
@@ -138,8 +149,8 @@ export class SoundManager {
     // Filter (optional)
     const filter = buildFilter(ctx, patch.filter, t, duration);
 
-    // Envelope gain
-    const envGain = buildEnvelopeGain(ctx, envelope, t, duration, patch.gain);
+    // Envelope gain — master gain scaled by user volume
+    const envGain = buildEnvelopeGain(ctx, envelope, t, duration, patch.gain * this._volume);
 
     // Effects chain (always present — pass-through if none)
     const fx = buildFxChain(ctx, patch.fx);

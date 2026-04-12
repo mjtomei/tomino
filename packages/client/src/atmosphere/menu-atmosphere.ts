@@ -6,6 +6,7 @@
  */
 
 import type { AtmosphereState, AtmosphereEvent } from "./types.js";
+import { INITIAL_FLOW_STATE } from "./types.js";
 
 export type MenuView =
   | "name-input"
@@ -35,6 +36,7 @@ const CALM: AtmosphereState = {
   intensity: 0.15,
   danger: 0,
   momentum: 0.05,
+  flow: INITIAL_FLOW_STATE,
   events: [],
 };
 
@@ -80,7 +82,8 @@ export function computeMenuAtmosphere(
         intensity,
         danger: 0,
         momentum: 0.05 + intensity * 0.1,
-        events: [],
+        flow: INITIAL_FLOW_STATE,
+    events: [],
       };
     }
     case "results": {
@@ -90,14 +93,16 @@ export function computeMenuAtmosphere(
           intensity: 0.55,
           danger: 0,
           momentum: 0.7,
-          events: [],
+          flow: INITIAL_FLOW_STATE,
+    events: [],
         };
       }
       return {
         intensity: 0.2,
         danger: 0,
         momentum: 0.1,
-        events: [],
+        flow: INITIAL_FLOW_STATE,
+    events: [],
       };
     }
     case "name-input":

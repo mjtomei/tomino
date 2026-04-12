@@ -114,6 +114,68 @@ describe("AtmosphereEngine — events", () => {
     expect(events.find((ev) => ev.type === "levelUp")?.magnitude).toBe(2);
   });
 
+  it("fires garbageSent on multiplayer cumulative delta", () => {
+    const e = new AtmosphereEngine();
+    const mp = (sent: number) => ({
+      opponentCount: 1,
+      eliminations: 0,
+      garbageSent: sent,
+      garbageReceivedTotal: 0,
+    });
+    e.update(base({ multiplayer: mp(0) }));
+    const { events } = e.update(base({ multiplayer: mp(4) }));
+    expect(events.find((ev) => ev.type === "garbageSent")?.magnitude).toBe(4);
+  });
+
+  it("fires opponentEliminated when eliminations count increments", () => {
+    const e = new AtmosphereEngine();
+    const mp = (elim: number) => ({
+      opponentCount: 3,
+      eliminations: elim,
+      garbageSent: 0,
+      garbageReceivedTotal: 0,
+    });
+    e.update(base({ multiplayer: mp(0) }));
+    const { events } = e.update(base({ multiplayer: mp(1) }));
+    expect(events.find((ev) => ev.type === "opponentEliminated")?.magnitude).toBe(
+      1,
+    );
+  });
+
+  it("does not fire opponentEliminated on initial tick", () => {
+    const e = new AtmosphereEngine();
+    const { events } = e.update(
+      base({
+        multiplayer: {
+          opponentCount: 2,
+          eliminations: 1,
+          garbageSent: 0,
+          garbageReceivedTotal: 0,
+        },
+      }),
+    );
+    expect(events).toEqual([]);
+  });
+
+  it("multiplayer signals boost intensity via match-intensity blend", () => {
+    const e1 = new AtmosphereEngine();
+    const e2 = new AtmosphereEngine();
+    const plain = e1.update(base({ level: 5, stackHeight: 5 })).intensity;
+    const withMp = e2.update(
+      base({
+        level: 5,
+        stackHeight: 5,
+        multiplayer: {
+          opponentCount: 8,
+          eliminations: 3,
+          garbageSent: 20,
+          garbageReceivedTotal: 20,
+        },
+      }),
+    ).intensity;
+    expect(withMp).toBeGreaterThan(plain);
+  });
+
   it("fires garbageReceived on multiplayer cumulative delta", () => {
     const e = new AtmosphereEngine();
     const mp = (total: number) => ({
@@ -151,6 +213,61 @@ describe("AtmosphereEngine — events", () => {
     const paused = e.update(base({ status: "paused", level: 10, stackHeight: 10 }));
     expect(paused.intensity).toBe(active.intensity);
     expect(paused.events).toEqual([]);
+  });
+});
+
+describe("AtmosphereEngine — flow state", () => {
+  it("exposes a flow field with safe defaults", () => {
+    const e = new AtmosphereEngine();
+    const s = e.update(base());
+    expect(s.flow).toEqual({ active: false, level: 0, sustainedMs: 0 });
+  });
+
+  it("drives the flow detector with an injected clock", () => {
+    let t = 0;
+    const e = new AtmosphereEngine({ now: () => t });
+    let lines = 0;
+    e.update(base({ linesCleared: lines, stackHeight: 6 }));
+    for (let i = 0; i < 20; i++) {
+      t += 600;
+      lines += 1;
+      e.update(
+        base({
+          linesCleared: lines,
+          combo: Math.min(i + 1, 6),
+          b2b: Math.min(i + 1, 4),
+          stackHeight: 6,
+        }),
+      );
+    }
+    const s = e.getState();
+    expect(s.flow.active).toBe(true);
+    expect(s.flow.level).toBeGreaterThan(0.5);
+  });
+
+  it("reset clears flow state", () => {
+    let t = 0;
+    const e = new AtmosphereEngine({ now: () => t });
+    let lines = 0;
+    e.update(base({ linesCleared: lines, stackHeight: 6 }));
+    for (let i = 0; i < 20; i++) {
+      t += 600;
+      lines += 1;
+      e.update(
+        base({
+          linesCleared: lines,
+          combo: i + 1,
+          b2b: i + 1,
+          stackHeight: 6,
+        }),
+      );
+    }
+    expect(e.getState().flow.active).toBe(true);
+    e.reset();
+    t += 1000;
+    const s = e.update(base({ linesCleared: 0 }));
+    expect(s.flow.active).toBe(false);
+    expect(s.flow.level).toBe(0);
   });
 });
 

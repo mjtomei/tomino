@@ -19,11 +19,13 @@ import {
   type MenuView,
 } from "./atmosphere/menu-atmosphere";
 import { useMenuMusic } from "./audio/use-music";
+import { SettingsPanel } from "./ui/SettingsPanel";
 
 function AppInner() {
   const lobby = useLobby();
   const [showStats, setShowStats] = useState(false);
   const [showSolo, setShowSolo] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Menu atmosphere override — drives BackgroundCanvas and ambient
   // music on non-game screens. Null while in countdown/playing so the
@@ -78,34 +80,50 @@ function AppInner() {
 
   const latencyMs = useLatency(lobby.socket, lobby.state.view === "playing");
 
+  const settingsOverlay = showSettings ? (
+    <SettingsPanel onClose={() => setShowSettings(false)} />
+  ) : null;
+
   const screen = renderScreen();
 
   function renderScreen() {
   if (showStats) {
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e" }}>
-        <StatsScreen username={lobby.playerName} onBack={() => setShowStats(false)} />
-      </div>
+      <>
+        <div style={{ minHeight: "100vh", backgroundColor: "#1a1a2e" }}>
+          <StatsScreen username={lobby.playerName} onBack={() => setShowStats(false)} />
+        </div>
+        {settingsOverlay}
+      </>
     );
   }
 
   if (showSolo) {
-    return <GameShell onBack={() => setShowSolo(false)} />;
+    return (
+      <>
+        <GameShell onBack={() => setShowSolo(false)} />
+        {settingsOverlay}
+      </>
+    );
   }
 
   switch (lobby.state.view) {
     case "name-input":
       return (
-        <PlayerNameInput
-          initialName={lobby.playerName}
-          onConfirm={(name) => {
-            lobby.confirmName(name);
-          }}
-        />
+        <>
+          <PlayerNameInput
+            initialName={lobby.playerName}
+            onConfirm={(name) => {
+              lobby.confirmName(name);
+            }}
+          />
+          {settingsOverlay}
+        </>
       );
 
     case "menu":
       return (
+        <>
         <Lobby
           playerName={lobby.playerName}
           connectionState={lobby.state.connectionState}
@@ -114,8 +132,11 @@ function AppInner() {
           onJoinRoom={lobby.openJoinDialog}
           onSoloPlay={() => setShowSolo(true)}
           onViewStats={() => setShowStats(true)}
+          onOpenSettings={() => setShowSettings(true)}
           onClearError={lobby.clearError}
         />
+        {settingsOverlay}
+        </>
       );
 
     case "joining":
@@ -129,6 +150,7 @@ function AppInner() {
             onJoinRoom={lobby.openJoinDialog}
             onSoloPlay={() => setShowSolo(true)}
             onViewStats={() => setShowStats(true)}
+            onOpenSettings={() => setShowSettings(true)}
             onClearError={lobby.clearError}
           />
           <JoinDialog
@@ -136,6 +158,7 @@ function AppInner() {
             onJoin={lobby.joinRoom}
             onCancel={lobby.closeJoinDialog}
           />
+          {settingsOverlay}
         </>
       );
 

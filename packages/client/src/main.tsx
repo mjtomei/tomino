@@ -5,13 +5,16 @@ import App from "./App";
 import { AtmosphereProvider } from "./atmosphere/use-atmosphere";
 import { ThemeProvider } from "./atmosphere/theme-context.js";
 import { MusicProvider } from "./audio/use-music.js";
+import { SettingsProvider } from "./atmosphere/settings-context.js";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <AtmosphereProvider>
         <MusicProvider>
-          <App />
+          <SettingsProvider>
+            <App />
+          </SettingsProvider>
         </MusicProvider>
       </AtmosphereProvider>
     </ThemeProvider>

@@ -1,0 +1,155 @@
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: system-ui, sans-serif;
+}
+
+.settings-panel {
+  background: #16213e;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  width: min(560px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 0.4rem;
+}
+
+.settings-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 0;
+}
+
+.settings-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.settings-section h3 {
+  margin: 0 0 0.6rem 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #aaa;
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 48px;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.settings-row input[type="range"] {
+  width: 100%;
+}
+
+.settings-value {
+  text-align: right;
+  color: #aaa;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+.settings-segmented {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-segment {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.settings-segment.active {
+  background: linear-gradient(135deg, #4040d0, #6020a0);
+  border-color: #ff00aa;
+  font-weight: 700;
+}
+
+.settings-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.settings-swatch {
+  position: relative;
+  height: 64px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.settings-swatch.active {
+  outline: 2px solid #ff00aa;
+  outline-offset: 2px;
+}
+
+.settings-swatch-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+}
+
+.settings-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.settings-genre {
+  padding: 0.5rem 1rem;
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.settings-genre.active {
+  background: linear-gradient(135deg, #4040d0, #6020a0);
+  border-color: #ff00aa;
+  font-weight: 700;
+}
