@@ -118,12 +118,6 @@ function App() {
       if (!lobby.state.room) return null;
       return (
         <>
-          {handicapData && (
-            <div style={handicapBannerStyle}>
-              Handicap: {handicapData.incomingMultiplier.toFixed(1)}x incoming
-              {handicapData.outgoingMultiplier != null && `, ${handicapData.outgoingMultiplier.toFixed(1)}x outgoing`}
-            </div>
-          )}
           <GameMultiplayer
             room={lobby.state.room}
             currentPlayerId={currentPlayerId}
@@ -134,6 +128,7 @@ function App() {
             targetingStates={lobby.state.targetingStates}
             attackPowers={lobby.state.attackPowers}
             targetingSettings={lobby.state.targetingSettings}
+            handicap={handicapData}
             onStrategyChange={lobby.setTargetingStrategy}
             onManualTarget={lobby.setManualTarget}
           />
@@ -163,18 +158,5 @@ function App() {
     }
   }
 }
-
-const handicapBannerStyle = {
-  position: "fixed" as const,
-  top: 0,
-  left: 0,
-  right: 0,
-  padding: "0.25rem 0.5rem",
-  fontSize: "0.9rem",
-  color: "#aaa",
-  backgroundColor: "rgba(26, 26, 46, 0.85)",
-  textAlign: "center" as const,
-  zIndex: 10,
-};
 
 export default App;

@@ -6,6 +6,7 @@ import type {
   TargetingStrategyType,
   TargetingSettings,
 } from "@tetris/shared";
+import type { HandicapIndicatorData } from "./BoardCanvas.js";
 import type { EliminationData, PlayerTargetingState, PlayerAttackPower } from "../net/lobby-client.js";
 import { GameShell } from "./GameShell.js";
 import { OpponentBoard, opponentCellSize } from "./OpponentBoard.js";
@@ -23,6 +24,8 @@ export interface GameMultiplayerProps {
   targetingStates?: Record<PlayerId, PlayerTargetingState>;
   attackPowers?: Record<PlayerId, PlayerAttackPower>;
   targetingSettings?: TargetingSettings | null;
+  /** Handicap indicator data for the local player's board. */
+  handicap?: HandicapIndicatorData;
   onStrategyChange?: (strategy: TargetingStrategyType) => void;
   onManualTarget?: (targetPlayerId: PlayerId) => void;
 }
@@ -37,6 +40,7 @@ export function GameMultiplayer({
   targetingStates,
   attackPowers,
   targetingSettings,
+  handicap,
   onStrategyChange,
   onManualTarget,
 }: GameMultiplayerProps) {
@@ -65,7 +69,7 @@ export function GameMultiplayer({
       style={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}
     >
       <div style={{ flex: "1 1 auto", position: "relative" }}>
-        <GameShell seed={seed} pendingGarbage={localPendingGarbage} />
+        <GameShell seed={seed} pendingGarbage={localPendingGarbage} handicap={handicap} />
         {localElimination && (
           <SpectatorOverlay placement={localElimination.placement} />
         )}

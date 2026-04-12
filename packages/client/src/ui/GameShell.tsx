@@ -2,9 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import type { RuleSet, GameModeConfig, GameState, GarbageBatch } from "@tetris/shared";
 import { TetrisEngine } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
+import type { HandicapIndicatorData } from "./BoardCanvas.js";
 import { ScoreDisplay } from "./ScoreDisplay.js";
 import { NextQueue } from "./NextQueue.js";
 import { HoldDisplay } from "./HoldDisplay.js";
+import { HandicapIndicator } from "./HandicapIndicator.js";
 import { GarbageMeter } from "./GarbageMeter.js";
 import { Overlay } from "./Overlay.js";
 import { StartScreen } from "./StartScreen.js";
@@ -95,9 +97,11 @@ export interface GameShellProps {
   onBack?: () => void;
   /** Pending incoming garbage (multiplayer only). */
   pendingGarbage?: GarbageBatch[];
+  /** Handicap indicator data. If undefined, no indicator is shown. */
+  handicap?: HandicapIndicatorData;
 }
 
-export function GameShell({ seed, onBack, pendingGarbage }: GameShellProps) {
+export function GameShell({ seed, onBack, pendingGarbage, handicap }: GameShellProps) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [ruleSet, setRuleSet] = useState<RuleSet | null>(null);
   const [modeConfig, setModeConfig] = useState<GameModeConfig | null>(null);
@@ -329,6 +333,7 @@ export function GameShell({ seed, onBack, pendingGarbage }: GameShellProps) {
         <div className="game-left-panel">
           <HoldDisplay hold={gameState.hold} holdUsed={gameState.holdUsed} ruleSet={ruleSet} />
           <ScoreDisplay scoring={gameState.scoring} modeConfig={modeConfig} elapsedMs={gameState.elapsedMs} />
+          {handicap && <HandicapIndicator handicap={handicap} />}
         </div>
 
         <div className="game-board-container">
