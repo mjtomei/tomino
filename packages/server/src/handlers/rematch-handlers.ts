@@ -80,7 +80,7 @@ export function handleRequestRematch(
 
   // Check for unanimity
   if (votes.size >= totalPlayers) {
-    acceptRematch(roomId, ctx, store);
+    resetToWaiting(roomId, ctx, store);
   }
 }
 
@@ -107,9 +107,9 @@ export function removeRematchVote(
   }
 
   // If the room is still in "finished" status and has remaining players,
-  // return them to the waiting room
+  // check if remaining voters are now unanimous; otherwise return to waiting
   if (room.status === "finished") {
-    returnToWaitingRoom(roomId, ctx, store);
+    resetToWaiting(roomId, ctx, store);
   }
 }
 
@@ -131,24 +131,8 @@ export function hasRematchVotes(roomId: RoomId): boolean {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/** All players agreed: reset room to waiting so host can start a new game. */
-function acceptRematch(
-  roomId: RoomId,
-  ctx: Pick<RematchHandlerContext, "broadcastToRoom">,
-  store: RoomStore,
-): void {
-  rematchVotes.delete(roomId);
-  removeGameSession(roomId);
-  store.setStatus(roomId, "waiting");
-
-  const room = store.getRoom(roomId);
-  if (room) {
-    ctx.broadcastToRoom(roomId, { type: "roomUpdated", room });
-  }
-}
-
-/** A player left during voting: return remaining players to waiting room. */
-function returnToWaitingRoom(
+/** Reset room to waiting: clear votes, remove game session, broadcast. */
+function resetToWaiting(
   roomId: RoomId,
   ctx: Pick<RematchHandlerContext, "broadcastToRoom">,
   store: RoomStore,

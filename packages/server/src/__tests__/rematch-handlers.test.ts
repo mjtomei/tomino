@@ -197,6 +197,28 @@ describe("rematch-handlers", () => {
       expect(hasRematchVotes(roomId)).toBe(false);
     });
 
+    it("accepts rematch when non-voter leaves and remaining are unanimous", () => {
+      const roomId = setupFinishedRoom3Players();
+      const spy = createBroadcastSpy();
+      const ctx = makeCtx(spy);
+
+      // Two players vote, then the non-voter leaves
+      handleRequestRematch("host", roomId, ctx, store);
+      handleRequestRematch("p2", roomId, ctx, store);
+      store.removePlayer("p3");
+      removeRematchVote(roomId, "p3", ctx, store);
+
+      // Remaining players are unanimous — room should reset to waiting
+      const room = store.getRoom(roomId);
+      expect(room!.status).toBe("waiting");
+      expect(room!.players).toHaveLength(2);
+      expect(hasRematchVotes(roomId)).toBe(false);
+
+      // Should have broadcast roomUpdated (status=waiting)
+      const roomUpdatedMsgs = spy.messages.filter((m) => m.msg.type === "roomUpdated");
+      expect(roomUpdatedMsgs.length).toBeGreaterThanOrEqual(1);
+    });
+
     it("clears votes when room becomes empty", () => {
       const roomId = setupFinishedRoom();
       const spy = createBroadcastSpy();
