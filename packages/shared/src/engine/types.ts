@@ -55,6 +55,11 @@ export interface RuleSet {
   /** Soft Drop Factor — gravity multiplier during soft drop. Infinity = instant. */
   sdf: number;
 
+  // -- Starting level --
+
+  /** Default starting level for this rule set (0 for NES, 1 for modern). */
+  startLevel: number;
+
   // -- Preview --
 
   /** Number of next pieces shown (0–6). */
