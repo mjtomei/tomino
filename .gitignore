@@ -1,5 +1,6 @@
 node_modules
 dist
+coverage
 *.local
 *.tsbuildinfo
 pm_prompt_*.txt
