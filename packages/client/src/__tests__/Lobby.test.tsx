@@ -11,6 +11,7 @@ const defaultProps = {
   onJoinRoom: vi.fn(),
   onSoloPlay: vi.fn(),
   onViewStats: vi.fn(),
+  onOpenSettings: vi.fn(),
   onClearError: vi.fn(),
 };
 
