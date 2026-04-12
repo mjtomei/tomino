@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-a367deb
+  active_pr: pr-40e39d6
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -21,6 +21,11 @@ plans:
 - id: plan-45cb304
   name: plans/03-adaptive-balancing.md
   file: plans/plan-45cb304.md
+  status: draft
+  parent: null
+- id: plan-17af8d3
+  name: Automated testing
+  file: plans/plan-17af8d3.md
   status: draft
   parent: null
 prs:
@@ -135,7 +140,7 @@ prs:
   plan: plan-48e829d
   title: Board model and line clearing
   branch: pm/pr-698f2b5-board-model-and-line-clearing
-  status: pending
+  status: merged
   depends_on:
   - pr-48ed9f4
   description: 'Implement the board as a 10x40 2D grid (rows 0-19 buffer zone, 20-39
@@ -150,25 +155,26 @@ prs:
 
 
     Files: `src/engine/board.ts`, `src/engine/board.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/19
+  gh_pr_number: 19
   created_at: '2026-04-11T20:46:48.057194+00:00'
-  updated_at: '2026-04-11T22:43:36.610063+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:31:30.567711+00:00'
+  started_at: '2026-04-11T23:23:46.835816+00:00'
+  reviewed_at: '2026-04-11T23:28:14.270927+00:00'
+  merged_at: '2026-04-11T23:31:30.567711+00:00'
   notes:
   - id: note-e8949f4
     text: Build board model in packages/shared, not packages/client. The server needs
       this for server-authoritative game state in Plan 2.
     created_at: '2026-04-11T22:02:17Z'
     last_edited: '2026-04-11T22:02:17Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-698f2b5-board-model-and-line-clearing-59b24595
 - id: pr-ac2a70b
   plan: plan-48e829d
   title: Piece movement, rotation, and wall kicks
   branch: pm/pr-ac2a70b-piece-movement-rotation-and-wall-kicks
-  status: pending
+  status: merged
   depends_on:
   - pr-698f2b5
   description: 'Implement piece movement (left, right, soft drop) and rotation via
@@ -186,25 +192,26 @@ prs:
 
 
     Files: `src/engine/movement.ts`, `src/engine/movement.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/23
+  gh_pr_number: 23
   created_at: '2026-04-11T20:46:48.057199+00:00'
-  updated_at: '2026-04-11T22:02:19.274821+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:40:37.433811+00:00'
+  started_at: '2026-04-11T23:31:33.575718+00:00'
+  reviewed_at: '2026-04-11T23:39:15.276814+00:00'
+  merged_at: '2026-04-11T23:40:37.433811+00:00'
   notes:
   - id: note-581e2fb
     text: Build movement/rotation/wall kick logic in packages/shared, not packages/client.
       The server needs this for server-authoritative game state in Plan 2.
     created_at: '2026-04-11T22:02:19Z'
     last_edited: '2026-04-11T22:02:19Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-ac2a70b-piece-movement-rotation-and-wall-kic-4ef43767
 - id: pr-3c6d5aa
   plan: plan-48e829d
   title: Randomizer variants — 7-bag and pure random
   branch: pm/pr-3c6d5aa-randomizer-variants-7-bag-and-pure-random
-  status: pending
+  status: merged
   depends_on:
   - pr-48ed9f4
   description: 'Implement the `Randomizer` interface with two implementations. **SevenBagRandomizer**:
@@ -223,14 +230,14 @@ prs:
 
     Files: `src/engine/randomizer.ts`, `src/engine/randomizer-7bag.ts`, `src/engine/randomizer-pure.ts`,
     `src/engine/hold.ts`, `src/engine/randomizer.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/20
+  gh_pr_number: 20
   created_at: '2026-04-11T20:46:48.057207+00:00'
-  updated_at: '2026-04-11T22:43:37.566759+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:29:29.634317+00:00'
+  started_at: '2026-04-11T23:23:50.686156+00:00'
+  reviewed_at: '2026-04-11T23:28:27.322699+00:00'
+  merged_at: '2026-04-11T23:29:29.634317+00:00'
   notes:
   - id: note-ccd71c0
     text: Build randomizer variants in packages/shared, not packages/client. The server
@@ -238,11 +245,12 @@ prs:
       2.
     created_at: '2026-04-11T22:02:21Z'
     last_edited: '2026-04-11T22:02:21Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3c6d5aa-randomizer-variants-7-bag-and-pure-r-59b24595
 - id: pr-6060eaf
   plan: plan-48e829d
   title: Scoring systems — Guideline and NES
   branch: pm/pr-6060eaf-scoring-systems-guideline-and-nes
-  status: pending
+  status: merged
   depends_on:
   - pr-698f2b5
   description: 'Implement the `ScoringSystem` interface with two implementations.
@@ -264,25 +272,26 @@ prs:
 
     Files: `src/engine/scoring.ts`, `src/engine/scoring-guideline.ts`, `src/engine/scoring-nes.ts`,
     `src/engine/gravity.ts`, `src/engine/scoring.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/24
+  gh_pr_number: 24
   created_at: '2026-04-11T20:46:48.057213+00:00'
-  updated_at: '2026-04-11T22:02:20.261836+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:42:14.859177+00:00'
+  started_at: '2026-04-11T23:31:37.442765+00:00'
+  reviewed_at: '2026-04-11T23:38:22.409500+00:00'
+  merged_at: '2026-04-11T23:42:14.859177+00:00'
   notes:
   - id: note-6880f47
     text: Build scoring systems in packages/shared, not packages/client. The server
       needs this for authoritative scoring in Plan 2.
     created_at: '2026-04-11T22:02:20Z'
     last_edited: '2026-04-11T22:02:20Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-6060eaf-scoring-systems-guideline-and-nes-4ef43767
 - id: pr-0d483af
   plan: plan-48e829d
   title: TetrisEngine — game loop and state machine
   branch: pm/pr-0d483af-tetrisengine-game-loop-and-state-machine
-  status: pending
+  status: in_review
   depends_on:
   - pr-ac2a70b
   - pr-3c6d5aa
@@ -309,13 +318,13 @@ prs:
 
 
     Files: `src/engine/engine.ts`, `src/engine/engine.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/25
+  gh_pr_number: 25
   created_at: '2026-04-11T20:46:48.057223+00:00'
-  updated_at: '2026-04-11T22:02:22.599968+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-11T23:50:59.352973+00:00'
+  started_at: '2026-04-11T23:42:18.354726+00:00'
+  reviewed_at: '2026-04-11T23:50:59.352973+00:00'
   merged_at: null
   notes:
   - id: note-886ac56
@@ -323,6 +332,7 @@ prs:
       the engine on both client (prediction) and server (authority).
     created_at: '2026-04-11T22:02:22Z'
     last_edited: '2026-04-11T22:02:22Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-0d483af-tetrisengine-game-loop-and-state-mac-4d9a9ed8
 - id: pr-c08aefa
   plan: plan-48e829d
   title: Canvas renderer for game board
@@ -554,7 +564,7 @@ prs:
   plan: plan-c686698
   title: Room and lobby server logic
   branch: pm/pr-0b382c5-room-and-lobby-server-logic
-  status: in_progress
+  status: merged
   depends_on:
   - pr-7d32c30
   - pr-b393198
@@ -573,17 +583,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/15
   gh_pr_number: 15
   created_at: '2026-04-11T21:27:51.614793+00:00'
-  updated_at: '2026-04-11T22:56:44.600696+00:00'
+  updated_at: '2026-04-11T23:23:34.518839+00:00'
   started_at: '2026-04-11T22:56:44.600696+00:00'
-  reviewed_at: null
-  merged_at: null
+  reviewed_at: '2026-04-11T23:02:59.355578+00:00'
+  merged_at: '2026-04-11T23:23:34.518839+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-0b382c5-room-and-lobby-server-logic-67f84d9f
 - id: pr-ea6f093
   plan: plan-c686698
   title: Lobby UI
   branch: pm/pr-ea6f093-lobby-ui
-  status: in_progress
+  status: merged
   depends_on:
   - pr-b393198
   description: 'React components for the multiplayer lobby: main menu with "Create
@@ -604,17 +614,17 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/16
   gh_pr_number: 16
   created_at: '2026-04-11T21:27:51.614799+00:00'
-  updated_at: '2026-04-11T22:56:48.947626+00:00'
+  updated_at: '2026-04-11T23:23:43.526797+00:00'
   started_at: '2026-04-11T22:56:48.947626+00:00'
-  reviewed_at: null
-  merged_at: null
+  reviewed_at: '2026-04-11T23:06:35.239058+00:00'
+  merged_at: '2026-04-11T23:23:43.526797+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-ea6f093-lobby-ui-67f84d9f
 - id: pr-3faa55d
   plan: plan-c686698
   title: Game start synchronization
   branch: pm/pr-3faa55d-game-start-synchronization
-  status: pending
+  status: merged
   depends_on:
   - pr-0b382c5
   - pr-ea6f093
@@ -631,15 +641,16 @@ prs:
 
     Files: `server/handlers/game-handlers.ts`, `server/game-session.ts`, `shared/protocol.ts`
     (add game start messages), `src/ui/Countdown.tsx`, `src/net/game-client.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/21
+  gh_pr_number: 21
   created_at: '2026-04-11T21:27:51.614804+00:00'
-  updated_at: '2026-04-11T21:27:51.614804+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:50:08.562923+00:00'
+  started_at: '2026-04-11T23:23:55.178270+00:00'
+  reviewed_at: '2026-04-11T23:37:24.287011+00:00'
+  merged_at: '2026-04-11T23:50:08.562923+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3faa55d-game-start-synchronization-59b24595
 - id: pr-dfc0673
   plan: plan-c686698
   title: Server-authoritative game state
@@ -707,7 +718,7 @@ prs:
   plan: plan-c686698
   title: Garbage mechanics engine
   branch: pm/pr-d3377ef-garbage-mechanics-engine
-  status: pending
+  status: merged
   depends_on:
   - pr-6060eaf
   - pr-b393198
@@ -725,20 +736,21 @@ prs:
 
 
     Files: `src/engine/garbage.ts`, `src/engine/garbage-table.ts`, `shared/garbage-types.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/26
+  gh_pr_number: 26
   created_at: '2026-04-11T21:27:51.614830+00:00'
-  updated_at: '2026-04-11T22:02:27.192694+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:53:18.684927+00:00'
+  started_at: '2026-04-11T23:42:22.328078+00:00'
+  reviewed_at: '2026-04-11T23:49:31.386917+00:00'
+  merged_at: '2026-04-11T23:53:18.684927+00:00'
   notes:
   - id: note-eb8bbd1
     text: Build garbage mechanics in packages/shared, not packages/client. Plan 2
       sends garbage events over the network and the server needs to validate them.
     created_at: '2026-04-11T22:02:23Z'
     last_edited: '2026-04-11T22:02:23Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-d3377ef-garbage-mechanics-engine-4d9a9ed8
 - id: pr-7a9a7e5
   plan: plan-c686698
   title: Garbage network integration
@@ -1302,7 +1314,7 @@ prs:
   plan: plan-45cb304
   title: Handicap settings in lobby UI
   branch: pm/pr-493072b-handicap-settings-in-lobby-ui
-  status: pending
+  status: merged
   depends_on:
   - pr-c7b0d7c
   - pr-ea6f093
@@ -1328,15 +1340,16 @@ prs:
     Files: `src/ui/HandicapSettings.tsx`, `src/ui/HandicapSettings.css`, `src/ui/Lobby.tsx`
     (extend), `shared/protocol.ts` (add handicap settings messages), `server/handlers/lobby-handlers.ts`
     (extend)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/22
+  gh_pr_number: 22
   created_at: '2026-04-11T21:50:04.211777+00:00'
-  updated_at: '2026-04-11T21:51:55.077876+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:45:31.737177+00:00'
+  started_at: '2026-04-11T23:23:59.305825+00:00'
+  reviewed_at: '2026-04-11T23:35:26.342402+00:00'
+  merged_at: '2026-04-11T23:45:31.737177+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-493072b-handicap-settings-in-lobby-ui-59b24595
 - id: pr-b34072f
   plan: plan-45cb304
   title: In-game handicap indicator
@@ -1369,7 +1382,7 @@ prs:
   plan: plan-45cb304
   title: Stats screen with match history and skill progression
   branch: pm/pr-90a1525-stats-screen-with-match-history-and-skill-progress
-  status: in_progress
+  status: merged
   depends_on:
   - pr-4601342
   - pr-a1cfec0
@@ -1393,10 +1406,10 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/14
   gh_pr_number: 14
   created_at: '2026-04-11T21:50:04.211786+00:00'
-  updated_at: '2026-04-11T22:55:47.161868+00:00'
+  updated_at: '2026-04-11T23:13:39.573824+00:00'
   started_at: '2026-04-11T22:55:47.161868+00:00'
-  reviewed_at: null
-  merged_at: null
+  reviewed_at: '2026-04-11T23:05:12.265849+00:00'
+  merged_at: '2026-04-11T23:13:39.573824+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-90a1525-stats-screen-with-match-history-and--4c2bf3df
 - id: pr-fb5033a
@@ -1532,7 +1545,7 @@ prs:
   plan: plan-48e829d
   title: Piece definitions for SRS and NRS rotation systems
   branch: pm/pr-48ed9f4-piece-definitions-for-srs-and-nrs-rotation-systems
-  status: pending
+  status: merged
   depends_on:
   - pr-e38d93c
   description: 'Define all 7 Tetris pieces with rotation states for both rotation
@@ -1552,17 +1565,356 @@ prs:
 
     Files: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`,
     `src/engine/rotation.ts`, `src/engine/pieces.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/18
+  gh_pr_number: 18
   created_at: '2026-04-11T22:43:21.911875+00:00'
-  updated_at: '2026-04-11T22:43:39.424174+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-11T23:21:01.401491+00:00'
+  started_at: '2026-04-11T23:13:43.503809+00:00'
+  reviewed_at: '2026-04-11T23:19:23.296136+00:00'
+  merged_at: '2026-04-11T23:21:01.401491+00:00'
   notes:
   - id: note-22a8852
     text: Build piece definitions in packages/shared, not packages/client. The server
       needs these for server-authoritative game state in Plan 2.
     created_at: '2026-04-11T22:43:39Z'
     last_edited: '2026-04-11T22:43:39Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-48ed9f4-piece-definitions-for-srs-and-nrs-ro-70f352a1
+- id: pr-109d87a
+  plan: plan-17af8d3
+  title: Seeded PRNG utility
+  branch: pm/pr-109d87a-seeded-prng-utility
+  status: pending
+  depends_on: []
+  description: 'Add a seedable pseudo-random number generator to `packages/shared/src/engine/`.
+    This is the foundation for deterministic tests and reproducible game replays.
+    Implement a fast, well-known algorithm (e.g., xoshiro128) with a simple API: `createRNG(seed)
+    → { next(): number, nextInt(min, max): number }`. Pure code, no human-guided testing
+    needed.
+
+
+    Tests: Determinism (same seed → same sequence), distribution sanity check, independence
+    of separate instances, edge cases (nextInt bounds)
+
+
+    Files: `packages/shared/src/engine/rng.ts`, `packages/shared/src/engine/rng.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040016+00:00'
+  updated_at: '2026-04-11T23:10:58.040016+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-940a121
+  plan: plan-17af8d3
+  title: Board builder test utility
+  branch: pm/pr-940a121-board-builder-test-utility
+  status: pending
+  depends_on: []
+  description: 'Add a `boardFromAscii()` helper and a `boardToAscii()` helper for
+    test readability. Accepts a multiline string where `.` = empty, `X` = filled (generic),
+    and piece-type letters (`I`, `T`, etc.) represent colored cells. Strips leading/trailing
+    blank lines, pads short boards to full height. Also add `emptyBoard()` and `assertBoardEquals()`
+    helpers. Pure utility, no human-guided testing needed.
+
+
+    Tests: Round-trip (ascii → board → ascii), partial board (only bottom rows specified),
+    piece-type colors preserved, full 40-row board support, error on invalid width
+
+
+    Files: `packages/shared/src/__test-utils__/board-builder.ts`, `packages/shared/src/__test-utils__/board-builder.test.ts`,
+    `packages/shared/src/__test-utils__/index.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040033+00:00'
+  updated_at: '2026-04-11T23:10:58.040033+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-8d8faf9
+  plan: plan-17af8d3
+  title: Game state factory helpers
+  branch: pm/pr-8d8faf9-game-state-factory-helpers
+  status: pending
+  depends_on: []
+  description: 'Add factory functions for creating test game states: `makeGameState(overrides?)`,
+    `makePiece(type, overrides?)`, `makeGarbageBatch(overrides?)`. These produce valid
+    `GameStateSnapshot`, `PieceState`, and `GarbageBatch` objects with sensible defaults,
+    reducing boilerplate in every engine test file. Pure utility, no human-guided
+    testing needed.
+
+
+    Tests: Defaults produce valid objects, overrides are applied correctly, board
+    dimensions are correct, factory objects are independent (no shared references)
+
+
+    Files: `packages/shared/src/__test-utils__/factories.ts`, `packages/shared/src/__test-utils__/factories.test.ts`,
+    `packages/shared/src/__test-utils__/index.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040040+00:00'
+  updated_at: '2026-04-11T23:10:58.040040+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-f48ed86
+  plan: plan-17af8d3
+  title: Snapshot tests for piece shapes and SRS kick tables
+  branch: pm/pr-f48ed86-snapshot-tests-for-piece-shapes-and-srs-kick-table
+  status: pending
+  depends_on:
+  - pr-48ed9f4
+  description: 'Add snapshot tests that lock down the static data tables defined in
+    pr-48ed9f4: piece shape matrices for all 7 pieces in all 4 rotations, and the
+    SRS wall kick offset table (including I-piece special cases). These tests import
+    the data and use `toMatchInlineSnapshot()` so any accidental edit is caught immediately.
+    Pure data tests, no human-guided testing needed.
+
+
+    Tests: Inline snapshots for all 7 piece shapes x 4 rotations (28 snapshots), inline
+    snapshots for all SRS kick offset sets, NRS rotation states if applicable
+
+
+    Files: `packages/shared/src/engine/piece-data.test.ts`, `packages/shared/src/engine/kick-tables.test.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040047+00:00'
+  updated_at: '2026-04-11T23:12:26.769720+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1052bf4
+  plan: plan-17af8d3
+  title: Game test harness (input replay)
+  branch: pm/pr-1052bf4-game-test-harness-input-replay
+  status: pending
+  depends_on:
+  - pr-109d87a
+  - pr-8d8faf9
+  description: 'Add a `GameTestHarness` class that wraps the engine for integration-level
+    testing. API: `new GameTestHarness({ seed, ruleSet?, startLevel? })` creates a
+    game, then `harness.input(action)` or `harness.inputs([action1, action2, ...])`
+    feeds inputs, and `harness.state` returns the current `GameStateSnapshot`. Also
+    supports `harness.tickUntil(predicate)` for advancing past lock delays. This enables
+    testing full state transitions (piece lock → line clear → garbage insert → next
+    piece spawn) without timers. Depends on the engine existing, so this PR also defines
+    the minimal engine interface it expects (which engine PRs will implement). No
+    human-guided testing needed.
+
+
+    Tests: Harness initializes with correct defaults, inputs are applied in order,
+    state is accessible after each input, tickUntil advances correctly, deterministic
+    (same seed + inputs = same state)
+
+
+    Files: `packages/shared/src/__test-utils__/game-harness.ts`, `packages/shared/src/__test-utils__/game-harness.test.ts`,
+    `packages/shared/src/__test-utils__/index.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040053+00:00'
+  updated_at: '2026-04-11T23:10:58.040053+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-d8c0916
+  plan: plan-17af8d3
+  title: State transition assertion helpers
+  branch: pm/pr-d8c0916-state-transition-assertion-helpers
+  status: pending
+  depends_on:
+  - pr-940a121
+  - pr-8d8faf9
+  description: 'Add focused assertion helpers for verifying engine state transitions:
+    `assertLinesCleared(before, after, expectedCount)`, `assertPieceLocked(state,
+    expectedCells)`, `assertGarbageInserted(before, after, batch)`, `assertSpawnedPiece(state,
+    expectedType)`. These compose with the board builder and game harness to make
+    transition tests readable and specific. No human-guided testing needed.
+
+
+    Tests: Each assertion helper correctly passes on valid transitions, each helper
+    throws descriptive errors on mismatches, composability (chain multiple assertions
+    for a full lock→clear→garbage→spawn cycle)
+
+
+    Files: `packages/shared/src/__test-utils__/assertions.ts`, `packages/shared/src/__test-utils__/assertions.test.ts`,
+    `packages/shared/src/__test-utils__/index.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040059+00:00'
+  updated_at: '2026-04-11T23:10:58.040059+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-9fa62c0
+  plan: plan-17af8d3
+  title: Playwright E2E setup and dev server orchestration
+  branch: pm/pr-9fa62c0-playwright-e2e-setup-and-dev-server-orchestration
+  status: pending
+  depends_on: []
+  description: 'Install Playwright and configure it for the project. Set up `playwright.config.ts`
+    at the repo root with a `webServer` config that starts both the Vite dev server
+    (client) and the game server before tests run. Configure headless Chromium as
+    the default browser, with a headed mode flag for local debugging. Add `npm run
+    test:e2e` script to root `package.json`. Create a first smoke test that loads
+    the app and verifies it renders. **INPUT_REQUIRED**: Human should verify the smoke
+    test opens the app correctly in a real browser.
+
+
+    Tests: Smoke test — app loads, title is correct, no console errors
+
+
+    Files: `playwright.config.ts`, `package.json`, `e2e/smoke.spec.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040063+00:00'
+  updated_at: '2026-04-11T23:10:58.040063+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-8e93a65
+  plan: plan-17af8d3
+  title: E2E test helpers for multiplayer flows
+  branch: pm/pr-8e93a65-e2e-test-helpers-for-multiplayer-flows
+  status: pending
+  depends_on:
+  - pr-9fa62c0
+  - pr-ea6f093
+  - pr-0b382c5
+  description: 'Add Playwright helper utilities for multiplayer E2E scenarios: `createPlayerContext(browser,
+    name)` opens a new browser context and navigates to the app, `createRoom(page)`
+    and `joinRoom(page, roomId)` handle lobby interactions, `sendKeyboardInput(page,
+    action)` maps game actions to key presses. These helpers abstract away UI selectors
+    so E2E tests read like game scenarios. Also add a `waitForGameState(page, predicate)`
+    helper that polls the page for a DOM condition (e.g., game started, game over).
+    **INPUT_REQUIRED**: Human should verify the helpers work with the actual UI once
+    lobby/game components exist.
+
+
+    Tests: Helper functions are tested via a 2-player lobby flow: create room → join
+    room → verify both players see each other
+
+
+    Files: `e2e/helpers/player.ts`, `e2e/helpers/lobby.ts`, `e2e/helpers/input.ts`,
+    `e2e/helpers/game-state.ts`, `e2e/helpers/index.ts`, `e2e/multiplayer-lobby.spec.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040068+00:00'
+  updated_at: '2026-04-11T23:19:05.109277+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-86780be
+  plan: plan-17af8d3
+  title: E2E multiplayer game flow test
+  branch: pm/pr-86780be-e2e-multiplayer-game-flow-test
+  status: pending
+  depends_on:
+  - pr-8e93a65
+  - pr-c0cc689
+  description: 'Add an E2E test that exercises a full multiplayer game: two browser
+    contexts create/join a room, host starts the game, both players make moves via
+    keyboard, one player tops out, winner is declared. This validates the complete
+    stack: React UI → WebSocket → server → game state → UI updates. **INPUT_REQUIRED**:
+    Human should verify game interactions work in a real browser — keyboard inputs,
+    board rendering, game over detection all depend on the actual UI implementation.
+
+
+    Tests: Full game lifecycle — room creation, game start, player input, game over,
+    winner announcement. Also test disconnect/reconnect during a game.
+
+
+    Files: `e2e/multiplayer-game.spec.ts`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040072+00:00'
+  updated_at: '2026-04-11T23:19:05.313354+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-edcf972
+  plan: plan-17af8d3
+  title: Coverage configuration and CI thresholds
+  branch: pm/pr-edcf972-coverage-configuration-and-ci-thresholds
+  status: pending
+  depends_on: []
+  description: 'Configure vitest coverage (v8 provider) with per-package thresholds.
+    Set `packages/shared/src/engine/` to 90% branch coverage minimum. Add `npm run
+    test:coverage` script to root `package.json`. Update vitest workspace configs
+    to include coverage settings. No human-guided testing needed.
+
+
+    Tests: No new unit tests — this PR is configuration. Verify by running `npm run
+    test:coverage` and confirming thresholds are enforced.
+
+
+    Files: `packages/shared/vitest.config.ts`, `packages/server/vitest.config.ts`,
+    `package.json`'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:10:58.040077+00:00'
+  updated_at: '2026-04-11T23:10:58.040077+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-8b8c60d
+  plan: plan-17af8d3
+  title: Testing plan review gate
+  branch: pm/pr-8b8c60d-testing-plan-review-gate
+  status: pending
+  depends_on:
+  - pr-f48ed86
+  - pr-1052bf4
+  - pr-d8c0916
+  - pr-86780be
+  - pr-edcf972
+  description: ''
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:55:24.401345+00:00'
+  updated_at: '2026-04-11T23:55:24.401345+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-40e39d6
+  plan: null
+  title: Project gate — all plans
+  branch: pm/pr-40e39d6-project-gate-all-plans
+  status: pending
+  depends_on:
+  - pr-8b8c60d
+  - pr-234798c
+  description: Top-level gate PR for auto-starting the entire project. Depends on
+    the testing plan review gate and the full integration test, which transitively
+    cover all PRs across all four plans (core Tetris, multiplayer, adaptive balancing,
+    automated testing). No implementation — close once all dependencies are merged.
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-11T23:56:03.030691+00:00'
+  updated_at: '2026-04-11T23:56:07.914770+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
