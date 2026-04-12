@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-63f7e69
+  active_pr: pr-a08de2e
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -31,6 +31,11 @@ plans:
 - id: plan-b7926f4
   name: Playwright testing
   file: plans/plan-b7926f4.md
+  status: draft
+  parent: null
+- id: plan-3dc51ce
+  name: UX polish
+  file: plans/plan-3dc51ce.md
   status: draft
   parent: null
 prs:
@@ -2076,7 +2081,7 @@ prs:
   plan: plan-b7926f4
   title: Expand E2E test helpers and add data-testid coverage
   branch: pm/pr-3687ade-expand-e2e-test-helpers-and-add-data-testid-covera
-  status: pending
+  status: merged
   depends_on: []
   description: '**This is the foundation PR that all E2E test PRs depend on.** It
     has two parts: (A) new Playwright helpers and (B) data-testid attributes on UI
@@ -2149,20 +2154,21 @@ prs:
     Files: `e2e/helpers/input.ts`, `e2e/helpers/game-state.ts`, `e2e/helpers/solo.ts`
     (new), `e2e/helpers/index.ts`, `e2e/helpers.spec.ts` (new), `packages/client/src/ui/ScoreDisplay.tsx`,
     `packages/client/src/ui/GameShell.tsx`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/68
+  gh_pr_number: 68
   created_at: '2026-04-12T16:05:51.469496+00:00'
-  updated_at: '2026-04-12T16:09:10.142777+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:23:24.465576+00:00'
+  started_at: '2026-04-12T16:12:37.764394+00:00'
+  reviewed_at: '2026-04-12T16:20:00.827302+00:00'
+  merged_at: '2026-04-12T16:23:24.465576+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3687ade-expand-e2e-test-helpers-and-add-data-5cd36d36
 - id: pr-698d1ce
   plan: plan-b7926f4
   title: Fix arrow key page scroll while held
   branch: pm/pr-698d1ce-fix-arrow-key-page-scroll-while-held
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: '**Root cause**: In `GameShell.tsx`, both the solo keydown handler
@@ -2177,20 +2183,21 @@ prs:
 
 
     Files: `packages/client/src/ui/GameShell.tsx`, `e2e/input-bugs.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/72
+  gh_pr_number: 72
   created_at: '2026-04-12T16:05:51.469516+00:00'
-  updated_at: '2026-04-12T16:05:51.469516+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:30:47.604660+00:00'
+  started_at: '2026-04-12T16:23:28.082121+00:00'
+  reviewed_at: '2026-04-12T16:28:07.844237+00:00'
+  merged_at: '2026-04-12T16:30:47.604660+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-698d1ce-fix-arrow-key-page-scroll-while-held-419307a5
 - id: pr-76a4952
   plan: plan-b7926f4
   title: Fix left/right movement double-fire and stuck keys
   branch: pm/pr-76a4952-fix-left-right-movement-double-fire-and-stuck-keys
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: '**Root cause**: The active inline DAS code in `GameShell.tsx` (both
@@ -2207,20 +2214,21 @@ prs:
 
     Files: `packages/client/src/ui/GameShell.tsx`, `packages/client/src/input/keyboard.ts`
     (if integrating), `e2e/input-bugs.spec.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/73
+  gh_pr_number: 73
   created_at: '2026-04-12T16:05:51.469525+00:00'
-  updated_at: '2026-04-12T16:05:51.469525+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:42:22.884272+00:00'
+  started_at: '2026-04-12T16:23:32.433889+00:00'
+  reviewed_at: '2026-04-12T16:32:50.262533+00:00'
+  merged_at: '2026-04-12T16:42:22.884272+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-76a4952-fix-left-right-movement-double-fire--419307a5
 - id: pr-1477f2b
   plan: plan-b7926f4
   title: Fix garbage not appearing on receiving player's game
   branch: pm/pr-1477f2b-fix-garbage-not-appearing-on-receiving-player-s-ga
-  status: pending
+  status: in_progress
   depends_on:
   - pr-3687ade
   description: '**Root cause**: The server''s `game-session.ts` broadcasts two garbage-related
@@ -2239,20 +2247,21 @@ prs:
 
     Files: `packages/client/src/net/lobby-client.ts`, `e2e/multiplayer-garbage.spec.ts`
     (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/74
+  gh_pr_number: 74
   created_at: '2026-04-12T16:05:51.469532+00:00'
-  updated_at: '2026-04-12T16:05:51.469532+00:00'
-  started_at: null
+  updated_at: '2026-04-12T16:23:37.069655+00:00'
+  started_at: '2026-04-12T16:23:37.069655+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-1477f2b-fix-garbage-not-appearing-on-receivi-419307a5
 - id: pr-f99a3e8
   plan: plan-b7926f4
   title: Investigate and fix NES classic mode level progression
   branch: pm/pr-f99a3e8-investigate-and-fix-nes-classic-mode-level-progres
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: '**Reported issue**: Levels don''t appear to work in classic NES mode.
@@ -2269,20 +2278,21 @@ prs:
     Files: `packages/client/src/ui/StartScreen.tsx`, `packages/client/src/ui/GameShell.tsx`,
     `packages/shared/src/engine/engine.ts` (if gravity curve wiring needs fixing),
     `e2e/single-player.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/75
+  gh_pr_number: 75
   created_at: '2026-04-12T16:05:51.469538+00:00'
-  updated_at: '2026-04-12T16:05:51.469538+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:30:40.949073+00:00'
+  started_at: '2026-04-12T16:23:41.811831+00:00'
+  reviewed_at: '2026-04-12T16:28:56.104109+00:00'
+  merged_at: '2026-04-12T16:30:40.949073+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-f99a3e8-investigate-and-fix-nes-classic-mode-419307a5
 - id: pr-e1885a9
   plan: plan-b7926f4
   title: Single-player E2E tests — game modes and basic gameplay
   branch: pm/pr-e1885a9-single-player-e2e-tests-game-modes-and-basic-gamep
-  status: pending
+  status: in_review
   depends_on:
   - pr-3687ade
   description: 'Add comprehensive Playwright tests for all single-player features.
@@ -2355,20 +2365,21 @@ prs:
 
 
     Files: `e2e/single-player.spec.ts` (new or extend)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/76
+  gh_pr_number: 76
   created_at: '2026-04-12T16:05:51.469545+00:00'
-  updated_at: '2026-04-12T16:09:37.259659+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-12T16:32:16.783369+00:00'
+  started_at: '2026-04-12T16:23:46.909009+00:00'
+  reviewed_at: '2026-04-12T16:32:16.783369+00:00'
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-e1885a9-single-player-e2e-tests-game-modes-a-419307a5
 - id: pr-155e552
   plan: plan-b7926f4
   title: Reference verification — NES scoring and gravity tables
   branch: pm/pr-155e552-reference-verification-nes-scoring-and-gravity-tab
-  status: pending
+  status: merged
   depends_on: []
   description: 'Add unit tests in `packages/shared` that verify our NES implementation
     against the authoritative data from [Tetris (NES) — TetrisWiki](https://tetris.wiki/Tetris_(NES))
@@ -2381,20 +2392,21 @@ prs:
 
 
     Files: `packages/shared/src/__tests__/reference-nes.test.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/69
+  gh_pr_number: 69
   created_at: '2026-04-12T16:05:51.469550+00:00'
-  updated_at: '2026-04-12T16:05:51.469550+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:20:26.431378+00:00'
+  started_at: '2026-04-12T16:12:42.137944+00:00'
+  reviewed_at: '2026-04-12T16:18:27.868363+00:00'
+  merged_at: '2026-04-12T16:20:26.431378+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-155e552-reference-verification-nes-scoring-a-5cd36d36
 - id: pr-511ada6
   plan: plan-b7926f4
   title: Reference verification — SRS rotation and wall kicks
   branch: pm/pr-511ada6-reference-verification-srs-rotation-and-wall-kicks
-  status: pending
+  status: in_review
   depends_on: []
   description: 'Add unit tests verifying our SRS rotation system against [Super Rotation
     System — TetrisWiki](https://tetris.wiki/Super_Rotation_System) and [SRS — Hard
@@ -2406,20 +2418,21 @@ prs:
 
 
     Files: `packages/shared/src/__tests__/reference-srs.test.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/70
+  gh_pr_number: 70
   created_at: '2026-04-12T16:05:51.469555+00:00'
-  updated_at: '2026-04-12T16:05:51.469555+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-12T16:55:50.822412+00:00'
+  started_at: '2026-04-12T16:12:47.805076+00:00'
+  reviewed_at: '2026-04-12T16:55:50.822412+00:00'
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-511ada6-reference-verification-srs-rotation--5cd36d36
 - id: pr-3bd15fc
   plan: plan-b7926f4
   title: Reference verification — guideline garbage and scoring
   branch: pm/pr-3bd15fc-reference-verification-guideline-garbage-and-scori
-  status: pending
+  status: merged
   depends_on: []
   description: 'Add unit tests verifying our modern/guideline scoring and garbage
     values against [Garbage — TetrisWiki](https://tetris.wiki/Garbage) and [Scoring
@@ -2431,20 +2444,21 @@ prs:
 
 
     Files: `packages/shared/src/__tests__/reference-guideline.test.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/71
+  gh_pr_number: 71
   created_at: '2026-04-12T16:05:51.469560+00:00'
-  updated_at: '2026-04-12T16:05:51.469560+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:24:57.666757+00:00'
+  started_at: '2026-04-12T16:12:53.539788+00:00'
+  reviewed_at: '2026-04-12T16:20:42.766376+00:00'
+  merged_at: '2026-04-12T16:24:57.666757+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3bd15fc-reference-verification-guideline-gar-5cd36d36
 - id: pr-3414828
   plan: plan-b7926f4
   title: Multiplayer rematch flow E2E tests
   branch: pm/pr-3414828-multiplayer-rematch-flow-e2e-tests
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: 'The rematch flow has no E2E coverage. The results screen (`GameResults.tsx`)
@@ -2492,20 +2506,21 @@ prs:
 
 
     Files: `e2e/multiplayer-rematch.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/77
+  gh_pr_number: 77
   created_at: '2026-04-12T16:05:51.469565+00:00'
-  updated_at: '2026-04-12T16:09:53.835957+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:42:54.461327+00:00'
+  started_at: '2026-04-12T16:23:51.919242+00:00'
+  reviewed_at: '2026-04-12T16:31:26.701962+00:00'
+  merged_at: '2026-04-12T16:42:54.461327+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3414828-multiplayer-rematch-flow-e2e-tests-419307a5
 - id: pr-7945e4c
   plan: plan-b7926f4
   title: Multiplayer reconnection flow E2E tests
   branch: pm/pr-7945e4c-multiplayer-reconnection-flow-e2e-tests
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: 'Currently only the disconnect→forfeit path is tested (in `multiplayer-game.spec.ts`).
@@ -2521,20 +2536,21 @@ prs:
 
 
     Files: `e2e/multiplayer-reconnect.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/78
+  gh_pr_number: 78
   created_at: '2026-04-12T16:05:51.469569+00:00'
-  updated_at: '2026-04-12T16:05:51.469569+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:51:55.829073+00:00'
+  started_at: '2026-04-12T16:23:56.870823+00:00'
+  reviewed_at: '2026-04-12T16:50:01.611822+00:00'
+  merged_at: '2026-04-12T16:51:55.829073+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-7945e4c-multiplayer-reconnection-flow-e2e-te-419307a5
 - id: pr-a64e895
   plan: plan-b7926f4
   title: Room settings and handicap UI E2E tests
   branch: pm/pr-a64e895-room-settings-and-handicap-ui-e2e-tests
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: 'The waiting room (`WaitingRoom.tsx`) displays two settings panels
@@ -2552,20 +2568,21 @@ prs:
 
 
     Files: `e2e/room-settings.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/79
+  gh_pr_number: 79
   created_at: '2026-04-12T16:05:51.469575+00:00'
-  updated_at: '2026-04-12T16:05:51.469575+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:46:11.485168+00:00'
+  started_at: '2026-04-12T16:24:02.133719+00:00'
+  reviewed_at: '2026-04-12T16:34:12.643765+00:00'
+  merged_at: '2026-04-12T16:46:11.485168+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-a64e895-room-settings-and-handicap-ui-e2e-te-419307a5
 - id: pr-a5bbff2
   plan: plan-b7926f4
   title: Three-or-more player game E2E tests
   branch: pm/pr-a5bbff2-three-or-more-player-game-e2e-tests
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: 'All existing multiplayer tests use exactly 2 players. The game is
@@ -2619,20 +2636,21 @@ prs:
 
 
     Files: `e2e/multiplayer-3player.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/80
+  gh_pr_number: 80
   created_at: '2026-04-12T16:05:51.469579+00:00'
-  updated_at: '2026-04-12T16:10:15.827727+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:38:37.562967+00:00'
+  started_at: '2026-04-12T16:24:07.850098+00:00'
+  reviewed_at: '2026-04-12T16:31:29.119979+00:00'
+  merged_at: '2026-04-12T16:38:37.562967+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-a5bbff2-three-or-more-player-game-e2e-tests-419307a5
 - id: pr-77a4924
   plan: plan-b7926f4
   title: Stats screen and post-game UI E2E tests
   branch: pm/pr-77a4924-stats-screen-and-post-game-ui-e2e-tests
-  status: pending
+  status: merged
   depends_on:
   - pr-3687ade
   description: 'The stats screen (`StatsScreen.tsx`) loads data from `/api/stats/{username}`
@@ -2691,15 +2709,16 @@ prs:
 
 
     Files: `e2e/stats-screen.spec.ts` (new)'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/81
+  gh_pr_number: 81
   created_at: '2026-04-12T16:05:51.469584+00:00'
-  updated_at: '2026-04-12T16:10:36.189226+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T16:42:06.818929+00:00'
+  started_at: '2026-04-12T16:24:13.213071+00:00'
+  reviewed_at: '2026-04-12T16:37:57.686999+00:00'
+  merged_at: '2026-04-12T16:42:06.818929+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-77a4924-stats-screen-and-post-game-ui-e2e-te-419307a5
 - id: pr-63f7e69
   plan: plan-b7926f4
   title: Final gate — all Playwright testing plan PRs merged
@@ -2741,6 +2760,608 @@ prs:
   gh_pr_number: null
   created_at: '2026-04-12T16:05:51.469592+00:00'
   updated_at: '2026-04-12T16:05:51.469592+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-c052338
+  plan: plan-3dc51ce
+  title: Atmosphere engine
+  branch: pm/pr-c052338-atmosphere-engine
+  status: pending
+  depends_on: []
+  description: 'Reactive state machine that reads game signals (board height, level,
+    speed, combo, b2b, garbage pressure, game status) and outputs continuous atmosphere
+    values: intensity (0-1), danger (0-1), momentum (combo/b2b streak energy), and
+    discrete event triggers (lineClear, tSpin, tetris, levelUp, garbageReceived).
+    Provides a React context/hook (`useAtmosphere`) that other systems subscribe to.
+    Includes multiplayer signal inputs (opponent count, eliminations, garbage sent/received).
+    This is the foundational data layer with no visual or audio output.
+
+
+    Tests: Unit tests for atmosphere computation: intensity rises with level/speed,
+    danger rises with board height, momentum tracks combo/b2b streaks, event triggers
+    fire correctly, multiplayer signals integrate properly. Snapshot tests for known
+    game states mapping to expected atmosphere values.
+
+
+    Files: `packages/client/src/atmosphere/atmosphere-engine.ts`, `packages/client/src/atmosphere/types.ts`,
+    `packages/client/src/atmosphere/use-atmosphere.ts`, `e2e/atmosphere-engine.spec.ts`,
+    tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.411971+00:00'
+  updated_at: '2026-04-12T16:47:15.411971+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-d687e7a
+  plan: plan-3dc51ce
+  title: Theme and genre config system
+  branch: pm/pr-d687e7a-theme-and-genre-config-system
+  status: pending
+  depends_on: []
+  description: 'Data-driven configuration system for visual themes and music genres.
+    A theme defines: color palette (background gradient stops, particle colors, accent
+    colors), particle style (shape, size range, trail behavior), background geometry
+    (pattern type, density, movement), board accent colors. A genre defines: musical
+    scale/mode, base tempo, instrument timbres (oscillator types + envelope shapes),
+    rhythm patterns, layer activation thresholds. Ships with 3-4 initial themes (e.g.,
+    "Deep Ocean", "Neon City", "Void", "Aurora") and 3-4 genres (e.g., "Ambient",
+    "Synthwave", "Minimal Techno", "Chiptune"). Includes a React context for current
+    theme/genre selection and a settings UI for choosing them.
+
+
+    Tests: Unit tests for theme/genre config validation and defaults. Tests for theme
+    switching at runtime.
+
+
+    Files: `packages/client/src/atmosphere/themes.ts`, `packages/client/src/atmosphere/genres.ts`,
+    `packages/client/src/atmosphere/theme-context.ts`, `packages/client/src/ui/ThemeSelector.tsx`,
+    `e2e/theme-selector.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.411995+00:00'
+  updated_at: '2026-04-12T16:47:15.411995+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-9ced1e0
+  plan: plan-3dc51ce
+  title: Background canvas layer
+  branch: pm/pr-9ced1e0-background-canvas-layer
+  status: pending
+  depends_on:
+  - pr-c052338
+  - pr-d687e7a
+  description: 'A full-viewport canvas that renders behind the game board, driven
+    by the atmosphere engine and current theme. Renders animated geometric elements
+    (floating shapes, grid patterns, flowing lines, gradient fields) that shift in
+    color, speed, density, and behavior based on atmosphere intensity and danger.
+    Low intensity = sparse, slow, cool-toned. High intensity = dense, fast, warm/bright.
+    Danger = color shift toward reds/darks, agitated movement. The background is an
+    abstract landscape that mirrors game state without depicting it literally. Integrated
+    into GameShell and the lobby/menu screens. **Human testing needed**: visual aesthetics,
+    performance feel, theme variety look-and-feel.
+
+
+    Tests: Unit tests for background geometry computation given atmosphere values.
+    Integration test that the canvas mounts and renders without errors.
+
+
+    Files: `packages/client/src/atmosphere/BackgroundCanvas.tsx`, `packages/client/src/atmosphere/background-renderers.ts`,
+    `packages/client/src/ui/GameShell.tsx`, `packages/client/src/ui/GameShell.css`,
+    `e2e/background-atmosphere.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412003+00:00'
+  updated_at: '2026-04-12T16:47:15.412003+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-8aa0270
+  plan: plan-3dc51ce
+  title: Particle system
+  branch: pm/pr-8aa0270-particle-system
+  status: pending
+  depends_on:
+  - pr-d687e7a
+  description: 'A canvas-based particle engine that spawns, updates, and renders particles.
+    Supports configurable particle types: shape (circle, square, diamond, line, star),
+    color (from theme palette), lifetime, velocity, gravity, fade, scale curves, trail
+    rendering. Particles are triggered by atmosphere events — not on a timer. Provides
+    an imperative API (`emit(config, position, count)`) and a React component that
+    overlays the game area. Does not render anything on its own — just the engine
+    and rendering infrastructure. **Human testing needed**: particle visual quality,
+    feel of different particle shapes.
+
+
+    Tests: Unit tests for particle lifecycle (spawn, update, expire), velocity/gravity
+    integration, bounds culling. Tests for emission from event triggers.
+
+
+    Files: `packages/client/src/atmosphere/particle-system.ts`, `packages/client/src/atmosphere/ParticleCanvas.tsx`,
+    `e2e/particle-system.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412009+00:00'
+  updated_at: '2026-04-12T16:47:15.412009+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-1066844
+  plan: plan-3dc51ce
+  title: Board visual effects — line clear and lock
+  branch: pm/pr-1066844-board-visual-effects-line-clear-and-lock
+  status: pending
+  depends_on:
+  - pr-8aa0270
+  - pr-c052338
+  description: 'Visual effects rendered on or near the board for game events. Line
+    clear: rows flash white and dissolve into particles (using the particle system)
+    that scatter outward. Piece lock: brief pulse/glow at the locked position. Hard
+    drop: vertical trail of fading cells from drop start to landing. Tetris (4-line
+    clear): amplified version — screen-wide flash, more particles, color burst. All
+    effects use theme colors. These are rendered on the particle/effects canvas layer,
+    not by modifying BoardCanvas internals. **Human testing needed**: timing feel
+    relative to gameplay, visual clarity, effect doesn''t obscure next piece placement.
+
+
+    Tests: Unit tests for effect trigger detection (diffing game state for line clears,
+    locks, hard drops). Tests that effects spawn correct particle configurations.
+
+
+    Files: `packages/client/src/atmosphere/board-effects.ts`, `packages/client/src/ui/GameShell.tsx`,
+    `e2e/board-effects.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412017+00:00'
+  updated_at: '2026-04-12T16:47:15.412017+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-3fc952c
+  plan: plan-3dc51ce
+  title: Event burst visuals
+  branch: pm/pr-3fc952c-event-burst-visuals
+  status: pending
+  depends_on:
+  - pr-8aa0270
+  - pr-c052338
+  - pr-d687e7a
+  description: 'Abstract visual responses to significant game events, rendered as
+    full-screen or board-area effects. T-spin: radial starburst emanating from the
+    T-piece position. Combo streak: escalating concentric ripples — each successive
+    combo in a streak produces a larger, more colorful ripple. Back-to-back: horizontal
+    color wave that sweeps across the screen. Level up: brief chromatic shift of the
+    entire background. These are artistic, abstract — no text, no numbers. The visual
+    language communicates "something impressive happened" through motion and color
+    alone. Uses theme palette. **Human testing needed**: whether events feel distinct
+    from each other, whether they feel rewarding, visual clarity.
+
+
+    Tests: Unit tests for event detection from atmosphere signals. Tests for burst
+    geometry computation (ripple radius over time, starburst ray count).
+
+
+    Files: `packages/client/src/atmosphere/event-bursts.ts`, `packages/client/src/atmosphere/EventBurstCanvas.tsx`,
+    `e2e/event-bursts.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412022+00:00'
+  updated_at: '2026-04-12T16:47:15.412022+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-14419d6
+  plan: plan-3dc51ce
+  title: Screen effects — vignette, shake, flash
+  branch: pm/pr-14419d6-screen-effects-vignette-shake-flash
+  status: pending
+  depends_on:
+  - pr-c052338
+  - pr-d687e7a
+  description: 'Screen-level post-processing effects applied as a CSS/canvas overlay
+    on the entire game view. Danger vignette: dark reddish vignette creeps in from
+    edges as board height increases — controlled by atmosphere danger signal. Screen
+    shake: brief displacement on garbage received or hard drop (subtle, 2-4px). Screen
+    flash: brief white flash on line clears, scaled by line count. All effects driven
+    by atmosphere, themed by current theme''s accent colors. Applied via a wrapper
+    component around the game layout. **Human testing needed**: shake magnitude feel,
+    vignette not obscuring board edges, flash not causing discomfort.
+
+
+    Tests: Unit tests for effect parameter computation from atmosphere (vignette opacity
+    from danger, shake magnitude from event type). Tests for auto-decay of transient
+    effects.
+
+
+    Files: `packages/client/src/atmosphere/screen-effects.ts`, `packages/client/src/atmosphere/ScreenEffects.tsx`,
+    `packages/client/src/ui/GameShell.tsx`, `e2e/screen-effects.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412028+00:00'
+  updated_at: '2026-04-12T16:47:15.412028+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-a83d71d
+  plan: plan-3dc51ce
+  title: Adaptive music engine
+  branch: pm/pr-a83d71d-adaptive-music-engine
+  status: pending
+  depends_on:
+  - pr-c052338
+  - pr-d687e7a
+  description: 'A layered procedural music system built on Web Audio API. Architecture:
+    multiple concurrent "layers" (bass drone, rhythm/percussion, arpeggiated melody,
+    lead/pad), each generated procedurally from the current genre config. Layers activate/deactivate
+    based on atmosphere intensity thresholds — calm games have just a bass drone,
+    intense moments bring in all layers. Tempo is driven by game speed/level. Danger
+    shifts the musical mode (e.g., major to minor, or to diminished). Line clears
+    trigger harmonic accents. Combos add rhythmic fills. Level-up triggers a brief
+    key change or flourish. The engine crossfades between states smoothly. Genre config
+    determines all musical parameters (scale, timbre, rhythm patterns). Includes a
+    mute/volume control. **Human testing needed**: musical quality, genre variety,
+    transitions between intensity levels, whether music feels connected to gameplay.
+
+
+    Tests: Unit tests for layer activation thresholds, tempo calculation from game
+    speed, scale/mode selection from atmosphere. Tests for note generation from genre
+    config. Tests for crossfade timing.
+
+
+    Files: `packages/client/src/audio/music-engine.ts`, `packages/client/src/audio/music-layers.ts`,
+    `packages/client/src/audio/use-music.ts`, `e2e/music-engine.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412033+00:00'
+  updated_at: '2026-04-12T16:47:15.412033+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-24b6a22
+  plan: plan-3dc51ce
+  title: Multiplayer atmosphere integration
+  branch: pm/pr-24b6a22-multiplayer-atmosphere-integration
+  status: pending
+  depends_on:
+  - pr-c052338
+  - pr-8aa0270
+  - pr-9ced1e0
+  description: 'Extends the atmosphere engine to incorporate multiplayer-specific
+    signals as abstract visual phenomena. Garbage incoming: approaching particles/shapes
+    drift toward the board from the direction of the attacker''s opponent board —
+    abstract "pressure" visualization. Opponent elimination: a distant visual "shockwave"
+    ripple. Garbage sent by local player: outward burst of energy toward targeted
+    opponent. Overall match intensity (number of active players, aggregate garbage
+    flying) modulates background density and color saturation. All effects are abstract
+    — you feel the battle''s energy without needing to read numbers. **Human testing
+    needed**: whether multiplayer atmosphere feels meaningfully different from solo,
+    whether opponent events are noticeable but not distracting.
+
+
+    Tests: Unit tests for multiplayer signal processing in atmosphere engine. Tests
+    for garbage direction computation (which opponent). Tests for match-wide intensity
+    aggregation.
+
+
+    Files: `packages/client/src/atmosphere/multiplayer-effects.ts`, `packages/client/src/atmosphere/atmosphere-engine.ts`,
+    `packages/client/src/ui/GameMultiplayer.tsx`, `e2e/multiplayer-atmosphere.spec.ts`,
+    tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412038+00:00'
+  updated_at: '2026-04-12T16:47:15.412038+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-b648096
+  plan: plan-3dc51ce
+  title: Menu and lobby atmosphere
+  branch: pm/pr-b648096-menu-and-lobby-atmosphere
+  status: pending
+  depends_on:
+  - pr-9ced1e0
+  - pr-a83d71d
+  description: 'Extends the background canvas and ambient music to non-game screens:
+    lobby, waiting room, start screen, results. These screens get a calm, ambient
+    version of the current theme''s background — slow-moving geometry, muted colors,
+    gentle particles. The music engine plays a low-intensity ambient loop on menu
+    screens. Waiting room background subtly shifts as more players join (the room
+    "fills up" visually). Game results screen reflects the match outcome — winner
+    gets a triumphant color burst, others get a softer resolved state. Smooth visual
+    transitions between screens (fade/crossfade the background canvas rather than
+    hard-cutting). **Human testing needed**: lobby feel, transition smoothness, whether
+    ambient audio is pleasant or annoying at low volumes.
+
+
+    Tests: Unit tests for menu atmosphere state computation. Tests for player-count-driven
+    waiting room intensity. Integration test for screen transition triggers.
+
+
+    Files: `packages/client/src/atmosphere/menu-atmosphere.ts`, `packages/client/src/ui/Lobby.tsx`,
+    `packages/client/src/ui/WaitingRoom.tsx`, `packages/client/src/ui/GameResults.tsx`,
+    `packages/client/src/App.tsx`, `e2e/menu-atmosphere.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412042+00:00'
+  updated_at: '2026-04-12T16:47:15.412042+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-0f48e4a
+  plan: plan-3dc51ce
+  title: Audio and visual settings panel
+  branch: pm/pr-0f48e4a-audio-and-visual-settings-panel
+  status: pending
+  depends_on:
+  - pr-d687e7a
+  - pr-a83d71d
+  description: 'A settings panel accessible from the lobby and in-game (pause overlay
+    in solo mode). Controls: music volume slider, SFX volume slider, master mute toggle,
+    visual effects intensity (off / subtle / full), theme selector (with preview swatches),
+    genre selector (with short audio preview on hover). Settings persist to localStorage.
+    The existing SoundManager gains volume control (currently just mute toggle). Settings
+    are exposed via React context so all atmosphere consumers can read them. **Human
+    testing needed**: settings persistence across sessions, volume slider feel, theme/genre
+    preview behavior.
+
+
+    Tests: Unit tests for settings serialization/deserialization, default values,
+    volume application to audio nodes. Tests for settings context provider.
+
+
+    Files: `packages/client/src/ui/SettingsPanel.tsx`, `packages/client/src/ui/SettingsPanel.css`,
+    `packages/client/src/atmosphere/settings-context.ts`, `packages/client/src/audio/sounds.ts`,
+    `packages/client/src/ui/Lobby.tsx`, `e2e/settings-panel.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412047+00:00'
+  updated_at: '2026-04-12T16:47:15.412047+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-49e8aee
+  plan: plan-3dc51ce
+  title: Flow state detection and Zone mode
+  branch: pm/pr-49e8aee-flow-state-detection-and-zone-mode
+  status: pending
+  depends_on:
+  - pr-c052338
+  - pr-9ced1e0
+  - pr-a83d71d
+  description: 'Extends the atmosphere engine to detect sustained skilled play — a
+    rolling window of recent performance (clears-per-minute, clean placements, combo
+    maintenance, no misdrops, low max board height) that when high enough for a sustained
+    duration triggers a "flow" atmosphere state. In flow state, the background opens
+    up dramatically, colors saturate, particles intensify, the music hits a sustained
+    groove with extra harmonic layers, and a subtle visual "aura" appears around the
+    board. Breaking the flow (topping out, missing a clear, big misdrop) smoothly
+    exits the state. This is Tetris-Effect''s "Zone" reimagined as an emergent reward
+    for the player getting into rhythm. **Human testing needed**: detection sensitivity
+    (not too easy, not too hard to trigger), how it feels to enter and exit, whether
+    it feels rewarding without being disruptive.
+
+
+    Tests: Unit tests for flow detection windowing (rolling metrics, entry/exit thresholds),
+    hysteresis to prevent flicker, that flow state modulates atmosphere output correctly.
+    Snapshot tests for game state sequences that should and should not trigger flow.
+
+
+    Files: `packages/client/src/atmosphere/flow-detection.ts`, `packages/client/src/atmosphere/atmosphere-engine.ts`,
+    `e2e/flow-state.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412052+00:00'
+  updated_at: '2026-04-12T16:47:15.412052+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-ed25215
+  plan: plan-3dc51ce
+  title: Piece animation — spawn, movement, rotation
+  branch: pm/pr-ed25215-piece-animation-spawn-movement-rotation
+  status: pending
+  depends_on: []
+  description: 'Replaces instant piece rendering with smoothly interpolated animation.
+    Spawn: new pieces fade in at their spawn position over ~100ms rather than popping
+    in. Lateral movement: pieces tween between cell positions over a short duration
+    (~40ms) instead of teleporting. Rotation: pieces rotate with a brief easing animation.
+    Hard drop already has a trail effect (from board effects PR); this PR adds the
+    piece-level animation. Soft drop feels smoother. The gameplay logic (engine) remains
+    cell-snapped — this is purely a render-layer interpolation. Must never lag behind
+    actual game state (animations catch up immediately on next input). **Human testing
+    needed**: animation duration feel (too slow = sluggish, too fast = pointless),
+    rotation easing shape, that animations never interfere with responsiveness of
+    DAS/ARR at high speeds.
+
+
+    Tests: Unit tests for interpolation state tracking, that animations are skipped
+    or compressed when inputs arrive faster than animation duration, that animated
+    render position matches logical position at rest.
+
+
+    Files: `packages/client/src/ui/BoardCanvas.tsx`, `packages/client/src/ui/piece-animation.ts`,
+    `e2e/piece-animation.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412057+00:00'
+  updated_at: '2026-04-12T16:47:15.412057+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-e46a8a0
+  plan: plan-3dc51ce
+  title: Board life — idle animations
+  branch: pm/pr-e46a8a0-board-life-idle-animations
+  status: pending
+  depends_on:
+  - pr-d687e7a
+  - pr-c052338
+  description: 'Subtle ambient animations on the board itself to make it feel alive
+    even during pauses between actions. Placed cells get a very faint shimmer (slow
+    color cycle through nearby hues, ~2% amplitude), occasional specular "glints"
+    that sweep across cells, and grid lines that pulse very gently with the atmosphere
+    intensity. Cell highlights breathe slowly. Everything is subtle — the board should
+    feel alive but not distract from piece placement. Theme palette drives the shimmer
+    colors. **Human testing needed**: whether animation amplitude is subtle enough
+    (not distracting), whether the board feels alive or busy, whether glints occur
+    too often.
+
+
+    Tests: Unit tests for shimmer computation from time + atmosphere, glint scheduling,
+    that baseline cell colors are preserved (animation is additive). Tests for theme-driven
+    color variation.
+
+
+    Files: `packages/client/src/ui/BoardCanvas.tsx`, `packages/client/src/atmosphere/board-life.ts`,
+    `e2e/board-life.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412062+00:00'
+  updated_at: '2026-04-12T16:47:15.412062+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-11a17ba
+  plan: plan-3dc51ce
+  title: Theme- and genre-aware SFX
+  branch: pm/pr-11a17ba-theme-and-genre-aware-sfx
+  status: pending
+  depends_on:
+  - pr-d687e7a
+  description: 'Enriches the existing SoundManager so that SFX sounds match the current
+    theme/genre rather than being generic oscillator tones. Each genre config gains
+    an SFX profile: oscillator types, filter parameters, envelope shapes, and effect
+    chains (reverb, delay, bitcrusher for chiptune, etc.) for each sound event. Chiptune
+    genre produces 8-bit bleeps; synthwave produces filtered analog-style hits; ambient
+    produces soft bells; minimal techno produces crisp percussive clicks. The audio
+    system also gains richer synthesis — current SFX are single oscillators; this
+    PR introduces multi-oscillator layering, filter envelopes, and basic effects.
+    Existing SoundEvent API is preserved; only the implementation changes. **Human
+    testing needed**: sound quality across all genres, whether each genre''s SFX feels
+    cohesive with its music, no jarring audio artifacts.
+
+
+    Tests: Unit tests for SFX profile lookup by genre, filter/envelope parameter application,
+    that all SoundEvent types have a config in every genre. Tests for backward compatibility
+    with the default profile when no genre is set.
+
+
+    Files: `packages/client/src/audio/sounds.ts`, `packages/client/src/audio/sfx-profiles.ts`,
+    `packages/client/src/audio/synth-helpers.ts`, `e2e/sfx-profiles.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412068+00:00'
+  updated_at: '2026-04-12T16:47:15.412068+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-6885981
+  plan: plan-3dc51ce
+  title: Multiplayer emotes and opponent reactions
+  branch: pm/pr-6885981-multiplayer-emotes-and-opponent-reactions
+  status: pending
+  depends_on:
+  - pr-8aa0270
+  - pr-d687e7a
+  description: 'Social expressiveness for multiplayer matches. Players can trigger
+    quick emotes (a small set: thumbs up, fire, wave, gg — rendered as abstract glyphs
+    or particle bursts, not text) via a keybind or button that appears briefly over
+    the sender''s opponent board from the receiver''s perspective. Additionally, opponent
+    boards get automatic visual pulses on notable events: a bright ring when they
+    clear a Tetris, a red flash when they take heavy garbage, a flourish on elimination.
+    These reactions make multiplayer feel like playing with people rather than against
+    silent boards. Emotes are sent via the existing WebSocket protocol (new message
+    type). **Human testing needed**: emote triggering feel, opponent reaction visibility
+    without distraction from own play, protocol round-trip latency.
+
+
+    Tests: Unit tests for emote message serialization and protocol handling. Unit
+    tests for opponent event detection (Tetris clear, heavy garbage, elimination).
+    Integration tests for emote delivery via socket.
+
+
+    Files: `packages/shared/src/protocol.ts`, `packages/client/src/net/lobby-client.ts`,
+    `packages/server/src/room-handlers.ts`, `packages/client/src/ui/OpponentBoard.tsx`,
+    `packages/client/src/ui/EmotePicker.tsx`, `packages/client/src/atmosphere/opponent-reactions.ts`,
+    `e2e/emotes-reactions.spec.ts`, tests'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:47:15.412072+00:00'
+  updated_at: '2026-04-12T16:47:15.412072+00:00'
+  started_at: null
+  reviewed_at: null
+  merged_at: null
+  notes: []
+- id: pr-a08de2e
+  plan: plan-3dc51ce
+  title: Final gate — atmosphere and music plan complete
+  branch: pm/pr-a08de2e-final-gate-atmosphere-and-music-plan-complete
+  status: pending
+  depends_on:
+  - pr-c052338
+  - pr-d687e7a
+  - pr-9ced1e0
+  - pr-8aa0270
+  - pr-1066844
+  - pr-3fc952c
+  - pr-14419d6
+  - pr-a83d71d
+  - pr-24b6a22
+  - pr-b648096
+  - pr-0f48e4a
+  - pr-49e8aee
+  - pr-ed25215
+  - pr-e46a8a0
+  - pr-11a17ba
+  - pr-6885981
+  description: 'Verification-only gate PR. Blocks until every PR in the UX Polish
+    atmosphere/music plan is merged. No code changes — the branch exists so autostart
+    can wait on the full dependency fan-in and then mark the plan complete.
+
+
+    Tests: none (gate PR).
+
+
+    Files: none.'
+  agent_machine: null
+  gh_pr: null
+  gh_pr_number: null
+  created_at: '2026-04-12T16:56:59.049749+00:00'
+  updated_at: '2026-04-12T16:56:59.049749+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
