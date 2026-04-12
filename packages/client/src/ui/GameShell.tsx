@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import type { RuleSet, GameModeConfig, GameState, GarbageBatch } from "@tetris/shared";
 import { TetrisEngine } from "@tetris/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
-import type { HandicapIndicatorData } from "./BoardCanvas.js";
+import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 import { ScoreDisplay } from "./ScoreDisplay.js";
 import { NextQueue } from "./NextQueue.js";
 import { HoldDisplay } from "./HoldDisplay.js";

@@ -1,4 +1,9 @@
-import type { HandicapIndicatorData } from "./BoardCanvas.js";
+export interface HandicapIndicatorData {
+  /** Effective incoming garbage multiplier (e.g. 0.6 for protection). */
+  incomingMultiplier: number;
+  /** Effective outgoing garbage multiplier (symmetric mode only). */
+  outgoingMultiplier?: number;
+}
 
 /** Color for protected multiplier (< 1.0). */
 const HANDICAP_GREEN = "#4CAF50";

@@ -5,7 +5,7 @@
 
 import type { HandicapModifiers, HandicapMode } from "@tetris/shared";
 import { modifierKey } from "@tetris/shared";
-import type { HandicapIndicatorData } from "./BoardCanvas.js";
+import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 
 /**
  * Compute the handicap indicator data for a given player.

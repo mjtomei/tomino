@@ -6,7 +6,7 @@ import type {
   TargetingStrategyType,
   TargetingSettings,
 } from "@tetris/shared";
-import type { HandicapIndicatorData } from "./BoardCanvas.js";
+import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 import type { EliminationData, PlayerTargetingState, PlayerAttackPower } from "../net/lobby-client.js";
 import { GameShell } from "./GameShell.js";
 import { OpponentBoard, opponentCellSize } from "./OpponentBoard.js";
