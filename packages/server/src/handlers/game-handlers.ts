@@ -132,6 +132,7 @@ export function startGameCountdown(
         : Promise.resolve();
 
       afterRatings.then(() => {
+        disconnectRegistry.clearRoom(roomId);
         store.setStatus(roomId, "finished");
         removeGameSession(roomId);
       });
@@ -252,7 +253,7 @@ export function handleGameDisconnect(
   playerId: PlayerId,
   roomId: RoomId,
   ctx: GameHandlerContext,
-  store?: RoomStore,
+  _store?: RoomStore,
   registry: DisconnectRegistry = disconnectRegistry,
 ): { pendingReconnect: boolean } {
   const session = getGameSession(roomId);
@@ -277,11 +278,9 @@ export function handleGameDisconnect(
     const s = getGameSession(roomId);
     if (!s) return;
     s.forfeitPlayer(playerId);
-    if (s.state === "finished") {
-      if (store) store.setStatus(roomId, "finished");
-      removeGameSession(roomId);
-      registry.clearRoom(roomId);
-    }
+    // Cleanup (setStatus, removeGameSession, clearRoom) is handled by the
+    // onGameEnd callback so that async rating updates complete before the
+    // session is torn down.
   });
 
   return { pendingReconnect: true };
