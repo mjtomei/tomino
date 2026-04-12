@@ -329,7 +329,7 @@ export function GameShell({ seed, onBack }: GameShellProps) {
         </div>
 
         <div className="game-board-container">
-          <BoardCanvas state={gameState} />
+          <BoardCanvas state={gameState} showSidePanels={false} />
           <Overlay
             state={gameState}
             modeConfig={modeConfig}
