@@ -157,7 +157,6 @@ function App() {
             rematchVotes={lobby.state.rematchVotes}
             ratingChanges={lobby.state.gameEndData.ratingChanges}
             handicapModifiers={session?.handicapModifiers}
-            handicapMode={session?.handicapMode}
           />
         </div>
       );

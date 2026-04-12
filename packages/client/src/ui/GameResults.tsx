@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { PlayerId, PlayerStats, HandicapModifiers, HandicapMode } from "@tetris/shared";
+import type { PlayerId, PlayerStats, HandicapModifiers, RatingChange } from "@tetris/shared";
 import { formatTime, placementLabel } from "./formatTime.js";
-import type { RematchVoteData, RatingChangeData } from "../net/lobby-client";
+import type { RematchVoteData } from "../net/lobby-client";
 import "./GameResults.css";
 
 export interface GameResultsProps {
@@ -15,11 +15,9 @@ export interface GameResultsProps {
   onViewStats: () => void;
   rematchVotes: RematchVoteData | null;
   /** Rating changes per player, arrives async after game end. */
-  ratingChanges?: Record<PlayerId, RatingChangeData>;
+  ratingChanges?: Record<PlayerId, RatingChange>;
   /** Handicap modifier matrix from the game session (key: "sender→receiver"). */
   handicapModifiers?: Record<string, HandicapModifiers>;
-  /** Handicap mode used in the game. */
-  handicapMode?: HandicapMode;
 }
 
 /**
@@ -109,7 +107,6 @@ export function GameResults({
           const s = stats[pid];
           const isLocal = pid === localPlayerId;
           const rc = ratingChanges?.[pid];
-          const delta = rc ? rc.after - rc.before : undefined;
 
           return (
             <div
@@ -135,9 +132,9 @@ export function GameResults({
                     <>
                       <span className="rating-value">{Math.round(rc.after)}</span>
                       <span
-                        className={`rating-delta ${delta! >= 0 ? "rating-positive" : "rating-negative"}`}
+                        className={`rating-delta ${rc.after >= rc.before ? "rating-positive" : "rating-negative"}`}
                       >
-                        {delta! >= 0 ? "+" : ""}{Math.round(delta!)}
+                        {rc.after >= rc.before ? "+" : ""}{Math.round(rc.after - rc.before)}
                       </span>
                     </>
                   ) : (

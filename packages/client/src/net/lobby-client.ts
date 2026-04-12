@@ -5,6 +5,7 @@ import type {
   PlayerId,
   PlayerInfo,
   PlayerStats,
+  RatingChange,
   RoomState,
   RoomId,
   ErrorCode,
@@ -30,20 +31,13 @@ export interface EliminationData {
   placement: number;
 }
 
-/** Per-player rating change entry received after a ranked game. */
-export interface RatingChangeData {
-  username: string;
-  before: number;
-  after: number;
-}
-
 /** Data stored when the game ends. */
 export interface GameEndData {
   winnerId: PlayerId;
   placements: Record<PlayerId, number>;
   stats: Record<PlayerId, PlayerStats>;
   /** Rating changes per player, populated when ratingUpdate message arrives. */
-  ratingChanges?: Record<PlayerId, RatingChangeData>;
+  ratingChanges?: Record<PlayerId, RatingChange>;
 }
 
 /** Tracks rematch voting status. */

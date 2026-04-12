@@ -202,7 +202,6 @@ describe("GameResults", () => {
         winnerId="p1"
         {...DEFAULT_PROPS}
         handicapModifiers={handicapModifiers}
-        handicapMode="boost"
       />,
     );
 
