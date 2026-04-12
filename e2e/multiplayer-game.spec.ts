@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Browser, type Page } from "@playwright/test";
 import {
   createPlayerContext,
   createRoom,
@@ -12,7 +12,7 @@ import {
  * Helper: start a 2-player game from scratch.
  * Returns both player handles and the room code.
  */
-async function setupAndStartGame(browser: import("@playwright/test").Browser) {
+async function setupAndStartGame(browser: Browser) {
   const host = await createPlayerContext(browser, "Alice");
   const roomId = await createRoom(host.page);
 
@@ -41,7 +41,7 @@ async function setupAndStartGame(browser: import("@playwright/test").Browser) {
  * Rapidly hard-drop pieces to fill the board and trigger a top-out.
  * Sends hard drops with short delays so the server can process each piece.
  */
-async function forceTopOut(page: import("@playwright/test").Page) {
+async function forceTopOut(page: Page) {
   // Hard drop ~25 pieces — enough to fill a 20-row board
   for (let i = 0; i < 25; i++) {
     await sendKeyboardInput(page, "hardDrop");
@@ -62,14 +62,6 @@ test.describe("multiplayer game flow", () => {
 
     try {
       ({ host, guest } = await setupAndStartGame(browser));
-
-      // Both players should see the game board
-      await expect(
-        host.page.locator('[data-testid="game-multiplayer"]'),
-      ).toBeVisible();
-      await expect(
-        guest.page.locator('[data-testid="game-multiplayer"]'),
-      ).toBeVisible();
 
       // Alice (host) hard-drops rapidly to top out
       // Bob does nothing — just waits
@@ -129,14 +121,6 @@ test.describe("multiplayer game flow", () => {
 
     try {
       ({ host, guest } = await setupAndStartGame(browser));
-
-      // Both should be in the game
-      await expect(
-        host.page.locator('[data-testid="game-multiplayer"]'),
-      ).toBeVisible();
-      await expect(
-        guest.page.locator('[data-testid="game-multiplayer"]'),
-      ).toBeVisible();
 
       // Bob disconnects (close the browser context)
       await guest.context.close();
