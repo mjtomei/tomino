@@ -55,12 +55,13 @@ function detectSoundEvents(prev: GameState | null, curr: GameState): SoundEvent[
     events.push("levelUp");
   }
 
-  // Piece lock: previous piece existed and is now gone or a different type spawned
-  if (
-    prev.currentPiece != null &&
-    linesDiff === 0 &&
-    (curr.currentPiece == null || curr.currentPiece.type !== prev.currentPiece.type)
-  ) {
+  // Piece lock: detect via queue shift (next piece consumed from queue).
+  // Comparing piece type alone misses locks when consecutive pieces share a type.
+  const queueShifted =
+    prev.queue.length > 0 &&
+    curr.queue.length > 0 &&
+    prev.queue[prev.queue.length - 1] !== curr.queue[curr.queue.length - 1];
+  if (prev.currentPiece != null && linesDiff === 0 && queueShifted) {
     events.push("lock");
   }
 
@@ -104,7 +105,6 @@ export function GameShell({ seed, onBack }: GameShellProps) {
   const prevStateRef = useRef<GameState | null>(null);
   const soundRef = useRef<SoundManager | null>(null);
   const dasRef = useRef<DASState>({ key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false });
-  const keysDownRef = useRef<Set<string>>(new Set());
 
   // Initialize sound manager
   useEffect(() => {
@@ -129,7 +129,7 @@ export function GameShell({ seed, onBack }: GameShellProps) {
     engineRef.current = engine;
     prevStateRef.current = null;
     dasRef.current = { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
-    keysDownRef.current.clear();
+
     setGameState(engine.getState());
   }, [seed]);
 
@@ -262,8 +262,6 @@ export function GameShell({ seed, onBack }: GameShellProps) {
 
       if (status !== "playing") return;
 
-      keysDownRef.current.add(e.code);
-
       // DAS for lateral movement
       if (action === "moveLeft" || action === "moveRight") {
         dasRef.current = {
@@ -289,8 +287,6 @@ export function GameShell({ seed, onBack }: GameShellProps) {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      keysDownRef.current.delete(e.code);
-
       const das = dasRef.current;
       if (das.key === e.code) {
         dasRef.current = { key: null, action: null, dasTimer: 0, arrTimer: 0, dasTriggered: false };
