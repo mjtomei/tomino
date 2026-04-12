@@ -5,7 +5,7 @@
  * Integrates with lobby-handlers' handleStartGame.
  */
 
-import type { HandicapModifiers, PlayerId, RoomId, ServerMessage } from "@tetris/shared";
+import type { HandicapMode, HandicapModifiers, PlayerId, RoomId, ServerMessage } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,
@@ -18,10 +18,6 @@ export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
 }
 
-/**
- * Initiate the game start countdown for a room.
- * Called after lobby validation (host check, player count, etc.) passes.
- */
 /** Default rating used when a player has no stored rating. */
 const DEFAULT_RATING = 1500;
 
@@ -38,6 +34,10 @@ function serializeModifierMatrix(
   return result;
 }
 
+/**
+ * Initiate the game start countdown for a room.
+ * Called after lobby validation (host check, player count, etc.) passes.
+ */
 export function startGameCountdown(
   roomId: RoomId,
   store: RoomStore,
@@ -48,7 +48,7 @@ export function startGameCountdown(
 
   // Compute handicap modifier matrix if handicap is enabled
   let handicapModifiers: Record<string, HandicapModifiers> | undefined;
-  let handicapMode = room.handicapSettings?.mode;
+  let handicapMode: HandicapMode | undefined;
   const settings = room.handicapSettings;
 
   if (settings && settings.intensity !== "off") {
@@ -58,6 +58,7 @@ export function startGameCountdown(
     }));
     const matrix = computeModifierMatrix(playerRatings, settings);
     handicapModifiers = serializeModifierMatrix(matrix);
+    handicapMode = settings.mode;
   }
 
   const session = createGameSession({
