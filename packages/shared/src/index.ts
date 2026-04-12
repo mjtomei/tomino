@@ -14,6 +14,19 @@ export * from "./protocol.js";
 export * from "./messages.js";
 
 export type {
+  TargetAllocation,
+  TargetingContext,
+  TargetingStrategy,
+  TargetingStrategyType,
+  TargetingSettings,
+} from "./targeting-types.js";
+export {
+  ALL_TARGETING_STRATEGIES,
+  DEFAULT_TARGETING_SETTINGS,
+  evenSplitStrategy,
+} from "./targeting-types.js";
+
+export type {
   PlayerProfile,
   PerformanceMetrics,
   MatchResult,
@@ -129,6 +142,14 @@ export type {
   ActivePiece,
   GameState,
   EngineOptions,
+  LineClearEvent,
 } from "./engine/engine.js";
 
 export { TetrisEngine } from "./engine/engine.js";
+
+export type { StateDelta } from "./state-snapshot.js";
+export {
+  engineStateToSnapshot,
+  computeStateDelta,
+  applyStateDelta,
+} from "./state-snapshot.js";

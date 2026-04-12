@@ -1,4 +1,10 @@
 export {
+  assertGarbageInserted,
+  assertLinesCleared,
+  assertPieceLocked,
+  assertSpawnedPiece,
+} from "./assertions.js";
+export {
   assertBoardEquals,
   boardFromAscii,
   boardToAscii,
