@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type {
+  GarbageBatch,
   GameStateSnapshot,
   PlayerId,
   PlayerInfo,
@@ -31,6 +32,8 @@ export interface LobbyState {
   gameSession: GameSessionData | null;
   /** Latest snapshots for remote players, keyed by playerId. */
   opponentStates: Record<PlayerId, GameStateSnapshot>;
+  /** Pending garbage for the local player (from authoritative server snapshots). */
+  localPendingGarbage: GarbageBatch[];
 }
 
 // ---------------------------------------------------------------------------
@@ -111,6 +114,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     countdownValue: null,
     gameSession: null,
     opponentStates: {},
+    localPendingGarbage: [],
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
@@ -144,6 +148,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             countdownValue: null,
             gameSession: null,
             opponentStates: {},
+            localPendingGarbage: [],
           }));
         }
       }
@@ -225,13 +230,21 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             handicapMode: msg.handicapMode,
           },
           opponentStates: initialOpponentStates,
+          localPendingGarbage: [],
         };
       });
     });
 
     socket.on("gameStateSnapshot", (msg) => {
       const localId = getSessionPlayerId();
-      if (msg.playerId === localId) return;
+      if (msg.playerId === localId) {
+        // Extract local player's pending garbage from authoritative snapshot.
+        setState((prev) => {
+          if (!prev.room || prev.room.id !== msg.roomId) return prev;
+          return { ...prev, localPendingGarbage: msg.state.pendingGarbage };
+        });
+        return;
+      }
       setState((prev) => {
         if (!prev.room || prev.room.id !== msg.roomId) return prev;
         return {
@@ -268,6 +281,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         countdownValue: null,
         gameSession: null,
         opponentStates: {},
+        localPendingGarbage: [],
       }));
     });
 
@@ -324,6 +338,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       room: null,
       error: null,
       opponentStates: {},
+      localPendingGarbage: [],
     }));
     setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
   }, []);

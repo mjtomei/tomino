@@ -1,4 +1,4 @@
-import type { GameStateSnapshot, PlayerId, RoomState } from "@tetris/shared";
+import type { GarbageBatch, GameStateSnapshot, PlayerId, RoomState } from "@tetris/shared";
 import { GameShell } from "./GameShell.js";
 import { OpponentBoard, opponentCellSize } from "./OpponentBoard.js";
 
@@ -7,6 +7,8 @@ export interface GameMultiplayerProps {
   currentPlayerId: PlayerId;
   seed?: number;
   opponentSnapshots: Record<PlayerId, GameStateSnapshot>;
+  /** Pending garbage for the local player. */
+  localPendingGarbage?: GarbageBatch[];
 }
 
 export function GameMultiplayer({
@@ -14,6 +16,7 @@ export function GameMultiplayer({
   currentPlayerId,
   seed,
   opponentSnapshots,
+  localPendingGarbage,
 }: GameMultiplayerProps) {
   const opponents = room.players.filter((p) => p.id !== currentPlayerId);
   const cellSize = opponentCellSize(opponents.length);
@@ -24,7 +27,7 @@ export function GameMultiplayer({
       style={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}
     >
       <div style={{ flex: "1 1 auto" }}>
-        <GameShell seed={seed} />
+        <GameShell seed={seed} pendingGarbage={localPendingGarbage} />
       </div>
       <div
         data-testid="opponent-boards"
