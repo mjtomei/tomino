@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-40e39d6
+  active_pr: pr-edcf972
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -371,6 +371,8 @@ prs:
   status: pending
   depends_on:
   - pr-0d483af
+  - pr-1052bf4
+  - pr-8d8faf9
   description: 'Implement keyboard input handling that maps keys to engine actions.
     DAS and ARR values are read from the active rule set. Actions gated by rule set:
     hard drop key ignored when `hardDropEnabled=false`, hold key ignored when `holdEnabled=false`.
@@ -392,11 +394,17 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T20:46:48.057233+00:00'
-  updated_at: '2026-04-11T20:46:48.057233+00:00'
+  updated_at: '2026-04-12T00:06:32.866445+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-3867b30
+    text: 'Tests should use testing infra from plan-17af8d3: game test harness (pr-1052bf4)
+      for replaying input sequences and verifying DAS/ARR timing behavior, factories
+      (pr-8d8faf9) for game state setup.'
+    created_at: '2026-04-12T00:04:46Z'
+    last_edited: '2026-04-12T00:04:46Z'
 - id: pr-e90433b
   plan: plan-48e829d
   title: React UI shell — score, next queue, hold, mode display
@@ -659,6 +667,10 @@ prs:
   depends_on:
   - pr-3faa55d
   - pr-0d483af
+  - pr-109d87a
+  - pr-8d8faf9
+  - pr-940a121
+  - pr-1052bf4
   description: 'Run a TetrisEngine instance on the server for each player in a game
     session. The server receives player inputs (move left/right, rotate, soft/hard
     drop, hold), applies them to the authoritative engine, and broadcasts the resulting
@@ -677,11 +689,18 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T21:27:51.614817+00:00'
-  updated_at: '2026-04-11T21:32:54.195388+00:00'
+  updated_at: '2026-04-12T00:06:28.441630+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-83d8ff0
+    text: 'Tests should use testing infra from plan-17af8d3: seeded PRNG (pr-109d87a)
+      for deterministic client/server agreement, game test harness (pr-1052bf4) for
+      state verification, factories (pr-8d8faf9) for setup, board builder (pr-940a121)
+      for readable board assertions.'
+    created_at: '2026-04-12T00:04:39Z'
+    last_edited: '2026-04-12T00:04:39Z'
 - id: pr-1e00262
   plan: plan-c686698
   title: Client multiplayer integration and prediction
@@ -690,6 +709,9 @@ prs:
   depends_on:
   - pr-dfc0673
   - pr-20fd8ff
+  - pr-109d87a
+  - pr-1052bf4
+  - pr-8d8faf9
   description: 'Connect the client-side game to the multiplayer server. Client sends
     inputs to server and simultaneously applies them to a local prediction engine.
     When authoritative state arrives from server, reconcile with local prediction
@@ -709,11 +731,18 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T21:27:51.614824+00:00'
-  updated_at: '2026-04-11T21:32:55.152932+00:00'
+  updated_at: '2026-04-12T00:06:30.363235+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-d796b9a
+    text: 'Tests should use testing infra from plan-17af8d3: seeded PRNG (pr-109d87a)
+      for deterministic prediction testing, game test harness (pr-1052bf4) for replaying
+      inputs and verifying client/server state agreement, factories (pr-8d8faf9) for
+      setup.'
+    created_at: '2026-04-12T00:04:42Z'
+    last_edited: '2026-04-12T00:04:42Z'
 - id: pr-d3377ef
   plan: plan-c686698
   title: Garbage mechanics engine
@@ -759,6 +788,9 @@ prs:
   depends_on:
   - pr-dfc0673
   - pr-d3377ef
+  - pr-940a121
+  - pr-d8c0916
+  - pr-8d8faf9
   description: 'Wire garbage mechanics into the multiplayer server. When a player
     clears lines, the server calculates garbage using the garbage engine and distributes
     it to opponents. Implement the garbage queue with a configurable delay (default
@@ -784,11 +816,17 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T21:27:51.614839+00:00'
-  updated_at: '2026-04-11T21:48:21.251011+00:00'
+  updated_at: '2026-04-12T00:06:29.361155+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-cd0d03e
+    text: 'Tests should use testing infra from plan-17af8d3: board builder (pr-940a121)
+      for setting up boards with gaps, state transition assertions (pr-d8c0916) for
+      verifying garbage insertion, factories (pr-8d8faf9) for GarbageBatch setup.'
+    created_at: '2026-04-12T00:04:40Z'
+    last_edited: '2026-04-12T00:04:40Z'
 - id: pr-1389028
   plan: plan-c686698
   title: Opponent board display
@@ -854,6 +892,9 @@ prs:
   depends_on:
   - pr-1389028
   - pr-7a9a7e5
+  - pr-940a121
+  - pr-8d8faf9
+  - pr-d8c0916
   description: 'Detect when a player tops out (board overflow) and broadcast elimination.
     Last player standing wins. Show results screen with placement (1st, 2nd, etc.),
     stats summary (lines sent, lines received, pieces placed, time survived). Eliminated
@@ -871,11 +912,17 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T21:27:51.614855+00:00'
-  updated_at: '2026-04-11T21:27:51.614855+00:00'
+  updated_at: '2026-04-12T00:06:32.211218+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-2b0b130
+    text: 'Tests should use testing infra from plan-17af8d3: board builder (pr-940a121)
+      for setting up near-topout boards, factories (pr-8d8faf9) for game state setup,
+      state transition assertions (pr-d8c0916) for verifying game-over transitions.'
+    created_at: '2026-04-12T00:04:44Z'
+    last_edited: '2026-04-12T00:04:44Z'
 - id: pr-6459c34
   plan: plan-c686698
   title: Disconnect handling
@@ -1205,6 +1252,9 @@ prs:
   depends_on:
   - pr-998f69e
   - pr-7a9a7e5
+  - pr-940a121
+  - pr-d8c0916
+  - pr-8d8faf9
   description: 'Implement `BalancingMiddleware` that wraps Plan 2''s garbage manager.
     At game start, computes the full modifier matrix from all players'' ratings (one
     entry per sender→receiver pair). When garbage is sent from player A to player
@@ -1232,11 +1282,17 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T21:50:04.211764+00:00'
-  updated_at: '2026-04-11T21:51:53.211611+00:00'
+  updated_at: '2026-04-12T00:06:31.276953+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-ab307d2
+    text: 'Tests should use testing infra from plan-17af8d3: board builder (pr-940a121)
+      for board state setup, state transition assertions (pr-d8c0916) for verifying
+      modified garbage insertion, factories (pr-8d8faf9) for GarbageBatch creation.'
+    created_at: '2026-04-12T00:04:43Z'
+    last_edited: '2026-04-12T00:04:43Z'
 - id: pr-f25402c
   plan: plan-45cb304
   title: Skill-aware targeting bias
@@ -1515,11 +1571,17 @@ prs:
   gh_pr: null
   gh_pr_number: null
   created_at: '2026-04-11T22:00:02.150190+00:00'
-  updated_at: '2026-04-11T22:00:02.150190+00:00'
+  updated_at: '2026-04-12T00:04:46.889343+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
-  notes: []
+  notes:
+  - id: note-977e61d
+    text: 'Should use the full testing infra from plan-17af8d3: seeded PRNG, board
+      builder, factories, game test harness, state transition assertions, and Playwright
+      E2E helpers for multiplayer scenarios.'
+    created_at: '2026-04-12T00:04:46Z'
+    last_edited: '2026-04-12T00:04:46Z'
 - id: pr-e38d93c
   plan: null
   title: Testing infrastructure — Vitest setup with shared/client/server configs
@@ -1584,7 +1646,7 @@ prs:
   plan: plan-17af8d3
   title: Seeded PRNG utility
   branch: pm/pr-109d87a-seeded-prng-utility
-  status: pending
+  status: in_review
   depends_on: []
   description: 'Add a seedable pseudo-random number generator to `packages/shared/src/engine/`.
     This is the foundation for deterministic tests and reproducible game replays.
@@ -1598,20 +1660,21 @@ prs:
 
 
     Files: `packages/shared/src/engine/rng.ts`, `packages/shared/src/engine/rng.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/27
+  gh_pr_number: 27
   created_at: '2026-04-11T23:10:58.040016+00:00'
-  updated_at: '2026-04-11T23:10:58.040016+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-12T00:05:47.328437+00:00'
+  started_at: '2026-04-12T00:02:31.570911+00:00'
+  reviewed_at: '2026-04-12T00:05:47.328437+00:00'
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-109d87a-seeded-prng-utility-c186ce8d
 - id: pr-940a121
   plan: plan-17af8d3
   title: Board builder test utility
   branch: pm/pr-940a121-board-builder-test-utility
-  status: pending
+  status: in_progress
   depends_on: []
   description: 'Add a `boardFromAscii()` helper and a `boardToAscii()` helper for
     test readability. Accepts a multiline string where `.` = empty, `X` = filled (generic),
@@ -1626,20 +1689,21 @@ prs:
 
     Files: `packages/shared/src/__test-utils__/board-builder.ts`, `packages/shared/src/__test-utils__/board-builder.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/28
+  gh_pr_number: 28
   created_at: '2026-04-11T23:10:58.040033+00:00'
-  updated_at: '2026-04-11T23:10:58.040033+00:00'
-  started_at: null
+  updated_at: '2026-04-12T00:02:35.671806+00:00'
+  started_at: '2026-04-12T00:02:35.671806+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-940a121-board-builder-test-utility-c186ce8d
 - id: pr-8d8faf9
   plan: plan-17af8d3
   title: Game state factory helpers
   branch: pm/pr-8d8faf9-game-state-factory-helpers
-  status: pending
+  status: in_review
   depends_on: []
   description: 'Add factory functions for creating test game states: `makeGameState(overrides?)`,
     `makePiece(type, overrides?)`, `makeGarbageBatch(overrides?)`. These produce valid
@@ -1654,20 +1718,21 @@ prs:
 
     Files: `packages/shared/src/__test-utils__/factories.ts`, `packages/shared/src/__test-utils__/factories.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/29
+  gh_pr_number: 29
   created_at: '2026-04-11T23:10:58.040040+00:00'
-  updated_at: '2026-04-11T23:10:58.040040+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-12T00:06:24.908780+00:00'
+  started_at: '2026-04-12T00:02:40.140811+00:00'
+  reviewed_at: '2026-04-12T00:06:24.908780+00:00'
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-8d8faf9-game-state-factory-helpers-c186ce8d
 - id: pr-f48ed86
   plan: plan-17af8d3
   title: Snapshot tests for piece shapes and SRS kick tables
   branch: pm/pr-f48ed86-snapshot-tests-for-piece-shapes-and-srs-kick-table
-  status: pending
+  status: in_progress
   depends_on:
   - pr-48ed9f4
   description: 'Add snapshot tests that lock down the static data tables defined in
@@ -1682,15 +1747,16 @@ prs:
 
 
     Files: `packages/shared/src/engine/piece-data.test.ts`, `packages/shared/src/engine/kick-tables.test.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/30
+  gh_pr_number: 30
   created_at: '2026-04-11T23:10:58.040047+00:00'
-  updated_at: '2026-04-11T23:12:26.769720+00:00'
-  started_at: null
+  updated_at: '2026-04-12T00:02:44.438018+00:00'
+  started_at: '2026-04-12T00:02:44.438018+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-f48ed86-snapshot-tests-for-piece-shapes-and--c186ce8d
 - id: pr-1052bf4
   plan: plan-17af8d3
   title: Game test harness (input replay)
@@ -1761,7 +1827,7 @@ prs:
   plan: plan-17af8d3
   title: Playwright E2E setup and dev server orchestration
   branch: pm/pr-9fa62c0-playwright-e2e-setup-and-dev-server-orchestration
-  status: pending
+  status: in_progress
   depends_on: []
   description: 'Install Playwright and configure it for the project. Set up `playwright.config.ts`
     at the repo root with a `webServer` config that starts both the Vite dev server
@@ -1776,15 +1842,16 @@ prs:
 
 
     Files: `playwright.config.ts`, `package.json`, `e2e/smoke.spec.ts`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/31
+  gh_pr_number: 31
   created_at: '2026-04-11T23:10:58.040063+00:00'
-  updated_at: '2026-04-11T23:10:58.040063+00:00'
-  started_at: null
+  updated_at: '2026-04-12T00:02:49.018702+00:00'
+  started_at: '2026-04-12T00:02:49.018702+00:00'
   reviewed_at: null
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-9fa62c0-playwright-e2e-setup-and-dev-server--c186ce8d
 - id: pr-8e93a65
   plan: plan-17af8d3
   title: E2E test helpers for multiplayer flows
@@ -1853,7 +1920,7 @@ prs:
   plan: plan-17af8d3
   title: Coverage configuration and CI thresholds
   branch: pm/pr-edcf972-coverage-configuration-and-ci-thresholds
-  status: pending
+  status: in_review
   depends_on: []
   description: 'Configure vitest coverage (v8 provider) with per-package thresholds.
     Set `packages/shared/src/engine/` to 90% branch coverage minimum. Add `npm run
@@ -1867,15 +1934,16 @@ prs:
 
     Files: `packages/shared/vitest.config.ts`, `packages/server/vitest.config.ts`,
     `package.json`'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/32
+  gh_pr_number: 32
   created_at: '2026-04-11T23:10:58.040077+00:00'
-  updated_at: '2026-04-11T23:10:58.040077+00:00'
-  started_at: null
-  reviewed_at: null
+  updated_at: '2026-04-12T00:06:51.040119+00:00'
+  started_at: '2026-04-12T00:02:53.310587+00:00'
+  reviewed_at: '2026-04-12T00:06:51.040119+00:00'
   merged_at: null
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-edcf972-coverage-configuration-and-ci-thresh-c186ce8d
 - id: pr-8b8c60d
   plan: plan-17af8d3
   title: Testing plan review gate
