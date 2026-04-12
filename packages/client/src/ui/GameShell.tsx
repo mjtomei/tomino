@@ -13,6 +13,8 @@ import { StartScreen } from "./StartScreen.js";
 import { SoundManager } from "../audio/sounds.js";
 import type { SoundEvent } from "../audio/sounds.js";
 import type { GameClient } from "../net/game-client.js";
+import { useAtmosphereUpdater, useAtmosphereReset } from "../atmosphere/use-atmosphere.js";
+import { gameStateToSignals } from "../atmosphere/signals.js";
 import { MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 import { snapshotToGameState } from "../net/snapshot-adapter.js";
 import "./GameShell.css";
@@ -168,6 +170,7 @@ function MultiplayerGameShell({
   const soundRef = useRef<SoundManager | null>(null);
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
+  const atmosphereUpdate = useAtmosphereUpdater();
 
   const mpRuleSet = useMemo(() => modernRuleSet(), []);
   const mpModeConfig = MULTIPLAYER_MODE_CONFIG;
@@ -239,6 +242,10 @@ function MultiplayerGameShell({
         soundRef.current?.play(s);
       }
       prevStateRef.current = state;
+
+      atmosphereUpdate(
+        gameStateToSignals(state, { pendingGarbage: snapshot.pendingGarbage }),
+      );
 
       setGameState(state);
 
@@ -376,6 +383,9 @@ function SoloGameShell({
   const dasRef = useRef<DASState>(resetDAS());
   const firedKeysRef = useRef<Set<string>>(new Set());
 
+  const atmosphereUpdate = useAtmosphereUpdater();
+  const atmosphereReset = useAtmosphereReset();
+
   // Initialize sound manager
   useEffect(() => {
     soundRef.current = new SoundManager();
@@ -400,9 +410,10 @@ function SoloGameShell({
     prevStateRef.current = null;
     dasRef.current = resetDAS();
     firedKeysRef.current.clear();
+    atmosphereReset();
 
     setGameState(engine.getState());
-  }, [seed]);
+  }, [seed, atmosphereReset]);
 
   // Return to start screen
   const handlePlayAgain = useCallback(() => {
@@ -450,6 +461,14 @@ function SoloGameShell({
         soundRef.current?.play(s);
       }
       prevStateRef.current = state;
+
+      // Atmosphere engine feed (solo mode).
+      atmosphereUpdate(
+        gameStateToSignals(state, {
+          pendingGarbage,
+          lastLineClear: engine.consumeLineClearEvent(),
+        }),
+      );
 
       setGameState(state);
 
