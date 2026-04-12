@@ -218,23 +218,29 @@ export function createWebSocketServer(
 
     function handleClientDisconnect(client: ClientInfo): void {
       if (client.playerId) {
-        const roomId = store.getRoomIdForPlayer(client.playerId);
-        let pendingReconnect = false;
-        if (roomId) {
-          const result = handleGameDisconnect(
-            client.playerId,
-            roomId,
-            { broadcastToRoom },
-            store,
-          );
-          pendingReconnect = result.pendingReconnect;
+        // If this connection has already been superseded by a newer one
+        // for the same player (e.g. the client reconnected on a fresh
+        // socket before our close event fired), do nothing player-level —
+        // the newer connection now owns the mapping.
+        const isStillActive =
+          playerConnections.get(client.playerId) === client.connectionId;
+        if (isStillActive) {
+          const roomId = store.getRoomIdForPlayer(client.playerId);
+          let pendingReconnect = false;
+          if (roomId) {
+            const result = handleGameDisconnect(
+              client.playerId,
+              roomId,
+              { broadcastToRoom },
+              store,
+            );
+            pendingReconnect = result.pendingReconnect;
+          }
+          if (!pendingReconnect) {
+            handleDisconnect(client.playerId, { broadcastToRoom }, store);
+          }
+          playerConnections.delete(client.playerId);
         }
-        // If the player is in a reconnect grace window, keep them in the
-        // room so they can rejoin on a fresh socket. Otherwise remove.
-        if (!pendingReconnect) {
-          handleDisconnect(client.playerId, { broadcastToRoom }, store);
-        }
-        playerConnections.delete(client.playerId);
       }
       cleanup(client);
     }
