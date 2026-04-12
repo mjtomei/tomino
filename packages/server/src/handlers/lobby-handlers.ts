@@ -23,6 +23,7 @@ import type {
 } from "@tetris/shared";
 import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
 import type { RoomStore } from "../room-store.js";
+import type { BalancingConfig } from "../balancing-init.js";
 import { startGameCountdown } from "./game-handlers.js";
 import { removeRematchVote, clearRematchVotes } from "./rematch-handlers.js";
 
@@ -42,6 +43,8 @@ export interface HandlerContext {
   ) => void;
   /** Skill store for rating updates (optional — only present in ranked mode). */
   skillStore?: SkillStore;
+  /** Loaded balancing config (rating params, handicap curves, etc.). */
+  balancingConfig?: BalancingConfig;
 }
 
 function sendError(ctx: HandlerContext, code: ErrorCode, message: string) {
@@ -266,6 +269,7 @@ export function handleStartGame(
   startGameCountdown(msg.roomId, store, {
     broadcastToRoom: ctx.broadcastToRoom,
     skillStore: ctx.skillStore,
+    balancingConfig: ctx.balancingConfig,
   });
 }
 
