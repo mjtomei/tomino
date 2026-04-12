@@ -289,6 +289,7 @@ export function renderBoard(
 
 export function BoardCanvas({ state, cellSize = 30 }: BoardCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const stateRef = useRef(state);
   const rafRef = useRef<number>(0);
 
@@ -297,14 +298,16 @@ export function BoardCanvas({ state, cellSize = 30 }: BoardCanvasProps) {
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    if (!ctxRef.current) {
+      ctxRef.current = canvas.getContext("2d");
+    }
+    const ctx = ctxRef.current;
     if (!ctx) return;
     renderBoard(ctx, stateRef.current, cellSize);
   }, [cellSize]);
 
   // Schedule a draw on each state change
   useEffect(() => {
-    stateRef.current = state;
     cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(rafRef.current);
