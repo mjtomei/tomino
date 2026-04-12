@@ -220,6 +220,10 @@ export function drawHandicapIndicator(
     ctx.fillStyle = outColor;
     ctx.fillText(outText, centerX, outY);
   }
+
+  // Restore textBaseline to canvas default so subsequent frames' HOLD/NEXT
+  // labels (which rely on the default "alphabetic" baseline) render correctly.
+  ctx.textBaseline = "alphabetic";
 }
 
 // ---------------------------------------------------------------------------
