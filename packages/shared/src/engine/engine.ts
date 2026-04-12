@@ -157,7 +157,7 @@ export class TetrisEngine {
         ? GuidelineScoring
         : NESScoring;
 
-    const startLevel = options.startLevel ?? 1;
+    const startLevel = options.startLevel ?? options.ruleSet.startLevel;
     this.scoringState = this.scoringSystem.createState(startLevel);
 
     // Board and hold

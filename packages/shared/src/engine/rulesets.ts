@@ -20,6 +20,7 @@ export function classicRuleSet(): RuleSet {
     das: 267,
     arr: 100,
     sdf: 2,
+    startLevel: 0,
     previewCount: 1,
   };
 }
@@ -40,6 +41,7 @@ export function modernRuleSet(): RuleSet {
     das: 133,
     arr: 10,
     sdf: Infinity,
+    startLevel: 1,
     previewCount: 5,
   };
 }

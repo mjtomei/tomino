@@ -31,6 +31,7 @@ const RULESET_KEYS: (keyof RuleSet)[] = [
   "das",
   "arr",
   "sdf",
+  "startLevel",
   "previewCount",
 ];
 
@@ -65,6 +66,7 @@ describe("classicRuleSet", () => {
     expect(classic.das).toBe(267);
     expect(classic.arr).toBe(100);
     expect(classic.sdf).toBe(2);
+    expect(classic.startLevel).toBe(0);
     expect(classic.previewCount).toBe(1);
   });
 
@@ -95,6 +97,7 @@ describe("modernRuleSet", () => {
     expect(modern.das).toBe(133);
     expect(modern.arr).toBe(10);
     expect(modern.sdf).toBe(Infinity);
+    expect(modern.startLevel).toBe(1);
     expect(modern.previewCount).toBe(5);
   });
 
