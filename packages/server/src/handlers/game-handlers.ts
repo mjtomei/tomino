@@ -13,6 +13,7 @@ import type {
   PlayerId,
   RoomId,
   ServerMessage,
+  SkillStore,
 } from "@tetris/shared";
 import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
 import type { C2S_PlayerInput, C2S_RejoinRoom, C2S_SetTargetingStrategy, C2S_SetManualTarget } from "@tetris/shared";
@@ -27,9 +28,11 @@ import {
   disconnectRegistry,
   DisconnectRegistry,
 } from "../disconnect-handler.js";
+import { handlePostGame } from "../post-game-handler.js";
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
+  skillStore?: SkillStore;
 }
 
 /** Default rating used when a player has no stored rating. */
@@ -87,6 +90,9 @@ export function startGameCountdown(
     handicapMode = settings.mode;
   }
 
+  // Determine whether this game is ranked (handicap enabled → ratings tracked)
+  const isRanked = settings !== undefined && settings.intensity !== "off";
+
   const session = createGameSession({
     roomId,
     players: room.players,
@@ -103,6 +109,32 @@ export function startGameCountdown(
       // Revert room to waiting so host can retry
       store.setStatus(roomId, "waiting");
       removeGameSession(roomId);
+    },
+    onGameEnd: (gameResult) => {
+      const afterRatings = isRanked && ctx.skillStore
+        ? handlePostGame(gameResult, ctx.skillStore, ctx.broadcastToRoom)
+            .then(() => {
+              // Update room player ratings for lobby display
+              for (const pid of Object.keys(gameResult.placements)) {
+                const username = gameResult.playerNames[pid];
+                if (username) {
+                  ctx.skillStore!.getPlayer(username).then((profile) => {
+                    if (profile) {
+                      store.setPlayerRating(roomId, pid, profile.rating);
+                    }
+                  }).catch(() => { /* best-effort lobby update */ });
+                }
+              }
+            })
+            .catch((err) => {
+              console.error("Post-game rating update failed:", err);
+            })
+        : Promise.resolve();
+
+      afterRatings.then(() => {
+        store.setStatus(roomId, "finished");
+        removeGameSession(roomId);
+      });
     },
   });
 

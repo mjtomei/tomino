@@ -17,6 +17,7 @@ import type {
   HandicapSettings,
   PlayerId,
   ServerMessage,
+  SkillStore,
   TargetingSettings,
   TargetingStrategyType,
 } from "@tetris/shared";
@@ -38,6 +39,8 @@ export interface HandlerContext {
     msg: ServerMessage,
     excludePlayerId: PlayerId,
   ) => void;
+  /** Skill store for rating updates (optional — only present in ranked mode). */
+  skillStore?: SkillStore;
 }
 
 function sendError(ctx: HandlerContext, code: ErrorCode, message: string) {
@@ -249,6 +252,7 @@ export function handleStartGame(
   // Start the countdown → gameStarted flow via the game session manager.
   startGameCountdown(msg.roomId, store, {
     broadcastToRoom: ctx.broadcastToRoom,
+    skillStore: ctx.skillStore,
   });
 }
 
