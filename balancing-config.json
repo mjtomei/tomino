@@ -1,0 +1,30 @@
+{
+  "rating": {
+    "initialRating": 1500,
+    "initialRD": 350,
+    "initialVolatility": 0.06,
+    "tau": 0.5,
+    "calibrationGames": 10,
+    "calibrationRDFloor": 200
+  },
+  "handicapCurve": {
+    "steepness": 0.01,
+    "midpoint": 400,
+    "delayScale": 0.5,
+    "messinessScale": 0.3,
+    "symmetricFactor": 0.5
+  },
+  "intensityPresets": {
+    "off": 0,
+    "light": 0.5,
+    "standard": 1.0,
+    "heavy": 1.5
+  },
+  "defaultHandicap": {
+    "intensity": "off",
+    "mode": "boost",
+    "targetingBiasStrength": 0.7,
+    "delayEnabled": false,
+    "messinessEnabled": false
+  }
+}

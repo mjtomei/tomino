@@ -342,11 +342,8 @@ export type ServerMessage =
   | S2C_PlayerDisconnected
   | S2C_PlayerReconnected
   | S2C_GameRejoined
-<<<<<<< ours
-  | S2C_RematchUpdate;
-=======
+  | S2C_RematchUpdate
   | S2C_RatingUpdate;
->>>>>>> theirs
 
 export type ServerMessageType = ServerMessage["type"];
 
@@ -370,9 +367,6 @@ export const SERVER_MESSAGE_TYPES: readonly ServerMessageType[] = [
   "playerDisconnected",
   "playerReconnected",
   "gameRejoined",
-<<<<<<< ours
   "rematchUpdate",
-=======
   "ratingUpdate",
->>>>>>> theirs
 ] as const;

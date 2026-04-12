@@ -18,16 +18,16 @@ import type {
 } from "@tetris/shared";
 import type { GameEndResult } from "./game-session.js";
 import { updateRatings } from "./rating-algorithm.js";
-import { GLICKO_CONFIG } from "./rating-config.js";
+import { GLICKO_CONFIG, type RatingConfig } from "./rating-config.js";
 import { randomUUID } from "node:crypto";
 
 /** Create a default profile for a player who has never been rated. */
-function defaultProfile(username: string): PlayerProfile {
+function defaultProfile(username: string, cfg: RatingConfig = GLICKO_CONFIG): PlayerProfile {
   return {
     username,
-    rating: GLICKO_CONFIG.INITIAL_RATING,
-    ratingDeviation: GLICKO_CONFIG.INITIAL_RD,
-    volatility: GLICKO_CONFIG.INITIAL_VOLATILITY,
+    rating: cfg.INITIAL_RATING,
+    ratingDeviation: cfg.INITIAL_RD,
+    volatility: cfg.INITIAL_VOLATILITY,
     gamesPlayed: 0,
   };
 }
@@ -46,7 +46,9 @@ export async function handlePostGame(
   result: GameEndResult,
   store: SkillStore,
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void,
+  ratingConfig?: Partial<RatingConfig>,
 ): Promise<void> {
+  const cfg: RatingConfig = { ...GLICKO_CONFIG, ...ratingConfig };
   const { roomId, winnerId, playerNames, placements, metrics } = result;
   const playerIds = Object.keys(placements);
 
@@ -61,7 +63,7 @@ export async function handlePostGame(
   for (const pid of playerIds) {
     const username = playerNames[pid]!;
     const existing = await store.getPlayer(username);
-    profiles.set(pid, existing ?? defaultProfile(username));
+    profiles.set(pid, existing ?? defaultProfile(username, cfg));
   }
 
   const gameId = randomUUID();
@@ -88,7 +90,7 @@ export async function handlePostGame(
     const loserProfile = profiles.get(loserId)!;
     const loserBefore = loserProfile.rating;
 
-    const updated = updateRatings(winnerProfile, loserProfile);
+    const updated = updateRatings(winnerProfile, loserProfile, cfg);
 
     // Update profiles in the map (winner accumulates across pairwise matches)
     profiles.set(winnerId, updated.winner);

@@ -30,11 +30,8 @@ import { GarbageManager } from "./garbage-manager.js";
 import { BalancingMiddleware } from "./balancing-middleware.js";
 import { AttackPowerTracker } from "./attack-power.js";
 import { getStrategy } from "./targeting.js";
-<<<<<<< ours
 import { createSkillBiasStrategy, type TargetingBiasConfig } from "./targeting-bias.js";
-=======
 import { MetricsCollector } from "./metrics-collector.js";
->>>>>>> theirs
 
 // ---------------------------------------------------------------------------
 // Types

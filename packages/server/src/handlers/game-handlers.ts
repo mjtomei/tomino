@@ -24,19 +24,18 @@ import {
   removeGameSession,
 } from "../game-session.js";
 import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
+import type { BalancingConfig } from "../balancing-init.js";
 import {
   disconnectRegistry,
   DisconnectRegistry,
 } from "../disconnect-handler.js";
-<<<<<<< ours
 import { clearRematchVotes } from "./rematch-handlers.js";
-=======
 import { handlePostGame } from "../post-game-handler.js";
->>>>>>> theirs
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
   skillStore?: SkillStore;
+  balancingConfig?: BalancingConfig;
 }
 
 /** Default rating used when a player has no stored rating. */
@@ -89,18 +88,16 @@ export function startGameCountdown(
       username: p.name,
       rating: room.playerRatings?.[p.id] ?? DEFAULT_RATING,
     }));
-    const matrix = computeModifierMatrix(playerRatings, settings);
+    const matrix = computeModifierMatrix(playerRatings, settings, ctx.balancingConfig?.handicapCurve);
     handicapModifiers = serializeModifierMatrix(matrix);
     handicapMode = settings.mode;
   }
 
-<<<<<<< ours
   // Clear any stale rematch votes from a previous game
   clearRematchVotes(roomId);
-=======
+
   // Determine whether this game is ranked (handicap enabled → ratings tracked)
   const isRanked = settings !== undefined && settings.intensity !== "off";
->>>>>>> theirs
 
   const session = createGameSession({
     roomId,
@@ -123,7 +120,7 @@ export function startGameCountdown(
     },
     onGameEnd: (gameResult) => {
       const afterRatings = isRanked && ctx.skillStore
-        ? handlePostGame(gameResult, ctx.skillStore, ctx.broadcastToRoom)
+        ? handlePostGame(gameResult, ctx.skillStore, ctx.broadcastToRoom, ctx.balancingConfig?.rating)
             .then(async () => {
               // Update room player ratings for lobby display
               const updates = Object.keys(gameResult.placements).map(async (pid) => {
