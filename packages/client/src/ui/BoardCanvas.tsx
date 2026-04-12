@@ -166,7 +166,7 @@ function drawShield(
   ctx.lineTo(cx + hw, cy - hh * 0.5); // top right
   ctx.lineTo(cx + hw, cy + hh * 0.1); // mid right
   ctx.lineTo(cx, cy + hh);                          // bottom point
-  ctx.quadraticCurveTo(cx, cy + hh, cx - hw, cy + hh * 0.1); // curve to left
+  ctx.lineTo(cx - hw, cy + hh * 0.1);               // bottom-left edge
   ctx.lineTo(cx - hw, cy - hh * 0.5); // top left
   ctx.closePath();
   ctx.fillStyle = color;
