@@ -32,7 +32,7 @@ Partway through, a fourth plan was added: automated testing infrastructure. This
 
 - **3 lines** of input
 - **~2 hours** of human time (initial setup, guiding plans, tweaking a few design decisions)
-- **16+ hours** of autonomous agent execution
+- **~10 hours** of autonomous agent execution (across two bursts, with an overnight pause when API usage limits were hit)
 - **>250 commits**, **>50 merged PRs**, **>30,000 lines of code** (>14k production, >18k tests)
 - A working multiplayer Tetris game with real-time networking, lobby system, garbage mechanics, Glicko-2 skill rating, adaptive handicapping, and end-to-end test coverage
 
