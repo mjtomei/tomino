@@ -160,6 +160,21 @@ describe("Targeting integration", () => {
       expect(spy.messages).toHaveLength(0);
     });
 
+    it("rejects manual target when manual strategy is not enabled", () => {
+      const spy = createBroadcastSpy();
+      const session = startSession(spy, {
+        targetingSettings: {
+          enabledStrategies: ["random", "kos"],
+          defaultStrategy: "random",
+        },
+      });
+      spy.messages.length = 0;
+
+      const ok = session.setManualTarget("p1", "p2");
+      expect(ok).toBe(false);
+      expect(spy.messages).toHaveLength(0);
+    });
+
     it("rejects targeting a dead player", () => {
       const spy = createBroadcastSpy();
       const session = startSession(spy);

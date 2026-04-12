@@ -249,6 +249,8 @@ export class GameSession {
     if (this._state !== "playing") return false;
     if (!this.engines.has(playerId)) return false;
     if (targetPlayerId === playerId) return false; // can't target self
+    // Manual targeting requires the "manual" strategy to be enabled
+    if (!this.targetingSettings.enabledStrategies.includes("manual")) return false;
 
     // Target must be alive
     const targetEngine = this.engines.get(targetPlayerId);
@@ -258,9 +260,7 @@ export class GameSession {
 
     // Auto-switch to manual strategy if not already
     if (this.playerStrategies.get(playerId) !== "manual") {
-      if (this.targetingSettings.enabledStrategies.includes("manual")) {
-        this.playerStrategies.set(playerId, "manual");
-      }
+      this.playerStrategies.set(playerId, "manual");
     }
 
     this.broadcastToRoom(this.roomId, {
