@@ -169,7 +169,7 @@ describe("disconnect handling — in-game", () => {
     removeGameSession(roomId);
   });
 
-  it("forfeits player when reconnect timer expires", () => {
+  it("forfeits player when reconnect timer expires", async () => {
     const spy = createBroadcastSpy();
     const roomId = setupPlayingSession(store, spy.broadcastToRoom);
     const session = getGameSession(roomId)!;
@@ -198,6 +198,9 @@ describe("disconnect handling — in-game", () => {
     if (gameEnd?.msg.type === "gameEnd") {
       expect(gameEnd.msg.winnerId).toBe("p1");
     }
+    // Session cleanup is async (onGameEnd runs through a promise chain).
+    // Flush microtasks so the cleanup completes.
+    await vi.advanceTimersByTimeAsync(0);
     // Session should be finished and torn down
     expect(getGameSession(roomId)).toBeUndefined();
     expect(store.getRoom(roomId)?.status).toBe("finished");

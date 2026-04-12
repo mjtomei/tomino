@@ -10,6 +10,7 @@ import type {
   HandicapMode,
   HandicapModifiers,
   InputAction,
+  PerformanceMetrics,
   PlayerId,
   PlayerInfo,
   PlayerStats,
@@ -29,11 +30,27 @@ import { GarbageManager } from "./garbage-manager.js";
 import { BalancingMiddleware } from "./balancing-middleware.js";
 import { AttackPowerTracker } from "./attack-power.js";
 import { getStrategy } from "./targeting.js";
+<<<<<<< ours
 import { createSkillBiasStrategy, type TargetingBiasConfig } from "./targeting-bias.js";
+=======
+import { MetricsCollector } from "./metrics-collector.js";
+>>>>>>> theirs
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+/** Data passed to the onGameEnd callback for post-game processing. */
+export interface GameEndResult {
+  roomId: RoomId;
+  winnerId: PlayerId;
+  /** All player IDs mapped to their username. */
+  playerNames: Record<PlayerId, string>;
+  /** 1-indexed placements for all players. */
+  placements: Record<PlayerId, number>;
+  /** Per-player performance metrics snapshots. */
+  metrics: Record<PlayerId, PerformanceMetrics>;
+}
 
 export interface GameSessionConfig {
   roomId: RoomId;
@@ -44,6 +61,8 @@ export interface GameSessionConfig {
   onGameStarted?: () => void;
   /** Called when the session is cancelled (e.g. player disconnect during countdown). */
   onCancelled?: () => void;
+  /** Called when the game ends with final results (for post-game rating updates). */
+  onGameEnd?: (result: GameEndResult) => void;
   /** Serialized handicap modifier matrix to include in gameStarted. */
   handicapModifiers?: Record<string, HandicapModifiers>;
   /** Handicap mode to include in gameStarted. */
@@ -116,6 +135,7 @@ export class GameSession {
   private readonly broadcastToRoom: GameSessionConfig["broadcastToRoom"];
   private readonly onGameStarted?: () => void;
   private readonly onCancelled?: () => void;
+  private readonly onGameEnd?: (result: GameEndResult) => void;
   readonly handicapModifiers?: Record<string, HandicapModifiers>;
   readonly handicapMode?: HandicapMode;
   private readonly handicapDelayEnabled: boolean;
@@ -150,6 +170,9 @@ export class GameSession {
   // -- Stats & elimination tracking --
   private gameStartTime: number = 0;
   private readonly playerStats = new Map<PlayerId, PlayerStats>();
+  private readonly metricsCollectors = new Map<PlayerId, MetricsCollector>();
+  /** Last known piecesPlaced per player, for detecting new piece locks. */
+  private readonly lastPiecesPlaced = new Map<PlayerId, number>();
   private readonly eliminations: PlayerId[] = [];
 
   constructor(config: GameSessionConfig) {
@@ -158,6 +181,7 @@ export class GameSession {
     this.broadcastToRoom = config.broadcastToRoom;
     this.onGameStarted = config.onGameStarted;
     this.onCancelled = config.onCancelled;
+    this.onGameEnd = config.onGameEnd;
     this.handicapModifiers = config.handicapModifiers;
     this.handicapMode = config.handicapMode;
     this.handicapDelayEnabled = config.handicapDelayEnabled ?? false;
@@ -239,6 +263,7 @@ export class GameSession {
     const applied = engine.applyInput(action);
     if (!applied) return undefined;
 
+    this.metricsCollectors.get(playerId)?.recordAction();
     this.processGarbageFor(playerId, engine);
 
     const snapshot = engine.getSnapshot();
@@ -469,6 +494,10 @@ export class GameSession {
         score: 0,
         linesCleared: 0,
       });
+
+      const collector = new MetricsCollector();
+      collector.start(this.gameStartTime);
+      this.metricsCollectors.set(playerId, collector);
     }
 
     this.garbageManager = new BalancingMiddleware({
@@ -549,6 +578,24 @@ export class GameSession {
 
     // 1. Any line clears from the player's latest action? → enqueue garbage.
     const event = engine.consumeLineClearEvent();
+
+    // Feed piece lock data to the metrics collector. The engine fires a
+    // LineClearEvent only when lines > 0, but we still want to count non-
+    // clearing locks for PPS. Detect a lock by piecesPlaced increment.
+    const collector = this.metricsCollectors.get(playerId);
+    if (collector) {
+      const snap = engine.getSnapshot();
+      const prevPieces = this.lastPiecesPlaced.get(playerId) ?? 0;
+      if (snap.piecesPlaced > prevPieces) {
+        this.lastPiecesPlaced.set(playerId, snap.piecesPlaced);
+        collector.recordPieceLock({
+          linesCleared: event?.linesCleared ?? 0,
+          tSpin: event?.tSpin ?? "none",
+          combo: event?.combo ?? -1,
+        });
+      }
+    }
+
     if (event) {
       // Build targeting context with per-player strategy dispatch
       const senderStrategy = this.playerStrategies.get(playerId) ?? this.targetingSettings.defaultStrategy;
@@ -771,6 +818,7 @@ export class GameSession {
     const stats = this.playerStats.get(playerId);
     if (!stats) return;
 
+    const now = Date.now();
     const engine = this.engines.get(playerId);
     if (engine) {
       const snapshot = engine.getSnapshot();
@@ -778,7 +826,10 @@ export class GameSession {
       stats.score = snapshot.score;
       stats.linesCleared = snapshot.linesCleared;
     }
-    stats.survivalMs = Date.now() - this.gameStartTime;
+    stats.survivalMs = now - this.gameStartTime;
+
+    // Freeze the metrics collector so APM/PPS reflect the actual play window
+    this.metricsCollectors.get(playerId)?.end(now);
   }
 
   /**
@@ -832,6 +883,21 @@ export class GameSession {
           placements,
           stats,
         });
+
+        // Collect performance metrics for post-game rating updates
+        if (this.onGameEnd) {
+          const metrics: Record<PlayerId, PerformanceMetrics> = {};
+          for (const [pid, collector] of this.metricsCollectors) {
+            metrics[pid] = collector.snapshot();
+          }
+          this.onGameEnd({
+            roomId: this.roomId,
+            winnerId,
+            playerNames: { ...this.playerNames },
+            placements,
+            metrics,
+          });
+        }
       }
       this._state = "finished";
     }

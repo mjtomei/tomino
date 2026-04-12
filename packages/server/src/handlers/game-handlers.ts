@@ -13,6 +13,7 @@ import type {
   PlayerId,
   RoomId,
   ServerMessage,
+  SkillStore,
 } from "@tetris/shared";
 import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
 import type { C2S_PlayerInput, C2S_RejoinRoom, C2S_SetTargetingStrategy, C2S_SetManualTarget } from "@tetris/shared";
@@ -27,10 +28,15 @@ import {
   disconnectRegistry,
   DisconnectRegistry,
 } from "../disconnect-handler.js";
+<<<<<<< ours
 import { clearRematchVotes } from "./rematch-handlers.js";
+=======
+import { handlePostGame } from "../post-game-handler.js";
+>>>>>>> theirs
 
 export interface GameHandlerContext {
   broadcastToRoom: (roomId: RoomId, msg: ServerMessage) => void;
+  skillStore?: SkillStore;
 }
 
 /** Default rating used when a player has no stored rating. */
@@ -88,8 +94,13 @@ export function startGameCountdown(
     handicapMode = settings.mode;
   }
 
+<<<<<<< ours
   // Clear any stale rematch votes from a previous game
   clearRematchVotes(roomId);
+=======
+  // Determine whether this game is ranked (handicap enabled → ratings tracked)
+  const isRanked = settings !== undefined && settings.intensity !== "off";
+>>>>>>> theirs
 
   const session = createGameSession({
     roomId,
@@ -109,6 +120,32 @@ export function startGameCountdown(
       // Revert room to waiting so host can retry
       store.setStatus(roomId, "waiting");
       removeGameSession(roomId);
+    },
+    onGameEnd: (gameResult) => {
+      const afterRatings = isRanked && ctx.skillStore
+        ? handlePostGame(gameResult, ctx.skillStore, ctx.broadcastToRoom)
+            .then(async () => {
+              // Update room player ratings for lobby display
+              const updates = Object.keys(gameResult.placements).map(async (pid) => {
+                const username = gameResult.playerNames[pid];
+                if (!username) return;
+                const profile = await ctx.skillStore!.getPlayer(username);
+                if (profile) {
+                  store.setPlayerRating(roomId, pid, profile.rating);
+                }
+              });
+              await Promise.all(updates);
+            })
+            .catch((err) => {
+              console.error("Post-game rating update failed:", err);
+            })
+        : Promise.resolve();
+
+      afterRatings.then(() => {
+        disconnectRegistry.clearRoom(roomId);
+        store.setStatus(roomId, "finished");
+        removeGameSession(roomId);
+      });
     },
   });
 
@@ -226,7 +263,7 @@ export function handleGameDisconnect(
   playerId: PlayerId,
   roomId: RoomId,
   ctx: GameHandlerContext,
-  store?: RoomStore,
+  _store?: RoomStore,
   registry: DisconnectRegistry = disconnectRegistry,
 ): { pendingReconnect: boolean } {
   const session = getGameSession(roomId);
@@ -251,11 +288,9 @@ export function handleGameDisconnect(
     const s = getGameSession(roomId);
     if (!s) return;
     s.forfeitPlayer(playerId);
-    if (s.state === "finished") {
-      if (store) store.setStatus(roomId, "finished");
-      removeGameSession(roomId);
-      registry.clearRoom(roomId);
-    }
+    // Cleanup (setStatus, removeGameSession, clearRoom) is handled by the
+    // onGameEnd callback so that async rating updates complete before the
+    // session is torn down.
   });
 
   return { pendingReconnect: true };

@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server as HttpServer } from "node:http";
-import type { PlayerId, ServerMessage } from "@tetris/shared";
+import type { PlayerId, ServerMessage, SkillStore } from "@tetris/shared";
 import { parseC2SMessage, serializeMessage } from "@tetris/shared";
 import { RoomStore } from "./room-store.js";
 import {
@@ -47,9 +47,15 @@ export interface TetrisWebSocketServer {
 
 let connectionCounter = 0;
 
+export interface WebSocketServerOptions {
+  skillStore?: SkillStore;
+}
+
 export function createWebSocketServer(
   httpServer: HttpServer,
+  options: WebSocketServerOptions = {},
 ): TetrisWebSocketServer {
+  const { skillStore } = options;
   const wss = new WebSocketServer({ server: httpServer });
   const clients = new Map<string, ClientInfo>();
   /** Reverse lookup: player ID → connection ID */
@@ -126,6 +132,7 @@ export function createWebSocketServer(
       send: (msg) => sendTo(playerId, msg),
       broadcastToRoom,
       broadcastToRoomExcept,
+      skillStore,
     };
   }
 

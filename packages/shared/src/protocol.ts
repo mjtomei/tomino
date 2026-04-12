@@ -308,6 +308,20 @@ export interface S2C_GameRejoined {
   handicapMode?: HandicapMode;
 }
 
+/** Per-player rating change entry broadcast after a ranked game. */
+export interface RatingChange {
+  username: string;
+  before: number;
+  after: number;
+}
+
+export interface S2C_RatingUpdate {
+  type: "ratingUpdate";
+  roomId: RoomId;
+  /** Rating changes for each player in the game, keyed by player ID. */
+  changes: Record<PlayerId, RatingChange>;
+}
+
 export type ServerMessage =
   | S2C_RoomCreated
   | S2C_RoomUpdated
@@ -328,7 +342,11 @@ export type ServerMessage =
   | S2C_PlayerDisconnected
   | S2C_PlayerReconnected
   | S2C_GameRejoined
+<<<<<<< ours
   | S2C_RematchUpdate;
+=======
+  | S2C_RatingUpdate;
+>>>>>>> theirs
 
 export type ServerMessageType = ServerMessage["type"];
 
@@ -352,5 +370,9 @@ export const SERVER_MESSAGE_TYPES: readonly ServerMessageType[] = [
   "playerDisconnected",
   "playerReconnected",
   "gameRejoined",
+<<<<<<< ours
   "rematchUpdate",
+=======
+  "ratingUpdate",
+>>>>>>> theirs
 ] as const;
