@@ -55,9 +55,8 @@ export function stepDurationMs(bpm: number): number {
  * When danger > 0.6 we flatten the 3rd (brightens → darkens). When
  * danger > 0.85 we also flatten the 5th, producing a diminished flavor.
  *
- * Scales without an identifiable 3rd (pentatonic, chromatic) pass
- * through unchanged — there is no "minor pentatonic by index" that
- * works uniformly.
+ * Scales shorter than 5 degrees (too few to safely index into a 3rd
+ * and 5th position) pass through unchanged.
  */
 export function shiftScale(
   scaleDegrees: readonly number[],
