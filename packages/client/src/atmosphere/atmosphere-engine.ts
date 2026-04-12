@@ -9,9 +9,15 @@
 import type {
   AtmosphereEvent,
   AtmosphereState,
+  FlowState,
   GameSignals,
 } from "./types.js";
-import { BOARD_VISIBLE_HEIGHT, INITIAL_ATMOSPHERE_STATE } from "./types.js";
+import {
+  BOARD_VISIBLE_HEIGHT,
+  INITIAL_ATMOSPHERE_STATE,
+  INITIAL_FLOW_STATE,
+} from "./types.js";
+import { FlowDetector } from "./flow-detection.js";
 
 function clamp01(n: number): number {
   if (n < 0) return 0;
@@ -54,9 +60,20 @@ function computeMomentum(combo: number, b2b: number): number {
   return clamp01(c * 0.12 + b * 0.15);
 }
 
+export interface AtmosphereEngineOptions {
+  /** Injectable clock for deterministic tests. Defaults to Date.now. */
+  now?: () => number;
+}
+
 export class AtmosphereEngine {
   private prev: GameSignals | null = null;
   private state: AtmosphereState = INITIAL_ATMOSPHERE_STATE;
+  private readonly flow = new FlowDetector();
+  private readonly now: () => number;
+
+  constructor(opts: AtmosphereEngineOptions = {}) {
+    this.now = opts.now ?? (() => Date.now());
+  }
 
   getState(): AtmosphereState {
     return this.state;
@@ -66,6 +83,7 @@ export class AtmosphereEngine {
   reset(): void {
     this.prev = null;
     this.state = INITIAL_ATMOSPHERE_STATE;
+    this.flow.reset();
   }
 
   /**
@@ -123,8 +141,18 @@ export class AtmosphereEngine {
       }
     }
 
+    const flowReadout = this.flow.update(signals, this.now());
+    const flow: FlowState = {
+      active: flowReadout.active,
+      level: flowReadout.level,
+      sustainedMs: flowReadout.sustainedMs,
+    };
+
     this.prev = signals;
-    this.state = { intensity, danger, momentum, events };
+    this.state = { intensity, danger, momentum, flow, events };
     return this.state;
   }
 }
+
+// Re-export so consumers can import from the same module.
+export { INITIAL_FLOW_STATE };

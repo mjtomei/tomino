@@ -154,6 +154,61 @@ describe("AtmosphereEngine — events", () => {
   });
 });
 
+describe("AtmosphereEngine — flow state", () => {
+  it("exposes a flow field with safe defaults", () => {
+    const e = new AtmosphereEngine();
+    const s = e.update(base());
+    expect(s.flow).toEqual({ active: false, level: 0, sustainedMs: 0 });
+  });
+
+  it("drives the flow detector with an injected clock", () => {
+    let t = 0;
+    const e = new AtmosphereEngine({ now: () => t });
+    let lines = 0;
+    e.update(base({ linesCleared: lines, stackHeight: 6 }));
+    for (let i = 0; i < 20; i++) {
+      t += 600;
+      lines += 1;
+      e.update(
+        base({
+          linesCleared: lines,
+          combo: Math.min(i + 1, 6),
+          b2b: Math.min(i + 1, 4),
+          stackHeight: 6,
+        }),
+      );
+    }
+    const s = e.getState();
+    expect(s.flow.active).toBe(true);
+    expect(s.flow.level).toBeGreaterThan(0.5);
+  });
+
+  it("reset clears flow state", () => {
+    let t = 0;
+    const e = new AtmosphereEngine({ now: () => t });
+    let lines = 0;
+    e.update(base({ linesCleared: lines, stackHeight: 6 }));
+    for (let i = 0; i < 20; i++) {
+      t += 600;
+      lines += 1;
+      e.update(
+        base({
+          linesCleared: lines,
+          combo: i + 1,
+          b2b: i + 1,
+          stackHeight: 6,
+        }),
+      );
+    }
+    expect(e.getState().flow.active).toBe(true);
+    e.reset();
+    t += 1000;
+    const s = e.update(base({ linesCleared: 0 }));
+    expect(s.flow.active).toBe(false);
+    expect(s.flow.level).toBe(0);
+  });
+});
+
 describe("AtmosphereEngine — snapshots", () => {
   it("calm start → empty board, level 1", () => {
     const e = new AtmosphereEngine();

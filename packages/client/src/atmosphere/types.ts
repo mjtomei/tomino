@@ -48,6 +48,16 @@ export interface AtmosphereEvent {
   magnitude: number;
 }
 
+/** Flow-state (Zone) readout surfaced alongside AtmosphereState. */
+export interface FlowState {
+  /** True when the player is in Zone. */
+  active: boolean;
+  /** 0..1 smoothed flow level (drives visuals/audio intensity). */
+  level: number;
+  /** ms the raw score has been above entry threshold. */
+  sustainedMs: number;
+}
+
 /** The continuous + discrete output of the atmosphere engine. */
 export interface AtmosphereState {
   /** 0..1 — overall energy from level + stack pressure. */
@@ -56,15 +66,24 @@ export interface AtmosphereState {
   danger: number;
   /** 0..1 — combo/b2b streak energy. */
   momentum: number;
+  /** Emergent flow (Zone) state. */
+  flow: FlowState;
   /** Events detected on the most recent update tick (cleared each tick). */
   events: readonly AtmosphereEvent[];
 }
 
 export const BOARD_VISIBLE_HEIGHT = 20;
 
+export const INITIAL_FLOW_STATE: FlowState = {
+  active: false,
+  level: 0,
+  sustainedMs: 0,
+};
+
 export const INITIAL_ATMOSPHERE_STATE: AtmosphereState = {
   intensity: 0,
   danger: 0,
   momentum: 0,
+  flow: INITIAL_FLOW_STATE,
   events: [],
 };
