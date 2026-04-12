@@ -37,6 +37,14 @@ export interface GameEndData {
   stats: Record<PlayerId, PlayerStats>;
 }
 
+/** Tracks rematch voting status. */
+export interface RematchVoteData {
+  /** Player IDs who have voted for rematch. */
+  votes: PlayerId[];
+  /** Total players who need to vote. */
+  totalPlayers: number;
+}
+
 export interface PlayerTargetingState {
   strategy: TargetingStrategyType;
   targetPlayerId?: PlayerId;
@@ -70,6 +78,8 @@ export interface LobbyState {
   localElimination: EliminationData | null;
   /** Set when the game ends (all but one eliminated). */
   gameEndData: GameEndData | null;
+  /** Rematch vote status, set when rematch voting is in progress. */
+  rematchVotes: RematchVoteData | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,6 +137,7 @@ export interface UseLobbyResult {
   createRoom: () => void;
   joinRoom: (roomId: RoomId) => void;
   leaveRoom: () => void;
+  requestRematch: () => void;
   startGame: () => void;
   openJoinDialog: () => void;
   closeJoinDialog: () => void;
@@ -160,6 +171,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     targetingSettings: null,
     localElimination: null,
     gameEndData: null,
+    rematchVotes: null,
   });
 
   const [handicapSettings, setHandicapSettings] = useState<HandicapSettingsValues>(
@@ -205,6 +217,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
             targetingSettings: null,
             localElimination: null,
             gameEndData: null,
+            rematchVotes: null,
           }));
         }
       }
@@ -219,6 +232,23 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         // When joining, the server confirms with a roomUpdated containing full state
         if (prev.view === "joining") {
           return { ...prev, view: "waiting", room: msg.room, error: null };
+        }
+        // Rematch accepted or player left during vote: return to waiting room
+        if (prev.view === "results" && msg.room.status === "waiting") {
+          return {
+            ...prev,
+            view: "waiting",
+            room: msg.room,
+            gameSession: null,
+            opponentStates: {},
+            localPendingGarbage: [],
+            targetingStates: {},
+            attackPowers: {},
+            targetingSettings: null,
+            localElimination: null,
+            gameEndData: null,
+            rematchVotes: null,
+          };
         }
         return { ...prev, room: msg.room };
       });
@@ -295,6 +325,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
           targetingSettings: msg.targetingSettings ?? null,
           localElimination: null,
           gameEndData: null,
+          rematchVotes: null,
         };
       });
     });
@@ -380,6 +411,19 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       });
     });
 
+    socket.on("rematchUpdate", (msg) => {
+      setState((prev) => {
+        if (!prev.room || prev.room.id !== msg.roomId) return prev;
+        return {
+          ...prev,
+          rematchVotes: {
+            votes: msg.votes,
+            totalPlayers: msg.totalPlayers,
+          },
+        };
+      });
+    });
+
     socket.on("error", (msg) => {
       const errorText = formatError(msg.code, msg.message);
       setState((prev) => {
@@ -410,6 +454,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
         targetingSettings: null,
         localElimination: null,
         gameEndData: null,
+        rematchVotes: null,
       }));
     });
 
@@ -473,9 +518,17 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
       localElimination: null,
       gameEndData: null,
       gameSession: null,
+      rematchVotes: null,
     }));
     setHandicapSettings({ ...DEFAULT_HANDICAP_SETTINGS });
     setLobbyTargetingSettings({ ...DEFAULT_TARGETING_SETTINGS });
+  }, []);
+
+  const requestRematch = useCallback(() => {
+    const socket = socketRef.current;
+    const room = stateRef.current.room;
+    if (!socket || !room) return;
+    socket.send({ type: "requestRematch", roomId: room.id });
   }, []);
 
   const startGame = useCallback(() => {
@@ -553,6 +606,7 @@ export function useLobby(serverUrl?: string): UseLobbyResult {
     createRoom,
     joinRoom,
     leaveRoom,
+    requestRematch,
     startGame,
     openJoinDialog,
     closeJoinDialog,

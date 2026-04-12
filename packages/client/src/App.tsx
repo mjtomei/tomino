@@ -152,6 +152,8 @@ function App() {
             stats={lobby.state.gameEndData.stats}
             playerNames={playerNames}
             onBackToLobby={lobby.leaveRoom}
+            onRequestRematch={lobby.requestRematch}
+            rematchVotes={lobby.state.rematchVotes}
           />
         </div>
       );

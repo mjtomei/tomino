@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import type { PlayerId, PlayerStats } from "@tetris/shared";
 import { GameResults } from "../ui/GameResults.js";
 
@@ -31,6 +31,8 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
@@ -49,6 +51,8 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
@@ -66,6 +70,8 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
@@ -83,6 +89,8 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
@@ -99,6 +107,8 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
@@ -118,6 +128,8 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
@@ -138,10 +150,71 @@ describe("GameResults", () => {
         stats={STATS}
         playerNames={PLAYER_NAMES}
         onBackToLobby={onBack}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
       />,
     );
 
     getByTestId("back-to-lobby").click();
     expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it("renders rematch button and calls onRequestRematch when clicked", () => {
+    const onRematch = vi.fn();
+    const { getByTestId } = render(
+      <GameResults
+        localPlayerId="p1"
+        winnerId="p1"
+        placements={PLACEMENTS}
+        stats={STATS}
+        playerNames={PLAYER_NAMES}
+        onBackToLobby={() => {}}
+        onRequestRematch={onRematch}
+        rematchVotes={null}
+      />,
+    );
+
+    const btn = getByTestId("rematch-btn");
+    expect(btn.textContent).toBe("REMATCH");
+    btn.click();
+    expect(onRematch).toHaveBeenCalledOnce();
+  });
+
+  it("disables rematch button after clicking", () => {
+    const { getByTestId } = render(
+      <GameResults
+        localPlayerId="p1"
+        winnerId="p1"
+        placements={PLACEMENTS}
+        stats={STATS}
+        playerNames={PLAYER_NAMES}
+        onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={null}
+      />,
+    );
+
+    const btn = getByTestId("rematch-btn") as HTMLButtonElement;
+    fireEvent.click(btn);
+    expect(btn.disabled).toBe(true);
+    expect(btn.textContent).toBe("WAITING...");
+  });
+
+  it("shows vote progress when rematchVotes is provided", () => {
+    const { getByTestId } = render(
+      <GameResults
+        localPlayerId="p1"
+        winnerId="p1"
+        placements={PLACEMENTS}
+        stats={STATS}
+        playerNames={PLAYER_NAMES}
+        onBackToLobby={() => {}}
+        onRequestRematch={() => {}}
+        rematchVotes={{ votes: ["p1"], totalPlayers: 3 }}
+      />,
+    );
+
+    const status = getByTestId("rematch-status");
+    expect(status.textContent).toContain("1/3");
   });
 });

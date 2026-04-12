@@ -19,6 +19,7 @@ import {
   handleSetTargetingStrategy,
   handleSetManualTarget,
 } from "./handlers/game-handlers.js";
+import { handleRequestRematch } from "./handlers/rematch-handlers.js";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const PONG_TIMEOUT_MS = 10_000;
@@ -228,6 +229,9 @@ export function createWebSocketServer(
           handleSetManualTarget(msg, client.playerId!, (code, message) => {
             ctx.send({ type: "error", code, message });
           });
+          break;
+        case "requestRematch":
+          handleRequestRematch(client.playerId!, msg.roomId, ctx, store);
           break;
       }
     });

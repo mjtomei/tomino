@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { PlayerId, PlayerStats } from "@tetris/shared";
 import { formatTime, placementLabel } from "./formatTime.js";
+import type { RematchVoteData } from "../net/lobby-client";
 import "./GameResults.css";
 
 export interface GameResultsProps {
@@ -9,6 +11,8 @@ export interface GameResultsProps {
   stats: Record<PlayerId, PlayerStats>;
   playerNames: Record<PlayerId, string>;
   onBackToLobby: () => void;
+  onRequestRematch: () => void;
+  rematchVotes: RematchVoteData | null;
 }
 
 export function GameResults({
@@ -18,7 +22,10 @@ export function GameResults({
   stats,
   playerNames,
   onBackToLobby,
+  onRequestRematch,
+  rematchVotes,
 }: GameResultsProps) {
+  const [hasVoted, setHasVoted] = useState(false);
   // Sort players by placement (1st first)
   const sortedPlayers = Object.keys(placements).sort(
     (a, b) => placements[a]! - placements[b]!,
@@ -71,10 +78,26 @@ export function GameResults({
       </div>
 
       <div className="results-buttons">
+        <button
+          className="overlay-btn overlay-btn-primary"
+          disabled={hasVoted}
+          onClick={() => {
+            setHasVoted(true);
+            onRequestRematch();
+          }}
+          data-testid="rematch-btn"
+        >
+          {hasVoted ? "WAITING..." : "REMATCH"}
+        </button>
         <button className="overlay-btn" onClick={onBackToLobby} data-testid="back-to-lobby">
           BACK TO LOBBY
         </button>
       </div>
+      {rematchVotes && (
+        <p className="rematch-status" data-testid="rematch-status">
+          {rematchVotes.votes.length}/{rematchVotes.totalPlayers} voted for rematch
+        </p>
+      )}
     </div>
   );
 }
