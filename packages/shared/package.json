@@ -9,6 +9,22 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./dist/index.js"
+    },
+    "./__test-utils__/game-harness.js": {
+      "types": "./src/__test-utils__/game-harness.ts",
+      "default": "./src/__test-utils__/game-harness.ts"
+    },
+    "./__test-utils__/factories.js": {
+      "types": "./src/__test-utils__/factories.ts",
+      "default": "./src/__test-utils__/factories.ts"
+    },
+    "./__test-utils__/board-builder.js": {
+      "types": "./src/__test-utils__/board-builder.ts",
+      "default": "./src/__test-utils__/board-builder.ts"
+    },
+    "./__test-utils__/assertions.js": {
+      "types": "./src/__test-utils__/assertions.ts",
+      "default": "./src/__test-utils__/assertions.ts"
     }
   },
   "scripts": {
