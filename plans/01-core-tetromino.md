@@ -1,4 +1,4 @@
-# Plan 1: Core Single-Player Tetromino
+# Plan 1: Core Single-Player Tetromino Stacking
 
 ## Context
 Building a web-based multiplayer tetromino stacking game inspired by tetr.io. The key
