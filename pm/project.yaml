@@ -3,7 +3,7 @@ project:
   repo: https://github.com/mjtomei/tetris.git
   base_branch: master
   backend: github
-  active_pr: pr-a08de2e
+  active_pr: pr-f13ebbf
   repo_id: 1530e9278b4e7be3221acd9dcadda8fd8e7e21ea
   skip_qa: true
   hide_merged: false
@@ -2228,7 +2228,7 @@ prs:
   plan: plan-b7926f4
   title: Fix garbage not appearing on receiving player's game
   branch: pm/pr-1477f2b-fix-garbage-not-appearing-on-receiving-player-s-ga
-  status: in_progress
+  status: in_review
   depends_on:
   - pr-3687ade
   description: '**Root cause**: The server''s `game-session.ts` broadcasts two garbage-related
@@ -2251,9 +2251,9 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/74
   gh_pr_number: 74
   created_at: '2026-04-12T16:05:51.469532+00:00'
-  updated_at: '2026-04-12T16:23:37.069655+00:00'
+  updated_at: '2026-04-12T16:57:21.572196+00:00'
   started_at: '2026-04-12T16:23:37.069655+00:00'
-  reviewed_at: null
+  reviewed_at: '2026-04-12T16:57:21.572196+00:00'
   merged_at: null
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-1477f2b-fix-garbage-not-appearing-on-receivi-419307a5
@@ -2292,7 +2292,7 @@ prs:
   plan: plan-b7926f4
   title: Single-player E2E tests — game modes and basic gameplay
   branch: pm/pr-e1885a9-single-player-e2e-tests-game-modes-and-basic-gamep
-  status: in_review
+  status: merged
   depends_on:
   - pr-3687ade
   description: 'Add comprehensive Playwright tests for all single-player features.
@@ -2369,10 +2369,10 @@ prs:
   gh_pr: https://github.com/mjtomei/tetris/pull/76
   gh_pr_number: 76
   created_at: '2026-04-12T16:05:51.469545+00:00'
-  updated_at: '2026-04-12T16:32:16.783369+00:00'
+  updated_at: '2026-04-12T16:59:43.847632+00:00'
   started_at: '2026-04-12T16:23:46.909009+00:00'
   reviewed_at: '2026-04-12T16:32:16.783369+00:00'
-  merged_at: null
+  merged_at: '2026-04-12T16:59:43.847632+00:00'
   notes: []
   workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-e1885a9-single-player-e2e-tests-game-modes-a-419307a5
 - id: pr-155e552
@@ -2768,7 +2768,7 @@ prs:
   plan: plan-3dc51ce
   title: Atmosphere engine
   branch: pm/pr-c052338-atmosphere-engine
-  status: pending
+  status: merged
   depends_on: []
   description: 'Reactive state machine that reads game signals (board height, level,
     speed, combo, b2b, garbage pressure, game status) and outputs continuous atmosphere
@@ -2788,20 +2788,21 @@ prs:
     Files: `packages/client/src/atmosphere/atmosphere-engine.ts`, `packages/client/src/atmosphere/types.ts`,
     `packages/client/src/atmosphere/use-atmosphere.ts`, `e2e/atmosphere-engine.spec.ts`,
     tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/82
+  gh_pr_number: 82
   created_at: '2026-04-12T16:47:15.411971+00:00'
-  updated_at: '2026-04-12T16:47:15.411971+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:29:52.922531+00:00'
+  started_at: '2026-04-12T17:04:44.030530+00:00'
+  reviewed_at: '2026-04-12T17:13:28.764384+00:00'
+  merged_at: '2026-04-12T17:29:52.922531+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-c052338-atmosphere-engine-f8485421
 - id: pr-d687e7a
   plan: plan-3dc51ce
   title: Theme and genre config system
   branch: pm/pr-d687e7a-theme-and-genre-config-system
-  status: pending
+  status: merged
   depends_on: []
   description: 'Data-driven configuration system for visual themes and music genres.
     A theme defines: color palette (background gradient stops, particle colors, accent
@@ -2821,20 +2822,21 @@ prs:
     Files: `packages/client/src/atmosphere/themes.ts`, `packages/client/src/atmosphere/genres.ts`,
     `packages/client/src/atmosphere/theme-context.ts`, `packages/client/src/ui/ThemeSelector.tsx`,
     `e2e/theme-selector.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/83
+  gh_pr_number: 83
   created_at: '2026-04-12T16:47:15.411995+00:00'
-  updated_at: '2026-04-12T16:47:15.411995+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:11:23.428895+00:00'
+  started_at: '2026-04-12T17:04:48.807298+00:00'
+  reviewed_at: '2026-04-12T17:10:29.847767+00:00'
+  merged_at: '2026-04-12T17:11:23.428895+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-d687e7a-theme-and-genre-config-system-f8485421
 - id: pr-9ced1e0
   plan: plan-3dc51ce
   title: Background canvas layer
   branch: pm/pr-9ced1e0-background-canvas-layer
-  status: pending
+  status: merged
   depends_on:
   - pr-c052338
   - pr-d687e7a
@@ -2856,20 +2858,21 @@ prs:
     Files: `packages/client/src/atmosphere/BackgroundCanvas.tsx`, `packages/client/src/atmosphere/background-renderers.ts`,
     `packages/client/src/ui/GameShell.tsx`, `packages/client/src/ui/GameShell.css`,
     `e2e/background-atmosphere.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/88
+  gh_pr_number: 88
   created_at: '2026-04-12T16:47:15.412003+00:00'
-  updated_at: '2026-04-12T16:47:15.412003+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T18:58:15.590345+00:00'
+  started_at: '2026-04-12T17:29:57.068506+00:00'
+  reviewed_at: '2026-04-12T18:48:46.057474+00:00'
+  merged_at: '2026-04-12T18:58:15.590345+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-9ced1e0-background-canvas-layer-0fe0d690
 - id: pr-8aa0270
   plan: plan-3dc51ce
   title: Particle system
   branch: pm/pr-8aa0270-particle-system
-  status: pending
+  status: merged
   depends_on:
   - pr-d687e7a
   description: 'A canvas-based particle engine that spawns, updates, and renders particles.
@@ -2888,20 +2891,21 @@ prs:
 
     Files: `packages/client/src/atmosphere/particle-system.ts`, `packages/client/src/atmosphere/ParticleCanvas.tsx`,
     `e2e/particle-system.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/85
+  gh_pr_number: 85
   created_at: '2026-04-12T16:47:15.412009+00:00'
-  updated_at: '2026-04-12T16:47:15.412009+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:18:44.552596+00:00'
+  started_at: '2026-04-12T17:11:27.490571+00:00'
+  reviewed_at: '2026-04-12T17:16:01.952001+00:00'
+  merged_at: '2026-04-12T17:18:44.552596+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-8aa0270-particle-system-c4c91d81
 - id: pr-1066844
   plan: plan-3dc51ce
   title: Board visual effects — line clear and lock
   branch: pm/pr-1066844-board-visual-effects-line-clear-and-lock
-  status: pending
+  status: merged
   depends_on:
   - pr-8aa0270
   - pr-c052338
@@ -2921,20 +2925,21 @@ prs:
 
     Files: `packages/client/src/atmosphere/board-effects.ts`, `packages/client/src/ui/GameShell.tsx`,
     `e2e/board-effects.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/89
+  gh_pr_number: 89
   created_at: '2026-04-12T16:47:15.412017+00:00'
-  updated_at: '2026-04-12T16:47:15.412017+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:42:39.487469+00:00'
+  started_at: '2026-04-12T17:30:01.862178+00:00'
+  reviewed_at: '2026-04-12T17:40:30.991489+00:00'
+  merged_at: '2026-04-12T17:42:39.487469+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-1066844-board-visual-effects-line-clear-and--0fe0d690
 - id: pr-3fc952c
   plan: plan-3dc51ce
   title: Event burst visuals
   branch: pm/pr-3fc952c-event-burst-visuals
-  status: pending
+  status: merged
   depends_on:
   - pr-8aa0270
   - pr-c052338
@@ -2956,20 +2961,21 @@ prs:
 
     Files: `packages/client/src/atmosphere/event-bursts.ts`, `packages/client/src/atmosphere/EventBurstCanvas.tsx`,
     `e2e/event-bursts.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/90
+  gh_pr_number: 90
   created_at: '2026-04-12T16:47:15.412022+00:00'
-  updated_at: '2026-04-12T16:47:15.412022+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:46:59.912620+00:00'
+  started_at: '2026-04-12T17:30:06.920662+00:00'
+  reviewed_at: '2026-04-12T17:36:32.529600+00:00'
+  merged_at: '2026-04-12T17:46:59.912620+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-3fc952c-event-burst-visuals-0fe0d690
 - id: pr-14419d6
   plan: plan-3dc51ce
   title: Screen effects — vignette, shake, flash
   branch: pm/pr-14419d6-screen-effects-vignette-shake-flash
-  status: pending
+  status: merged
   depends_on:
   - pr-c052338
   - pr-d687e7a
@@ -2990,20 +2996,21 @@ prs:
 
     Files: `packages/client/src/atmosphere/screen-effects.ts`, `packages/client/src/atmosphere/ScreenEffects.tsx`,
     `packages/client/src/ui/GameShell.tsx`, `e2e/screen-effects.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/91
+  gh_pr_number: 91
   created_at: '2026-04-12T16:47:15.412028+00:00'
-  updated_at: '2026-04-12T16:47:15.412028+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T18:55:28.780577+00:00'
+  started_at: '2026-04-12T17:30:14.289906+00:00'
+  reviewed_at: '2026-04-12T18:51:15.104090+00:00'
+  merged_at: '2026-04-12T18:55:28.780577+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-14419d6-screen-effects-vignette-shake-flash-0fe0d690
 - id: pr-a83d71d
   plan: plan-3dc51ce
   title: Adaptive music engine
   branch: pm/pr-a83d71d-adaptive-music-engine
-  status: pending
+  status: merged
   depends_on:
   - pr-c052338
   - pr-d687e7a
@@ -3027,20 +3034,21 @@ prs:
 
     Files: `packages/client/src/audio/music-engine.ts`, `packages/client/src/audio/music-layers.ts`,
     `packages/client/src/audio/use-music.ts`, `e2e/music-engine.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/92
+  gh_pr_number: 92
   created_at: '2026-04-12T16:47:15.412033+00:00'
-  updated_at: '2026-04-12T16:47:15.412033+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T19:05:39.088497+00:00'
+  started_at: '2026-04-12T17:30:19.362358+00:00'
+  reviewed_at: '2026-04-12T18:51:06.835230+00:00'
+  merged_at: '2026-04-12T19:05:39.088497+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-a83d71d-adaptive-music-engine-0fe0d690
 - id: pr-24b6a22
   plan: plan-3dc51ce
   title: Multiplayer atmosphere integration
   branch: pm/pr-24b6a22-multiplayer-atmosphere-integration
-  status: pending
+  status: merged
   depends_on:
   - pr-c052338
   - pr-8aa0270
@@ -3065,20 +3073,21 @@ prs:
     Files: `packages/client/src/atmosphere/multiplayer-effects.ts`, `packages/client/src/atmosphere/atmosphere-engine.ts`,
     `packages/client/src/ui/GameMultiplayer.tsx`, `e2e/multiplayer-atmosphere.spec.ts`,
     tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/94
+  gh_pr_number: 94
   created_at: '2026-04-12T16:47:15.412038+00:00'
-  updated_at: '2026-04-12T16:47:15.412038+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T19:10:18.712173+00:00'
+  started_at: '2026-04-12T18:58:19.540235+00:00'
+  reviewed_at: '2026-04-12T19:08:05.004869+00:00'
+  merged_at: '2026-04-12T19:10:18.712173+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-24b6a22-multiplayer-atmosphere-integration-1cdbd6cb
 - id: pr-b648096
   plan: plan-3dc51ce
   title: Menu and lobby atmosphere
   branch: pm/pr-b648096-menu-and-lobby-atmosphere
-  status: pending
+  status: merged
   depends_on:
   - pr-9ced1e0
   - pr-a83d71d
@@ -3101,20 +3110,21 @@ prs:
     Files: `packages/client/src/atmosphere/menu-atmosphere.ts`, `packages/client/src/ui/Lobby.tsx`,
     `packages/client/src/ui/WaitingRoom.tsx`, `packages/client/src/ui/GameResults.tsx`,
     `packages/client/src/App.tsx`, `e2e/menu-atmosphere.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/95
+  gh_pr_number: 95
   created_at: '2026-04-12T16:47:15.412042+00:00'
-  updated_at: '2026-04-12T16:47:15.412042+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T19:32:15.098757+00:00'
+  started_at: '2026-04-12T19:05:42.894735+00:00'
+  reviewed_at: '2026-04-12T19:13:26.965807+00:00'
+  merged_at: '2026-04-12T19:32:15.098757+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-b648096-menu-and-lobby-atmosphere-8c8a433f
 - id: pr-0f48e4a
   plan: plan-3dc51ce
   title: Audio and visual settings panel
   branch: pm/pr-0f48e4a-audio-and-visual-settings-panel
-  status: pending
+  status: merged
   depends_on:
   - pr-d687e7a
   - pr-a83d71d
@@ -3135,20 +3145,21 @@ prs:
     Files: `packages/client/src/ui/SettingsPanel.tsx`, `packages/client/src/ui/SettingsPanel.css`,
     `packages/client/src/atmosphere/settings-context.ts`, `packages/client/src/audio/sounds.ts`,
     `packages/client/src/ui/Lobby.tsx`, `e2e/settings-panel.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/96
+  gh_pr_number: 96
   created_at: '2026-04-12T16:47:15.412047+00:00'
-  updated_at: '2026-04-12T16:47:15.412047+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T19:21:55.633464+00:00'
+  started_at: '2026-04-12T19:05:47.780944+00:00'
+  reviewed_at: '2026-04-12T19:17:27.006758+00:00'
+  merged_at: '2026-04-12T19:21:55.633464+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-0f48e4a-audio-and-visual-settings-panel-8c8a433f
 - id: pr-49e8aee
   plan: plan-3dc51ce
   title: Flow state detection and Zone mode
   branch: pm/pr-49e8aee-flow-state-detection-and-zone-mode
-  status: pending
+  status: merged
   depends_on:
   - pr-c052338
   - pr-9ced1e0
@@ -3173,20 +3184,21 @@ prs:
 
     Files: `packages/client/src/atmosphere/flow-detection.ts`, `packages/client/src/atmosphere/atmosphere-engine.ts`,
     `e2e/flow-state.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/97
+  gh_pr_number: 97
   created_at: '2026-04-12T16:47:15.412052+00:00'
-  updated_at: '2026-04-12T16:47:15.412052+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T19:16:28.554807+00:00'
+  started_at: '2026-04-12T19:05:52.805728+00:00'
+  reviewed_at: '2026-04-12T19:14:29.882628+00:00'
+  merged_at: '2026-04-12T19:16:28.554807+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-49e8aee-flow-state-detection-and-zone-mode-8c8a433f
 - id: pr-ed25215
   plan: plan-3dc51ce
   title: Piece animation — spawn, movement, rotation
   branch: pm/pr-ed25215-piece-animation-spawn-movement-rotation
-  status: pending
+  status: merged
   depends_on: []
   description: 'Replaces instant piece rendering with smoothly interpolated animation.
     Spawn: new pieces fade in at their spawn position over ~100ms rather than popping
@@ -3208,20 +3220,21 @@ prs:
 
     Files: `packages/client/src/ui/BoardCanvas.tsx`, `packages/client/src/ui/piece-animation.ts`,
     `e2e/piece-animation.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/84
+  gh_pr_number: 84
   created_at: '2026-04-12T16:47:15.412057+00:00'
-  updated_at: '2026-04-12T16:47:15.412057+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:12:41.590991+00:00'
+  started_at: '2026-04-12T17:04:54.348511+00:00'
+  reviewed_at: '2026-04-12T17:11:02.626930+00:00'
+  merged_at: '2026-04-12T17:12:41.590991+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-ed25215-piece-animation-spawn-movement-rotat-f8485421
 - id: pr-e46a8a0
   plan: plan-3dc51ce
   title: Board life — idle animations
   branch: pm/pr-e46a8a0-board-life-idle-animations
-  status: pending
+  status: merged
   depends_on:
   - pr-d687e7a
   - pr-c052338
@@ -3243,20 +3256,21 @@ prs:
 
     Files: `packages/client/src/ui/BoardCanvas.tsx`, `packages/client/src/atmosphere/board-life.ts`,
     `e2e/board-life.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/93
+  gh_pr_number: 93
   created_at: '2026-04-12T16:47:15.412062+00:00'
-  updated_at: '2026-04-12T16:47:15.412062+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T19:04:54.121493+00:00'
+  started_at: '2026-04-12T17:30:25.164460+00:00'
+  reviewed_at: '2026-04-12T18:52:03.064910+00:00'
+  merged_at: '2026-04-12T19:04:54.121493+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-e46a8a0-board-life-idle-animations-0fe0d690
 - id: pr-11a17ba
   plan: plan-3dc51ce
   title: Theme- and genre-aware SFX
   branch: pm/pr-11a17ba-theme-and-genre-aware-sfx
-  status: pending
+  status: merged
   depends_on:
   - pr-d687e7a
   description: 'Enriches the existing SoundManager so that SFX sounds match the current
@@ -3279,20 +3293,21 @@ prs:
 
     Files: `packages/client/src/audio/sounds.ts`, `packages/client/src/audio/sfx-profiles.ts`,
     `packages/client/src/audio/synth-helpers.ts`, `e2e/sfx-profiles.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/86
+  gh_pr_number: 86
   created_at: '2026-04-12T16:47:15.412068+00:00'
-  updated_at: '2026-04-12T16:47:15.412068+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:22:10.837551+00:00'
+  started_at: '2026-04-12T17:11:32.182671+00:00'
+  reviewed_at: '2026-04-12T17:20:06.725509+00:00'
+  merged_at: '2026-04-12T17:22:10.837551+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-11a17ba-theme-and-genre-aware-sfx-c4c91d81
 - id: pr-6885981
   plan: plan-3dc51ce
   title: Multiplayer emotes and opponent reactions
   branch: pm/pr-6885981-multiplayer-emotes-and-opponent-reactions
-  status: pending
+  status: merged
   depends_on:
   - pr-8aa0270
   - pr-d687e7a
@@ -3317,20 +3332,21 @@ prs:
     `packages/server/src/room-handlers.ts`, `packages/client/src/ui/OpponentBoard.tsx`,
     `packages/client/src/ui/EmotePicker.tsx`, `packages/client/src/atmosphere/opponent-reactions.ts`,
     `e2e/emotes-reactions.spec.ts`, tests'
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/87
+  gh_pr_number: 87
   created_at: '2026-04-12T16:47:15.412072+00:00'
-  updated_at: '2026-04-12T16:47:15.412072+00:00'
-  started_at: null
-  reviewed_at: null
-  merged_at: null
+  updated_at: '2026-04-12T17:32:43.618951+00:00'
+  started_at: '2026-04-12T17:18:48.506878+00:00'
+  reviewed_at: '2026-04-12T17:30:44.446703+00:00'
+  merged_at: '2026-04-12T17:32:43.618951+00:00'
   notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-6885981-multiplayer-emotes-and-opponent-reac-671159c0
 - id: pr-a08de2e
   plan: plan-3dc51ce
   title: Final gate — atmosphere and music plan complete
   branch: pm/pr-a08de2e-final-gate-atmosphere-and-music-plan-complete
-  status: pending
+  status: merged
   depends_on:
   - pr-c052338
   - pr-d687e7a
@@ -3357,11 +3373,182 @@ prs:
 
 
     Files: none.'
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tetris/pull/98
+  gh_pr_number: 98
+  created_at: '2026-04-12T16:56:59.049749+00:00'
+  updated_at: '2026-04-12T19:33:59.578273+00:00'
+  started_at: '2026-04-12T19:32:19.214559+00:00'
+  reviewed_at: '2026-04-12T19:33:15.856239+00:00'
+  merged_at: '2026-04-12T19:33:59.578273+00:00'
+  notes: []
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-a08de2e-final-gate-atmosphere-and-music-plan-0c1a8bba
+- id: pr-f13ebbf
+  plan: null
+  title: Rename project from Tetris to Tomino
+  branch: pm/pr-f13ebbf-rename-project-from-tetris-to-tomino
+  status: pending
+  depends_on: []
+  description: "Rename the project throughout the codebase from \"Tetris\" to \"Tomino\"\
+    \ to distance from the Tetris trademark. Also replace the user-visible/code-symbol\
+    \ term \"tetris\" (as a 4-line clear) with \"quad\" (matching competitive-scene\
+    \ practice: tetr.io, Jstris). And replace the Tetris Guideline piece-color palette\
+    \ with three selectable in-house palettes — the Guideline colors were specifically\
+    \ cited as protected expression in *Tetris Holding v. Xio Interactive*, and switching\
+    \ palettes is the highest-leverage legal-distance change.\n\n## Scope\n\nThree\
+    \ coordinated changes in one PR:\n\n1. **Project identity:** \"Tetris\" → \"Tomino\"\
+    \ (package names, titles, README, UI, engine class, localStorage keys).\n2. **Genre\
+    \ term:** \"tetris\" (4-line clear) → \"quad\" (event variant names, method names,\
+    \ variable names, user-visible strings, and descriptive test/comment prose).\n\
+    3. **Piece colors:** replace the Guideline palette with three selectable palettes,\
+    \ default to \"Synthwave\".\n\n### Part 1 — Project identity rename (Tetris →\
+    \ Tomino)\n\n1. **Root package.json** — `\"name\": \"tetris\"` → `\"name\": \"\
+    tomino\"`\n2. **Workspace package names** — rename npm scope `@tetris/*` → `@tomino/*`:\n\
+    \   - `packages/shared/package.json` — `@tetris/shared` → `@tomino/shared`\n \
+    \  - `packages/server/package.json` — `@tetris/server` → `@tomino/server`, plus\
+    \ its `@tetris/shared` dependency\n   - `packages/client/package.json` — same\
+    \ treatment\n   - Update all `from \"@tetris/shared\"` imports across the codebase\
+    \ to `from \"@tomino/shared\"`\n   - Regenerate `package-lock.json` (run `npm\
+    \ install` after package.json edits)\n3. **README.md** — title `# Tetris` → `#\
+    \ Tomino`, first paragraph \"Multiplayer Tetris with adaptive…\" → \"Multiplayer\
+    \ block-stacking game with adaptive…\". Keep technical mentions (SRS, NES scoring)\
+    \ as-is — those are spec references.\n4. **packages/client/index.html** — `<title>Tetris</title>`\
+    \ → `<title>Tomino</title>`\n5. **packages/server/src/index.ts** — `\"Tetris server\
+    \ listening…\"` log → `\"Tomino server listening…\"`\n6. **Lobby UI** — `packages/client/src/ui/Lobby.tsx`\
+    \ shows \"Tetris\" as the app title. Change to \"Tomino\". Update `packages/client/src/__tests__/Lobby.test.tsx`\
+    \ (`expect(screen.getByText(\"Tetris\"))` → `\"Tomino\"`).\n7. **localStorage\
+    \ keys** — rename `tetris.*` / `tetris-player-name` → `tomino.*` / `tomino-player-name`:\n\
+    \   - `packages/client/src/audio/use-music.ts` — `tetris.music.volume`, `tetris.music.muted`\n\
+    \   - `packages/client/src/atmosphere/settings-context.ts` — `tetris.sfx.volume`,\
+    \ `tetris.master.muted`, `tetris.effects.intensity`\n   - `packages/client/src/atmosphere/theme-context.tsx`\
+    \ — `tetris.theme`, `tetris.genre`\n   - `packages/client/src/__tests__/App.test.tsx`\
+    \ and wherever the app code sets it — `tetris-player-name`\n   Acceptable that\
+    \ existing users lose their saved settings on next load — no migration needed.\n\
+    8. **`TetrisEngine` class** — rename to `TominoEngine` throughout:\n   - `packages/shared/src/engine/engine.ts`\
+    \ (class declaration and doc comment)\n   - `packages/shared/src/index.ts` (re-export)\n\
+    \   - All imports and usages in client, server, and tests (engine-proxy.ts, player-engine.ts,\
+    \ engine.test.ts, etc.)\n9. **Prose docs** — in `docs/pm-demo-narrative.md`, `notes.txt`,\
+    \ and `plans/*.md`, update descriptions of *our project* (\"multiplayer Tetris\
+    \ game\" → \"multiplayer Tomino game\"). Keep references to the standards (\"\
+    Tetris Guideline\", \"NES Tetris\", \"Tetris 99\", `tetris.wiki` URLs) — those\
+    \ are external specs/products, not us, and are protected by nominative fair use.\n\
+    \n### Part 2 — Genre term rename (\"tetris\" → \"quad\" for the 4-line clear)\n\
+    \nThe term \"tetris\" meaning a 4-line clear is a gray-area trademark use when\
+    \ it appears in user-visible text or as a public code symbol. The competitive\
+    \ scene uses **\"quad\"**. Replace in code and user-facing strings.\n\n1. **Event\
+    \ variant type strings** — change `\"tetris\"` to `\"quad\"` everywhere the event\
+    \ discriminator is defined, matched, or emitted:\n   - `packages/client/src/atmosphere/board-effects.ts`\
+    \ — the `BoardEffectEvent` union variant and call site; rename the method `spawnTetrisBurst`\
+    \ → `spawnQuadBurst`\n   - `packages/client/src/atmosphere/event-bursts.ts` —\
+    \ switch case `\"tetris\"` → `\"quad\"`\n   - `packages/client/src/atmosphere/atmosphere-engine.ts`\
+    \ — `events.push({ type: \"tetris\", … })` → `\"quad\"`\n   - `packages/client/src/atmosphere/menu-atmosphere.ts`\
+    \ — `{ type: \"tetris\", magnitude: 4 }` → `\"quad\"`\n   - `packages/client/src/atmosphere/ScreenEffects.tsx`\
+    \ — event type check `e.type === \"tetris\"` → `\"quad\"`\n   - `packages/client/src/atmosphere/screen-effects.ts`\
+    \ — comments referencing \"(tetris)\" → \"(quad)\"\n   - `packages/client/src/atmosphere/opponent-reactions.ts`\
+    \ — `OpponentReaction` union `\"tetris\"` → `\"quad\"`, switch case, and reaction\
+    \ emitter\n   - `packages/client/src/audio/music-engine.ts` — `ev.type === \"\
+    tetris\"` → `\"quad\"`, plus comment\n   - `packages/client/src/audio/use-music.ts`\
+    \ — `[{ type: \"tetris\", magnitude: 4 }]` → `\"quad\"`\n   - Update all corresponding\
+    \ tests (`packages/client/src/atmosphere/__tests__/*.test.ts`, `e2e/*.spec.ts`,\
+    \ `packages/client/src/audio/sounds.test.ts`) to use `\"quad\"` in event creation,\
+    \ assertions, and variable names (`tetrisCount` → `quadCount`)\n2. **Shared engine\
+    \ prose** — in `packages/shared/src/engine/*.ts` doc comments and `packages/shared/src/engine/*.test.ts`\
+    \ test descriptions, change references like `\"sends 4 garbage for a Tetris\"\
+    `, `\"clears a Tetris (4 lines)\"`, `\"awards 800 × level for a tetris\"`, `\"\
+    first tetris sets b2b=0\"`, `\"PC Tetris\"` → use \"quad\". Same for `packages/shared/src/__tests__/reference-nes.test.ts`\
+    \ and `reference-guideline.test.ts` test labels and data table labels (`{ lines:\
+    \ 4, label: \"Tetris\" }` → `\"Quad\"`, `{ action: \"Tetris\", lines: 4 }` → `{\
+    \ action: \"Quad\", … }`).\n3. **User-visible \"Tetris!\" strings** — search the\
+    \ client for any announcer/toast/overlay text saying \"Tetris\" as a clear name\
+    \ and replace with \"Quad\".\n\n### Part 3 — Piece color palettes\n\nReplace the\
+    \ single hardcoded Guideline palette in `packages/client/src/ui/colors.ts` with\
+    \ three named, selectable palettes. The Guideline palette was specifically cited\
+    \ as protected expression in *Tetris Holding v. Xio Interactive* (2012), and replacing\
+    \ it is the single most important legal-distance change.\n\n#### Palette definitions\n\
+    \nCreate `packages/client/src/ui/palettes.ts` (new file) with:\n\n```ts\nimport\
+    \ type { PieceType } from \"@tomino/shared\";\n\nexport type PaletteId = \"synthwave\"\
+    \ | \"jewel\" | \"muted\";\n\nexport interface Palette {\n  id: PaletteId;\n \
+    \ name: string;\n  colors: Record<PieceType, string>;\n}\n\nexport const PALETTES:\
+    \ Record<PaletteId, Palette> = {\n  synthwave: {\n    id: \"synthwave\",\n   \
+    \ name: \"Synthwave\",\n    colors: {\n      I: \"#00F5D4\", // mint-aqua\n  \
+    \    O: \"#FEE440\", // warm yellow\n      T: \"#9B5DE5\", // lavender\n     \
+    \ S: \"#06D6A0\", // emerald\n      Z: \"#EF476F\", // watermelon\n      J: \"\
+    #118AB2\", // steel blue\n      L: \"#FB8500\", // pumpkin\n    },\n  },\n  jewel:\
+    \ {\n    id: \"jewel\",\n    name: \"Jewel\",\n    colors: {\n      I: \"#2A9D8F\"\
+    , // deep teal\n      O: \"#E9C46A\", // gold\n      T: \"#9D4EDD\", // amethyst\n\
+    \      S: \"#52B788\", // forest\n      Z: \"#E63946\", // crimson\n      J: \"\
+    #3A86FF\", // cobalt\n      L: \"#E76F51\", // terracotta\n    },\n  },\n  muted:\
+    \ {\n    id: \"muted\",\n    name: \"Muted\",\n    colors: {\n      I: \"#8ECAE6\"\
+    , // soft sky\n      O: \"#F4E285\", // buttercream\n      T: \"#CDB4DB\", //\
+    \ dusty lilac\n      S: \"#B5E48C\", // sage\n      Z: \"#E07A5F\", // clay\n\
+    \      J: \"#6A7FDB\", // periwinkle\n      L: \"#F4A261\", // apricot\n    },\n\
+    \  },\n};\n\nexport const DEFAULT_PALETTE_ID: PaletteId = \"synthwave\";\n\nexport\
+    \ function getPalette(id: string): Palette {\n  return PALETTES[id as PaletteId]\
+    \ ?? PALETTES[DEFAULT_PALETTE_ID];\n}\n```\n\n#### Wire into existing theme system\n\
+    \nThe codebase already has a `ThemeProvider` (`packages/client/src/atmosphere/theme-context.tsx`)\
+    \ with `themeId` and `genreId` axes. Add a third axis `paletteId` alongside them:\n\
+    \n- Add `paletteId: string`, `palette: Palette`, `setPaletteId: (id: string) =>\
+    \ void` to `ThemeContextValue`.\n- Add a localStorage key constant `PALETTE_STORAGE_KEY\
+    \ = \"tomino.palette\"` (use the `tomino.*` namespace per Part 1).\n- Read/write\
+    \ the palette id the same way `themeId` and `genreId` are handled, using `PALETTES`\
+    \ as the valid-set dict and `DEFAULT_PALETTE_ID` as the fallback.\n- Follow the\
+    \ exact same pattern (`useState` initializer reading from localStorage, `useEffect`\
+    \ to persist, `setPaletteId` with validity check against `PALETTES`).\n\n####\
+    \ Rework colors.ts\n\nRefactor `packages/client/src/ui/colors.ts`:\n\n- **Remove**\
+    \ the hardcoded `PIECE_COLORS` constant and the `/** Tetris Guideline piece colors.\
+    \ */` comment.\n- **Keep** `darken`, `lighten`, `BOARD_BG`, `PANEL_BG` unchanged.\n\
+    - **Add** a helper `getPieceColors(palette: Palette): Record<PieceType, string>`\
+    \ that just returns `palette.colors` — or simpler, have callers use `palette.colors`\
+    \ directly.\n- Update every current import of `PIECE_COLORS` from `colors.ts`\
+    \ to instead read `palette.colors` from `useTheme()` (or equivalent theme hook).\
+    \ Likely call sites include `BoardCanvas.tsx`, `OpponentBoard.tsx`, piece preview\
+    \ components, and any other renderer that currently imports `PIECE_COLORS`. Grep\
+    \ for `PIECE_COLORS` to find them all.\n\n#### Settings UI\n\nAdd a palette selector\
+    \ to the existing settings panel (wherever theme/genre selectors live — check\
+    \ `SettingsPanel.tsx`). The selector should show the three palette names (\"Synthwave\"\
+    , \"Jewel\", \"Muted\") and ideally a small visual preview (7 colored squares,\
+    \ one per piece). Match the style of the existing theme/genre selectors.\n\n####\
+    \ Tests\n\n- Update any test that asserts specific hex values from the old Guideline\
+    \ palette (e.g., `BoardCanvas.test.tsx`) to instead assert that the rendered color\
+    \ matches the *current palette's* piece color, not a hardcoded hex. Or, where\
+    \ the test is checking color-independence, render with a known palette and assert\
+    \ against that palette's hex.\n- Add a small test for `palettes.ts` verifying\
+    \ each palette has all 7 piece types defined with valid 7-char hex strings.\n\
+    - Add a test for the `ThemeProvider` palette axis: set `paletteId`, verify it\
+    \ persists to localStorage and that the exposed `palette` object updates.\n\n\
+    ### Do NOT change\n\n- **External spec references** — \"Tetris Guideline\", \"\
+    NES Tetris\", \"Tetris 99\", \"TetrisWiki\", `https://tetris.wiki/*` URLs in code\
+    \ comments and test file headers. These are nominative fair use: citing the published\
+    \ specifications by their real names, the same as citing RFCs. Removing them would\
+    \ harm traceability without reducing legal risk.\n- **SRS rotation system, kick\
+    \ tables, scoring values, garbage tables, combo tables, B2B logic, perfect-clear\
+    \ bonuses, lock delay, DAS/ARR** — these are functional rules/algorithms, not\
+    \ copyrightable expression (17 USC §102(b)). Keep implementations intact.\n- **10-wide\
+    \ playfield** — de facto standard across every clone; leave as-is.\n- **`plans/01-core-tetris.md`\
+    \ filename** — historical plan artifact.\n- **Files under `pm/`** (transcripts,\
+    \ specs) — historical records, untouched.\n- **Repo directory `/home/matt/claude-work/tetris`**\
+    \ — the user will rename the directory and GitHub remote separately to avoid breaking\
+    \ the active pm session and worktrees.\n\n## Verification\n\n- `npm install` regenerates\
+    \ `package-lock.json` cleanly\n- `npm run build` succeeds\n- `npm run lint` clean\n\
+    - `npm test` passes (vitest)\n- `npm run dev:server` starts and logs \"Tomino\
+    \ server listening…\"\n- `npm run dev` starts and the browser tab title shows\
+    \ \"Tomino\"; the Lobby displays \"Tomino\"\n- Manually verify in the browser:\
+    \ the default piece colors match the Synthwave palette; the settings panel has\
+    \ a palette selector; switching to Jewel and Muted changes piece colors live and\
+    \ persists across reload\n- Grep for remaining `@tetris/`, `\"name\": \"tetris\"\
+    `, `\"name\": \"@tetris/`, `TetrisEngine`, or `tetris.` localStorage key prefixes\
+    \ returns zero hits\n- Grep for `type: \"tetris\"` and `\"tetris\"` as an event\
+    \ literal returns zero hits in `packages/client/src/atmosphere/**` and `packages/client/src/audio/**`\n\
+    - Grep for `PIECE_COLORS` returns zero hits (all call sites migrated to palette-aware\
+    \ rendering)\n- The old Guideline hex values (`#00D4D4`, `#E6C000`, `#A020D0`,\
+    \ `#00C800`, `#D41400`, `#2020D4`, `#E08000`) appear nowhere in the codebase\n\
+    - External references to \"Tetris Guideline\", \"NES Tetris\", and `tetris.wiki`\
+    \ URLs in doc comments and test file headers remain intact"
   agent_machine: null
   gh_pr: null
   gh_pr_number: null
-  created_at: '2026-04-12T16:56:59.049749+00:00'
-  updated_at: '2026-04-12T16:56:59.049749+00:00'
+  created_at: '2026-04-13T03:47:49.593017+00:00'
+  updated_at: '2026-04-13T03:55:17.531488+00:00'
   started_at: null
   reviewed_at: null
   merged_at: null
