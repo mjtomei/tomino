@@ -19,9 +19,9 @@ import { createRNG } from "../engine/rng.js";
 import { modernRuleSet } from "../engine/rulesets.js";
 import { createRandomizer } from "../engine/randomizer.js";
 import { SRSRotation } from "../engine/rotation-srs.js";
-import { NRSRotation } from "../engine/rotation-nrs.js";
+import { ClassicRotation } from "../engine/rotation-classic.js";
 import { GuidelineScoring } from "../engine/scoring-guideline.js";
-import { NESScoring } from "../engine/scoring-nes.js";
+import { ClassicScoring } from "../engine/scoring-classic.js";
 import { createGrid, placePiece, clearLines } from "../engine/board.js";
 import { collides, tryMove, tryRotate, hardDrop as findLandingRow } from "../engine/movement.js";
 import { detectTSpin } from "../engine/scoring.js";
@@ -445,8 +445,8 @@ export class GameTestHarness {
 
     const rng = createRNG(seed);
     const randomizer = createRandomizer(ruleSet.randomizer, ruleSet.previewCount, rng.next);
-    const rotationSystem = ruleSet.rotationSystem === "srs" ? SRSRotation : NRSRotation;
-    const scoringSystem = ruleSet.scoringSystem === "guideline" ? GuidelineScoring : NESScoring;
+    const rotationSystem = ruleSet.rotationSystem === "srs" ? SRSRotation : ClassicRotation;
+    const scoringSystem = ruleSet.scoringSystem === "guideline" ? GuidelineScoring : ClassicScoring;
 
     this.engine = createInternalEngine(rng, randomizer, rotationSystem, scoringSystem, ruleSet, startLevel);
   }

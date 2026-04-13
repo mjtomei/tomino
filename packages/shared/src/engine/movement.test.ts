@@ -9,7 +9,7 @@ import {
 import type { PieceType, Rotation } from "./pieces.js";
 import { ALL_PIECES } from "./pieces.js";
 import { SRSRotation } from "./rotation-srs.js";
-import { NRSRotation } from "./rotation-nrs.js";
+import { ClassicRotation } from "./rotation-classic.js";
 import {
   collides,
   tryMove,
@@ -425,33 +425,33 @@ describe("tryRotate — SRS", () => {
 });
 
 // ---------------------------------------------------------------------------
-// tryRotate — NRS rotation
+// tryRotate — Classic rotation
 // ---------------------------------------------------------------------------
 
-describe("tryRotate — NRS", () => {
+describe("tryRotate — Classic", () => {
   describe("2-state pieces (I, S, Z)", () => {
     it.each(["I", "S", "Z"] as PieceType[])("%s has 2 rotation states", (piece) => {
-      expect(NRSRotation.getRotationCount(piece)).toBe(2);
+      expect(ClassicRotation.getRotationCount(piece)).toBe(2);
     });
 
     it.each(["I", "S", "Z"] as PieceType[])("%s CW rotation cycles 0→1→0", (piece) => {
       const grid = createGrid();
-      const r1 = tryRotate(grid, piece, 20, 4, 0, "cw", NRSRotation);
+      const r1 = tryRotate(grid, piece, 20, 4, 0, "cw", ClassicRotation);
       expect(r1).not.toBeNull();
       expect(r1!.rotation).toBe(1);
 
-      const r2 = tryRotate(grid, piece, r1!.row, r1!.col, r1!.rotation, "cw", NRSRotation);
+      const r2 = tryRotate(grid, piece, r1!.row, r1!.col, r1!.rotation, "cw", ClassicRotation);
       expect(r2).not.toBeNull();
       expect(r2!.rotation).toBe(0);
     });
 
     it.each(["I", "S", "Z"] as PieceType[])("%s CCW rotation cycles 0→1→0", (piece) => {
       const grid = createGrid();
-      const r1 = tryRotate(grid, piece, 20, 4, 0, "ccw", NRSRotation);
+      const r1 = tryRotate(grid, piece, 20, 4, 0, "ccw", ClassicRotation);
       expect(r1).not.toBeNull();
       expect(r1!.rotation).toBe(1);
 
-      const r2 = tryRotate(grid, piece, r1!.row, r1!.col, r1!.rotation, "ccw", NRSRotation);
+      const r2 = tryRotate(grid, piece, r1!.row, r1!.col, r1!.rotation, "ccw", ClassicRotation);
       expect(r2).not.toBeNull();
       expect(r2!.rotation).toBe(0);
     });
@@ -459,7 +459,7 @@ describe("tryRotate — NRS", () => {
 
   describe("4-state pieces (J, L, T)", () => {
     it.each(["J", "L", "T"] as PieceType[])("%s has 4 rotation states", (piece) => {
-      expect(NRSRotation.getRotationCount(piece)).toBe(4);
+      expect(ClassicRotation.getRotationCount(piece)).toBe(4);
     });
 
     it.each(["J", "L", "T"] as PieceType[])("%s CW rotation cycles through 0→1→2→3→0", (piece) => {
@@ -469,7 +469,7 @@ describe("tryRotate — NRS", () => {
       let rotation: Rotation = 0;
 
       for (let i = 0; i < 4; i++) {
-        const result = tryRotate(grid, piece, row, col, rotation, "cw", NRSRotation);
+        const result = tryRotate(grid, piece, row, col, rotation, "cw", ClassicRotation);
         expect(result).not.toBeNull();
         row = result!.row;
         col = result!.col;
@@ -481,12 +481,12 @@ describe("tryRotate — NRS", () => {
 
   describe("O-piece", () => {
     it("has 1 rotation state", () => {
-      expect(NRSRotation.getRotationCount("O")).toBe(1);
+      expect(ClassicRotation.getRotationCount("O")).toBe(1);
     });
 
     it("rotation is a no-op (stays at state 0)", () => {
       const grid = createGrid();
-      const result = tryRotate(grid, "O", 20, 4, 0, "cw", NRSRotation);
+      const result = tryRotate(grid, "O", 20, 4, 0, "cw", ClassicRotation);
       expect(result).not.toBeNull();
       expect(result!.rotation).toBe(0);
       expect(result!.row).toBe(20);
@@ -495,35 +495,35 @@ describe("tryRotate — NRS", () => {
   });
 
   describe("no wall kicks", () => {
-    it("NRS rotation is blocked on collision (no kick fallback)", () => {
+    it("Classic rotation is blocked on collision (no kick fallback)", () => {
       const grid = createGrid();
       // T-piece state 0 at (38, 4): fills (38,5), (39,4), (39,5), (39,6)
       // CW to state 1 at base: fills (38,5), (39,5), (39,6), (40,5) — row 40 out of bounds
-      // NRS has no kicks, so rotation fails.
+      // Classic has no kicks, so rotation fails.
       fillRow(grid, 39);
       // T in state 0 at row 37: fills (37,5), (38,4), (38,5), (38,6)
       // Rotate CW to state 1: [0,1,0] / [0,1,1] / [0,1,0]
       // At (37, 4): fills (37,5), (38,5), (38,6), (39,5) — row 39 is full, (39,5) blocked!
-      const result = tryRotate(grid, "T", 37, 4, 0, "cw", NRSRotation);
+      const result = tryRotate(grid, "T", 37, 4, 0, "cw", ClassicRotation);
       expect(result).toBeNull();
     });
 
-    it("NRS I-piece rotation blocked at right wall", () => {
+    it("Classic I-piece rotation blocked at right wall", () => {
       const grid = createGrid();
       // I-piece state 0 at col 7: horizontal, fills (row+1, 7), (row+1, 8), (row+1, 9), (row+1, 10) — out of bounds
       // Actually at col 6: fills row+1 at cols 6,7,8,9 — valid
-      // CW to state 1 (vertical): NRS I vertical sits in a specific column
-      // NRS getShape("I", 1) — need to verify. But with no kicks, if it collides, it fails.
+      // CW to state 1 (vertical): Classic I vertical sits in a specific column
+      // Classic getShape("I", 1) — need to verify. But with no kicks, if it collides, it fails.
       // Place I-piece horizontal at col 7 — that itself is invalid. Use col 6.
-      // NRS I state 1 fills a single column. At col 6, that column might be at col 8.
-      // Without reading NRS shapes exactly, use a scenario where the floor blocks:
+      // Classic I state 1 fills a single column. At col 6, that column might be at col 8.
+      // Without reading Classic shapes exactly, use a scenario where the floor blocks:
       fillRow(grid, 39);
       fillRow(grid, 38);
       fillRow(grid, 37);
       // I-piece state 0 at row 35, col 3: fills (36, 3), (36, 4), (36, 5), (36, 6)
       // CW to state 1 (vertical): fills 4 rows in one column. Starting at row 35, that's rows 35,36,37,38
       // Row 37 and 38 are full — blocked!
-      const result = tryRotate(grid, "I", 35, 3, 0, "cw", NRSRotation);
+      const result = tryRotate(grid, "I", 35, 3, 0, "cw", ClassicRotation);
       expect(result).toBeNull();
     });
   });

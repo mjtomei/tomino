@@ -93,7 +93,7 @@ export function createBursts(
       break;
     }
     case "quad": {
-      // Tetris: extra-bright ripple on top of the standard line-clear ripple.
+      // Quad: extra-bright ripple on top of the standard line-clear ripple.
       out.push({
         id: nextId(),
         kind: "ripple",

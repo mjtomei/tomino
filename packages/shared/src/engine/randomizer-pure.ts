@@ -1,6 +1,6 @@
 /**
  * Pure random randomizer — uniform random piece selection, allows repeats.
- * Classic NES-style piece generation.
+ * Classic classic-style piece generation.
  */
 
 import type { PieceType } from "./pieces.js";

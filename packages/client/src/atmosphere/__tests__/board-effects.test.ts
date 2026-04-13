@@ -132,17 +132,17 @@ describe("BoardEffects", () => {
     const singleCount = system.count();
     system.clear();
 
-    // Tetris
-    const prevTetris = state();
+    // Quad
+    const prevQuad = state();
     for (let r = BUFFER_HEIGHT + 16; r < BUFFER_HEIGHT + 20; r++) {
-      fillRow(prevTetris.board as (PieceType | null)[][], r);
+      fillRow(prevQuad.board as (PieceType | null)[][], r);
     }
-    const currTetris = state({
-      scoring: { ...prevTetris.scoring, lines: 4 },
+    const currQuad = state({
+      scoring: { ...prevQuad.scoring, lines: 4 },
     });
-    const events = effects.onFrame(prevTetris, currTetris);
+    const events = effects.onFrame(prevQuad, currQuad);
     expect(events[0]!.type).toBe("quad");
-    // Tetris spawns per-row dissolve (with 2× multiplier) plus a burst.
+    // Quad spawns per-row dissolve (with 2× multiplier) plus a burst.
     expect(system.count()).toBeGreaterThan(singleCount);
   });
 

@@ -36,7 +36,7 @@ interface ClientInfo {
   pongTimer: ReturnType<typeof setTimeout> | null;
 }
 
-export interface TetrisWebSocketServer {
+export interface TominoWebSocketServer {
   /** Number of currently connected clients */
   clientCount: number;
   /** The shared room store */
@@ -57,7 +57,7 @@ export interface WebSocketServerOptions {
 export function createWebSocketServer(
   httpServer: HttpServer,
   options: WebSocketServerOptions = {},
-): TetrisWebSocketServer {
+): TominoWebSocketServer {
   const { skillStore, balancingConfig } = options;
   const wss = new WebSocketServer({ server: httpServer });
   const clients = new Map<string, ClientInfo>();

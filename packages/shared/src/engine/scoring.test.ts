@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { BOARD_WIDTH, createGrid, type Grid } from "./board.js";
-import { guidelineDropInterval, nesDropInterval } from "./gravity.js";
+import { guidelineDropInterval, classicDropInterval } from "./gravity.js";
 import { GuidelineScoring } from "./scoring-guideline.js";
-import { NESScoring } from "./scoring-nes.js";
+import { ClassicScoring } from "./scoring-classic.js";
 import type { LineClearCount, ScoringState, TSpinType } from "./scoring.js";
 import { detectTSpin } from "./scoring.js";
 
@@ -404,80 +404,80 @@ describe("GuidelineScoring", () => {
 });
 
 // ===========================================================================
-// NES Scoring
+// classic Scoring
 // ===========================================================================
 
-describe("NESScoring", () => {
+describe("ClassicScoring", () => {
   // -------------------------------------------------------------------------
   // Line clear points
   // -------------------------------------------------------------------------
 
   describe("line clear points", () => {
     it("awards 40 × (level+1) for a single", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 1, "none", false);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 1, "none", false);
       expect(state.score).toBe(40);
     });
 
     it("awards 100 × (level+1) for a double", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 2, "none", false);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 2, "none", false);
       expect(state.score).toBe(100);
     });
 
     it("awards 300 × (level+1) for a triple", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 3, "none", false);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 3, "none", false);
       expect(state.score).toBe(300);
     });
 
     it("awards 1200 × (level+1) for a quad", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 4, "none", false);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 4, "none", false);
       expect(state.score).toBe(1200);
     });
 
     it("scales with (level+1)", () => {
-      const state = NESScoring.createState(5);
-      NESScoring.onLineClear(state, 1, "none", false);
+      const state = ClassicScoring.createState(5);
+      ClassicScoring.onLineClear(state, 1, "none", false);
       expect(state.score).toBe(240); // 40 × 6
     });
 
     it("awards 0 for no lines", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 0, "none", false);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 0, "none", false);
       expect(state.score).toBe(0);
     });
   });
 
   // -------------------------------------------------------------------------
-  // NES ignores T-spins, combos, B2B, perfect clears
+  // classic ignores T-spins, combos, B2B, perfect clears
   // -------------------------------------------------------------------------
 
   describe("no T-spin/combo/B2B/perfect clear", () => {
     it("ignores T-spin type", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 1, "full", false);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 1, "full", false);
       expect(state.score).toBe(40); // same as normal single
     });
 
     it("ignores perfect clear flag", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 1, "none", true);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 1, "none", true);
       expect(state.score).toBe(40); // no PC bonus
     });
 
     it("does not track combos", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 1, "none", false); // 40
-      NESScoring.onLineClear(state, 1, "none", false); // 40
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 1, "none", false); // 40
+      ClassicScoring.onLineClear(state, 1, "none", false); // 40
       expect(state.score).toBe(80); // no combo bonus
     });
 
     it("does not apply B2B", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onLineClear(state, 4, "none", false); // 1200
-      NESScoring.onLineClear(state, 4, "none", false); // 1200 (no 1.5×)
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onLineClear(state, 4, "none", false); // 1200
+      ClassicScoring.onLineClear(state, 4, "none", false); // 1200 (no 1.5×)
       // But note: lines=8, still level 0 at start level 0 (threshold=10)
       expect(state.score).toBe(2400);
     });
@@ -489,8 +489,8 @@ describe("NESScoring", () => {
 
   describe("soft drop", () => {
     it("awards 1 point per cell", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onSoftDrop(state, 15);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onSoftDrop(state, 15);
       expect(state.score).toBe(15);
     });
   });
@@ -501,27 +501,27 @@ describe("NESScoring", () => {
 
   describe("hard drop", () => {
     it("is a no-op", () => {
-      const state = NESScoring.createState(0);
-      NESScoring.onHardDrop(state, 20);
+      const state = ClassicScoring.createState(0);
+      ClassicScoring.onHardDrop(state, 20);
       expect(state.score).toBe(0);
     });
   });
 
   // -------------------------------------------------------------------------
-  // NES level progression
+  // classic level progression
   // -------------------------------------------------------------------------
 
   describe("level progression", () => {
     it("starts at start level", () => {
-      const state = NESScoring.createState(0);
+      const state = ClassicScoring.createState(0);
       expect(state.level).toBe(0);
     });
 
     it("first level-up at 10 lines for start level 0", () => {
-      const state = NESScoring.createState(0);
+      const state = ClassicScoring.createState(0);
       // threshold = min(0*10+10, max(100, 0*10-50)) = min(10, 100) = 10
       for (let i = 0; i < 10; i++) {
-        NESScoring.onLineClear(state, 1, "none", false);
+        ClassicScoring.onLineClear(state, 1, "none", false);
       }
       expect(state.lines).toBe(10);
       expect(state.level).toBe(1);
@@ -529,39 +529,39 @@ describe("NESScoring", () => {
 
     it("first level-up at 100 lines for start level 9", () => {
       // threshold = min(9*10+10, max(100, 9*10-50)) = min(100, 100) = 100
-      const state = NESScoring.createState(9);
+      const state = ClassicScoring.createState(9);
       expect(state.level).toBe(9);
       // Clear 99 lines — should still be level 9
       for (let i = 0; i < 24; i++) {
-        NESScoring.onLineClear(state, 4, "none", false);
+        ClassicScoring.onLineClear(state, 4, "none", false);
       }
       expect(state.lines).toBe(96);
       expect(state.level).toBe(9);
-      NESScoring.onLineClear(state, 4, "none", false);
+      ClassicScoring.onLineClear(state, 4, "none", false);
       expect(state.lines).toBe(100);
       expect(state.level).toBe(10);
     });
 
     it("first level-up at 100 lines for start level 15", () => {
       // threshold = min(15*10+10, max(100, 15*10-50)) = min(160, 100) = 100
-      const state = NESScoring.createState(15);
+      const state = ClassicScoring.createState(15);
       for (let i = 0; i < 25; i++) {
-        NESScoring.onLineClear(state, 4, "none", false);
+        ClassicScoring.onLineClear(state, 4, "none", false);
       }
       expect(state.lines).toBe(100);
       expect(state.level).toBe(16);
     });
 
     it("levels up every 10 lines after first threshold", () => {
-      const state = NESScoring.createState(0);
+      const state = ClassicScoring.createState(0);
       // First 10 lines → level 1
       for (let i = 0; i < 10; i++) {
-        NESScoring.onLineClear(state, 1, "none", false);
+        ClassicScoring.onLineClear(state, 1, "none", false);
       }
       expect(state.level).toBe(1);
       // 10 more lines → level 2
       for (let i = 0; i < 10; i++) {
-        NESScoring.onLineClear(state, 1, "none", false);
+        ClassicScoring.onLineClear(state, 1, "none", false);
       }
       expect(state.level).toBe(2);
     });
@@ -597,27 +597,27 @@ describe("gravity curves", () => {
     });
   });
 
-  describe("NES", () => {
+  describe("classic", () => {
     it("returns ~799ms at level 0 (48 frames)", () => {
-      const interval = nesDropInterval(0);
+      const interval = classicDropInterval(0);
       expect(interval).toBe(Math.round((48 / 60.0988) * 1000));
     });
 
     it("returns ~17ms at level 29 (1 frame)", () => {
-      const interval = nesDropInterval(29);
+      const interval = classicDropInterval(29);
       expect(interval).toBe(Math.round((1 / 60.0988) * 1000));
     });
 
     it("level 29+ all use 1 frame", () => {
-      const l29 = nesDropInterval(29);
-      expect(nesDropInterval(30)).toBe(l29);
-      expect(nesDropInterval(99)).toBe(l29);
+      const l29 = classicDropInterval(29);
+      expect(classicDropInterval(30)).toBe(l29);
+      expect(classicDropInterval(99)).toBe(l29);
     });
 
     it("decreases monotonically", () => {
-      let prev = nesDropInterval(0);
+      let prev = classicDropInterval(0);
       for (let level = 1; level <= 29; level++) {
-        const cur = nesDropInterval(level);
+        const cur = classicDropInterval(level);
         expect(cur).toBeLessThanOrEqual(prev);
         prev = cur;
       }
@@ -625,10 +625,10 @@ describe("gravity curves", () => {
 
     it("has known values for key levels", () => {
       // L9: 6 frames, L10: 5 frames, L18: 3 frames, L19: 2 frames
-      expect(nesDropInterval(9)).toBe(Math.round((6 / 60.0988) * 1000));
-      expect(nesDropInterval(10)).toBe(Math.round((5 / 60.0988) * 1000));
-      expect(nesDropInterval(18)).toBe(Math.round((3 / 60.0988) * 1000));
-      expect(nesDropInterval(19)).toBe(Math.round((2 / 60.0988) * 1000));
+      expect(classicDropInterval(9)).toBe(Math.round((6 / 60.0988) * 1000));
+      expect(classicDropInterval(10)).toBe(Math.round((5 / 60.0988) * 1000));
+      expect(classicDropInterval(18)).toBe(Math.round((3 / 60.0988) * 1000));
+      expect(classicDropInterval(19)).toBe(Math.round((2 / 60.0988) * 1000));
     });
   });
 });

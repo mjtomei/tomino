@@ -18,7 +18,7 @@ export interface ReactionEvent {
 }
 
 const HEAVY_GARBAGE_THRESHOLD = 4;
-const TETRIS_LINES = 4;
+const QUAD_LINES = 4;
 
 function sumPending(queue: GameStateSnapshot["pendingGarbage"]): number {
   let total = 0;
@@ -41,7 +41,7 @@ export function detectReactions(
   if (!prev) return [];
   const events: ReactionEvent[] = [];
 
-  if (next.linesCleared - prev.linesCleared >= TETRIS_LINES) {
+  if (next.linesCleared - prev.linesCleared >= QUAD_LINES) {
     events.push({ playerId, reaction: "quad", at: now });
   }
 

@@ -388,7 +388,7 @@ describe("StartScreen", () => {
     expect(onStart).toHaveBeenCalledOnce();
     const [ruleSet, modeConfig] = onStart.mock.calls[0]!;
     expect(ruleSet.name).toBe("Classic");
-    expect(ruleSet.rotationSystem).toBe("nrs");
+    expect(ruleSet.rotationSystem).toBe("classic");
     expect(ruleSet.holdEnabled).toBe(false);
     expect(ruleSet.previewCount).toBe(1);
     expect(modeConfig.mode).toBe("sprint");

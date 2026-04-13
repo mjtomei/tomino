@@ -1,5 +1,5 @@
 /**
- * Board model — a 10x40 2D grid representing the Tetris playfield.
+ * Board model — a 10x40 2D grid representing the playfield.
  *
  * Rows 0–19 are the buffer zone (hidden, used for spawning).
  * Rows 20–39 are the visible playfield (row 39 = bottom).

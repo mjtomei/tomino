@@ -2,7 +2,7 @@
 export type GameMode = "marathon" | "sprint" | "ultra" | "zen";
 
 /**
- * Complete rule set configuration for a Tetris game.
+ * Complete rule set configuration for a tetromino-stacking game.
  * Plain data — serializable (except `sdf: Infinity`) so it can be saved,
  * shared, and sent over the wire for multiplayer.
  */
@@ -12,8 +12,8 @@ export interface RuleSet {
 
   // -- Rotation --
 
-  /** Rotation system: SRS (4-state, wall kicks) or NRS (2-state I/S/Z, no kicks). */
-  rotationSystem: "srs" | "nrs";
+  /** Rotation system: SRS (4-state, wall kicks) or Classic (2-state I/S/Z, no kicks). */
+  rotationSystem: "srs" | "classic";
 
   // -- Lock behavior --
 
@@ -39,12 +39,12 @@ export interface RuleSet {
   // -- Scoring --
 
   /** Scoring formula to use. */
-  scoringSystem: "guideline" | "nes";
+  scoringSystem: "guideline" | "classic";
 
   // -- Gravity / speed --
 
   /** Level-to-drop-interval mapping. */
-  gravityCurve: "guideline" | "nes";
+  gravityCurve: "guideline" | "classic";
 
   // -- DAS / ARR --
 
@@ -57,7 +57,7 @@ export interface RuleSet {
 
   // -- Starting level --
 
-  /** Default starting level for this rule set (0 for NES, 1 for modern). */
+  /** Default starting level for this rule set (0 for classic, 1 for modern). */
   startLevel: number;
 
   // -- Preview --

@@ -1,6 +1,6 @@
 /**
  * 7-bag randomizer — shuffles all 7 pieces, deals them out, refills.
- * Standard modern Tetris piece generation.
+ * Standard modern tetromino piece generation.
  */
 
 import type { PieceType } from "./pieces.js";

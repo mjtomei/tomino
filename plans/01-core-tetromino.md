@@ -34,4 +34,4 @@ Build a complete, polished single-player tetromino stacking game that runs in th
   in multiplayer (Plan 2). Consider a game engine class that ticks on a timer
   and emits state, with React/Canvas just rendering that state.
 - The board is a 10-wide, 20-tall (with hidden rows above) grid.
-- Use the SRS (Super Rotation System) which is the modern Tetris standard.
+- Use the SRS (Super Rotation System) which is the modern Guideline standard.

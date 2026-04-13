@@ -61,7 +61,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
   return (
     <div className="start-screen" data-testid="start-screen">
-      <h1 className="start-title">TETRIS</h1>
+      <h1 className="start-title">TOMINO</h1>
 
       <div className="start-section">
         <h2 className="start-section-title">Rule Set</h2>

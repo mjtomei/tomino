@@ -21,10 +21,10 @@ import { createGrid, placePiece, clearLines, BOARD_WIDTH } from "./board.js";
 import { insertGarbageBatches } from "./garbage.js";
 import type { GarbageBatch } from "../types.js";
 import { SRSRotation } from "./rotation-srs.js";
-import { NRSRotation } from "./rotation-nrs.js";
+import { ClassicRotation } from "./rotation-classic.js";
 import { createRandomizer, seededRng } from "./randomizer.js";
 import { GuidelineScoring } from "./scoring-guideline.js";
-import { NESScoring } from "./scoring-nes.js";
+import { ClassicScoring } from "./scoring-classic.js";
 import { createHoldState, holdPiece, resetHoldFlag } from "./hold.js";
 import { collides, tryMove, tryRotate, hardDrop as findLandingRow } from "./movement.js";
 import { detectTSpin } from "./scoring.js";
@@ -141,7 +141,7 @@ export class TominoEngine {
 
     // Rotation system
     this.rotationSystem =
-      options.ruleSet.rotationSystem === "srs" ? SRSRotation : NRSRotation;
+      options.ruleSet.rotationSystem === "srs" ? SRSRotation : ClassicRotation;
 
     // Randomizer with optional seeded RNG
     const rng = options.seed != null ? seededRng(options.seed) : undefined;
@@ -155,7 +155,7 @@ export class TominoEngine {
     this.scoringSystem =
       options.ruleSet.scoringSystem === "guideline"
         ? GuidelineScoring
-        : NESScoring;
+        : ClassicScoring;
 
     const startLevel = options.startLevel ?? options.ruleSet.startLevel;
     this.scoringState = this.scoringSystem.createState(startLevel);

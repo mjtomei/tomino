@@ -9,7 +9,7 @@ type ConnectionState = "disconnected" | "connecting" | "connected";
 type ConnectionHandler = (state: ConnectionState) => void;
 
 /**
- * Thin wrapper around a browser WebSocket that speaks the Tetris protocol.
+ * Thin wrapper around a browser WebSocket that speaks the Tomino protocol.
  *
  * - Serializes outgoing `ClientMessage` via `serializeMessage`
  * - Parses incoming data via `parseS2CMessage`

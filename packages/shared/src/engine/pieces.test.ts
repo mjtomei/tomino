@@ -4,7 +4,7 @@ import { ALL_PIECES, ALL_ROTATIONS } from "./pieces.js";
 import type { PieceShape, PieceType, Rotation } from "./pieces.js";
 import type { RotationSystem } from "./rotation.js";
 import { SRSRotation } from "./rotation-srs.js";
-import { NRSRotation } from "./rotation-nrs.js";
+import { ClassicRotation } from "./rotation-classic.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -304,55 +304,55 @@ describe("SRSRotation", () => {
 });
 
 // ---------------------------------------------------------------------------
-// NRS Rotation System
+// Classic Rotation System
 // ---------------------------------------------------------------------------
 
-describe("NRSRotation", () => {
-  const nrs = NRSRotation;
+describe("ClassicRotation", () => {
+  const classicRot = ClassicRotation;
 
   describe("interface compliance", () => {
     it("implements RotationSystem", () => {
-      const _: RotationSystem = nrs;
+      const _: RotationSystem = classicRot;
       expect(_).toBeDefined();
     });
   });
 
   describe("rotation state counts", () => {
     it("I-piece has 2 rotation states", () => {
-      expect(nrs.getRotationCount("I")).toBe(2);
+      expect(classicRot.getRotationCount("I")).toBe(2);
     });
 
     it("S-piece has 2 rotation states", () => {
-      expect(nrs.getRotationCount("S")).toBe(2);
+      expect(classicRot.getRotationCount("S")).toBe(2);
     });
 
     it("Z-piece has 2 rotation states", () => {
-      expect(nrs.getRotationCount("Z")).toBe(2);
+      expect(classicRot.getRotationCount("Z")).toBe(2);
     });
 
     it("J-piece has 4 rotation states", () => {
-      expect(nrs.getRotationCount("J")).toBe(4);
+      expect(classicRot.getRotationCount("J")).toBe(4);
     });
 
     it("L-piece has 4 rotation states", () => {
-      expect(nrs.getRotationCount("L")).toBe(4);
+      expect(classicRot.getRotationCount("L")).toBe(4);
     });
 
     it("T-piece has 4 rotation states", () => {
-      expect(nrs.getRotationCount("T")).toBe(4);
+      expect(classicRot.getRotationCount("T")).toBe(4);
     });
 
     it("O-piece has 1 rotation state", () => {
-      expect(nrs.getRotationCount("O")).toBe(1);
+      expect(classicRot.getRotationCount("O")).toBe(1);
     });
   });
 
   describe("shapes", () => {
     it("every piece returns valid shapes for all rotations", () => {
       for (const piece of ALL_PIECES) {
-        const count = nrs.getRotationCount(piece);
+        const count = classicRot.getRotationCount(piece);
         for (let r = 0; r < count; r++) {
-          const shape = nrs.getShape(piece, r as Rotation);
+          const shape = classicRot.getShape(piece, r as Rotation);
           assertValidShape(shape);
           expect(
             filledCells(shape),
@@ -363,23 +363,23 @@ describe("NRSRotation", () => {
     });
 
     it("I-piece rotation wraps after 2 states", () => {
-      expect(nrs.getShape("I", 2 as Rotation)).toEqual(nrs.getShape("I", 0));
-      expect(nrs.getShape("I", 3 as Rotation)).toEqual(nrs.getShape("I", 1));
+      expect(classicRot.getShape("I", 2 as Rotation)).toEqual(classicRot.getShape("I", 0));
+      expect(classicRot.getShape("I", 3 as Rotation)).toEqual(classicRot.getShape("I", 1));
     });
 
     it("S-piece rotation wraps after 2 states", () => {
-      expect(nrs.getShape("S", 2 as Rotation)).toEqual(nrs.getShape("S", 0));
+      expect(classicRot.getShape("S", 2 as Rotation)).toEqual(classicRot.getShape("S", 0));
     });
 
     it("Z-piece rotation wraps after 2 states", () => {
-      expect(nrs.getShape("Z", 2 as Rotation)).toEqual(nrs.getShape("Z", 0));
+      expect(classicRot.getShape("Z", 2 as Rotation)).toEqual(classicRot.getShape("Z", 0));
     });
 
     it("O-piece has a single state that wraps for all rotations", () => {
-      const base = nrs.getShape("O", 0);
-      expect(nrs.getShape("O", 1)).toEqual(base);
-      expect(nrs.getShape("O", 2 as Rotation)).toEqual(base);
-      expect(nrs.getShape("O", 3 as Rotation)).toEqual(base);
+      const base = classicRot.getShape("O", 0);
+      expect(classicRot.getShape("O", 1)).toEqual(base);
+      expect(classicRot.getShape("O", 2 as Rotation)).toEqual(base);
+      expect(classicRot.getShape("O", 3 as Rotation)).toEqual(base);
     });
   });
 
@@ -388,7 +388,7 @@ describe("NRSRotation", () => {
       for (const piece of ALL_PIECES) {
         for (const from of ALL_ROTATIONS) {
           const to = ((from + 1) % 4) as Rotation;
-          const kicks = nrs.getKickOffsets(piece, from, to);
+          const kicks = classicRot.getKickOffsets(piece, from, to);
           expect(kicks, `${piece} ${from}>${to}`).toEqual([[0, 0]]);
         }
       }
@@ -397,8 +397,8 @@ describe("NRSRotation", () => {
 
   describe("right-handed bias", () => {
     it("S-piece vertical state has cells biased right", () => {
-      const vertical = nrs.getShape("S", 1);
-      // In right-handed NRS, the S vertical should have the column
+      const vertical = classicRot.getShape("S", 1);
+      // In right-handed Classic, the S vertical should have the column
       // of cells offset to the right side of the bounding box
       const rightColFilled = vertical.some(
         (row) => row[2] === 1,
@@ -407,7 +407,7 @@ describe("NRSRotation", () => {
     });
 
     it("Z-piece vertical state has cells biased right", () => {
-      const vertical = nrs.getShape("Z", 1);
+      const vertical = classicRot.getShape("Z", 1);
       const rightColFilled = vertical.some(
         (row) => row[2] === 1,
       );
@@ -415,7 +415,7 @@ describe("NRSRotation", () => {
     });
 
     it("I-piece vertical state rotates to the right", () => {
-      const vertical = nrs.getShape("I", 1);
+      const vertical = classicRot.getShape("I", 1);
       // Right-handed: vertical I sits in column 2 (0-indexed) of the 4x4 box
       for (const row of vertical) {
         const filledCol = row.indexOf(1);
@@ -429,10 +429,10 @@ describe("NRSRotation", () => {
   describe("shape snapshots", () => {
     for (const piece of ALL_PIECES) {
       it(`${piece}-piece all rotations match snapshot`, () => {
-        const count = nrs.getRotationCount(piece);
+        const count = classicRot.getRotationCount(piece);
         const shapes = [];
         for (let r = 0; r < count; r++) {
-          shapes.push(nrs.getShape(piece, r as Rotation));
+          shapes.push(classicRot.getShape(piece, r as Rotation));
         }
         expect(shapes).toMatchSnapshot();
       });
@@ -447,7 +447,7 @@ describe("NRSRotation", () => {
 describe("RotationSystem interface", () => {
   const systems: [string, RotationSystem][] = [
     ["SRS", SRSRotation],
-    ["NRS", NRSRotation],
+    ["Classic", ClassicRotation],
   ];
 
   for (const [name, system] of systems) {

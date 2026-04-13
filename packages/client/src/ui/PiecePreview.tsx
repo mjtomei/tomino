@@ -1,9 +1,9 @@
 import type { PieceType, RuleSet, RotationSystem } from "@tomino/shared";
-import { SRSRotation, NRSRotation } from "@tomino/shared";
+import { SRSRotation, ClassicRotation } from "@tomino/shared";
 import { useTheme } from "../atmosphere/theme-context.js";
 
 export function getRotationSystem(ruleSet: RuleSet): RotationSystem {
-  return ruleSet.rotationSystem === "srs" ? SRSRotation : NRSRotation;
+  return ruleSet.rotationSystem === "srs" ? SRSRotation : ClassicRotation;
 }
 
 export interface PiecePreviewProps {

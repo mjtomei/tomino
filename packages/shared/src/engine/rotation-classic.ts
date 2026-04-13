@@ -1,5 +1,5 @@
 /**
- * Nintendo Rotation System (NRS) — classic NES Tetris rotation.
+ * Classic rotation — classic Nintendo-style 2-state I/S/Z rotation, no kicks.
  *
  * - I, S, Z: 2 rotation states
  * - J, L, T: 4 rotation states
@@ -15,7 +15,7 @@ import type { KickOffset, RotationSystem } from "./rotation.js";
 // Shape definitions
 // ---------------------------------------------------------------------------
 
-// NRS shapes — right-handed bias, classic NES Tetris orientations.
+// Classic shapes — right-handed bias, classic Nintendo-style orientations.
 
 const I_SHAPES: readonly PieceShape[] = [
   // 0 — horizontal (spawn)
@@ -153,7 +153,7 @@ const L_SHAPES: readonly PieceShape[] = [
   ],
 ];
 
-const NRS_SHAPES: Record<PieceType, readonly PieceShape[]> = {
+const CLASSIC_SHAPES: Record<PieceType, readonly PieceShape[]> = {
   I: I_SHAPES,
   O: O_SHAPES,
   T: T_SHAPES,
@@ -173,16 +173,16 @@ const ROTATION_COUNTS: Record<PieceType, number> = {
   L: 4,
 };
 
-// No wall kicks in NRS — only try the base position.
+// No wall kicks in Classic — only try the base position.
 const NO_KICKS: readonly KickOffset[] = [[0, 0]];
 
 // ---------------------------------------------------------------------------
-// NRSRotation implementation
+// ClassicRotation implementation
 // ---------------------------------------------------------------------------
 
-export const NRSRotation: RotationSystem = {
+export const ClassicRotation: RotationSystem = {
   getShape(piece: PieceType, rotation: Rotation): PieceShape {
-    const shapes = NRS_SHAPES[piece];
+    const shapes = CLASSIC_SHAPES[piece];
     const count = ROTATION_COUNTS[piece];
     return shapes[rotation % count]!;
   },

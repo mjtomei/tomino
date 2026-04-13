@@ -4,19 +4,19 @@ import type { GameMode, GameModeConfig, RuleSet } from "./types.js";
 // Rule set presets
 // ---------------------------------------------------------------------------
 
-/** Classic (NES-style) rule set. */
+/** Classic (classic-style) rule set. */
 export function classicRuleSet(): RuleSet {
   return {
     name: "Classic",
-    rotationSystem: "nrs",
+    rotationSystem: "classic",
     lockDelay: 0,
     lockResets: 0,
     holdEnabled: false,
     hardDropEnabled: false,
     ghostEnabled: false,
     randomizer: "pure-random",
-    scoringSystem: "nes",
-    gravityCurve: "nes",
+    scoringSystem: "classic",
+    gravityCurve: "classic",
     das: 267,
     arr: 100,
     sdf: 2,

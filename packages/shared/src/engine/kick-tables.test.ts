@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { SRSRotation } from "./rotation-srs.js";
-import { NRSRotation } from "./rotation-nrs.js";
+import { ClassicRotation } from "./rotation-classic.js";
 
 // ---------------------------------------------------------------------------
 // SRS kick offsets
@@ -413,12 +413,12 @@ describe("SRS kick offsets", () => {
 });
 
 // ---------------------------------------------------------------------------
-// NRS kick offsets — no wall kicks
+// Classic kick offsets — no wall kicks
 // ---------------------------------------------------------------------------
 
-describe("NRS kick offsets", () => {
+describe("Classic kick offsets", () => {
   it("always returns [[0,0]] (no wall kicks)", () => {
-    expect(NRSRotation.getKickOffsets("T", 0, 1)).toMatchInlineSnapshot(`
+    expect(ClassicRotation.getKickOffsets("T", 0, 1)).toMatchInlineSnapshot(`
       [
         [
           0,

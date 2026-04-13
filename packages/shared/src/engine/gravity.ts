@@ -1,7 +1,7 @@
 /**
  * Gravity curves — level-to-drop-interval mappings.
  *
- * Two curves: Guideline (modern) and NES (classic NTSC).
+ * Two curves: Guideline (modern) and classic (classic NTSC).
  * Returns the time in milliseconds between automatic downward moves.
  */
 
@@ -19,13 +19,13 @@ export function guidelineDropInterval(level: number): number {
 }
 
 // ---------------------------------------------------------------------------
-// NES gravity curve
+// classic gravity curve
 // ---------------------------------------------------------------------------
 
-/** NTSC NES frame rate. */
+/** NTSC classic frame rate. */
 const NES_FPS = 60.0988;
 
-/** Frames per drop at each level (NTSC NES). */
+/** Frames per drop at each level (NTSC classic). */
 const NES_FRAMES: readonly number[] = [
   48, // L0
   43, // L1
@@ -60,10 +60,10 @@ const NES_FRAMES: readonly number[] = [
 ];
 
 /**
- * Classic NES gravity: frame-count lookup table converted to milliseconds.
+ * Classic classic gravity: frame-count lookup table converted to milliseconds.
  * Levels 29+ use 1 frame.
  */
-export function nesDropInterval(level: number): number {
+export function classicDropInterval(level: number): number {
   const idx = Math.min(level, NES_FRAMES.length - 1);
   const frames = NES_FRAMES[idx]!;
   return Math.round((frames / NES_FPS) * 1000);
