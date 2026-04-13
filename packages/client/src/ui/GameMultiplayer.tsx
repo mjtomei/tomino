@@ -8,7 +8,7 @@ import type {
   RoomState,
   TargetingStrategyType,
   TargetingSettings,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 import type {
   ActiveEmote,
@@ -112,10 +112,10 @@ export function GameMultiplayer({
     for (const [pid, snap] of Object.entries(opponentSnapshots)) {
       const events = detectReactions(prev[pid] ?? null, snap, pid, now);
       if (events.length > 0) {
-        // Prefer the "biggest" reaction; elimination > tetris > heavyGarbage
+        // Prefer the "biggest" reaction; elimination > quad > heavyGarbage
         const priority: Record<OpponentReaction, number> = {
           eliminated: 3,
-          tetris: 2,
+          quad: 2,
           heavyGarbage: 1,
         };
         const chosen = events.reduce((a, b) =>

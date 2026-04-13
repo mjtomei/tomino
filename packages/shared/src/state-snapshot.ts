@@ -22,7 +22,7 @@ import type { GameState } from "./engine/engine.js";
  * The engine and protocol use different field names / shapes for the same data.
  * This function maps between them.
  *
- * @param engineState - The engine's current state (from `TetrisEngine.getState()`)
+ * @param engineState - The engine's current state (from `TominoEngine.getState()`)
  * @param tick - Server-managed tick counter
  */
 export function engineStateToSnapshot(

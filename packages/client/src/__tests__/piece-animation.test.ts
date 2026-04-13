@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { ActivePiece } from "@tetris/shared";
+import type { ActivePiece } from "@tomino/shared";
 import {
   PieceAnimator,
   SPAWN_MS,

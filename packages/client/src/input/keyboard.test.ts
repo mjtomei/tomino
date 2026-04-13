@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { KeyboardHandler } from "./keyboard.js";
-import type { RuleSet, InputAction } from "@tetris/shared";
-import { modernRuleSet, classicRuleSet } from "@tetris/shared";
+import type { RuleSet, InputAction } from "@tomino/shared";
+import { modernRuleSet, classicRuleSet } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Helpers

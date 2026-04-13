@@ -1,4 +1,4 @@
-import type { RoomState, TargetingSettings } from "@tetris/shared";
+import type { RoomState, TargetingSettings } from "@tomino/shared";
 import { HandicapSettings, type HandicapSettingsValues } from "./HandicapSettings";
 import { TargetingSettingsPanel, DEFAULT_TARGETING_SETTINGS } from "./TargetingSettingsPanel";
 

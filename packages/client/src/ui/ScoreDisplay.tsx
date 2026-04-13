@@ -1,4 +1,4 @@
-import type { GameModeConfig, ScoringState } from "@tetris/shared";
+import type { GameModeConfig, ScoringState } from "@tomino/shared";
 import { formatTime } from "./formatTime.js";
 
 export interface ScoreDisplayProps {

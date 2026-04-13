@@ -24,7 +24,7 @@ const httpServer = createServer(app);
 const wsServer = createWebSocketServer(httpServer, { skillStore: store, balancingConfig });
 
 httpServer.listen(PORT, () => {
-  console.log(`Tetris server listening on http://localhost:${PORT}`);
+  console.log(`Tomino server listening on http://localhost:${PORT}`);
   console.log(`WebSocket endpoint: ws://localhost:${PORT}`);
 });
 

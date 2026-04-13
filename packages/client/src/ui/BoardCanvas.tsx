@@ -1,7 +1,9 @@
 import { useRef, useEffect, useCallback } from "react";
-import type { GameState, PieceType, PieceShape } from "@tetris/shared";
-import { BOARD_WIDTH, VISIBLE_HEIGHT, BUFFER_HEIGHT, SRSRotation } from "@tetris/shared";
-import { PIECE_COLORS, darken, lighten, BOARD_BG, PANEL_BG } from "./colors.js";
+import type { GameState, PieceType, PieceShape } from "@tomino/shared";
+import { BOARD_WIDTH, VISIBLE_HEIGHT, BUFFER_HEIGHT, SRSRotation } from "@tomino/shared";
+import { darken, lighten, BOARD_BG, PANEL_BG } from "./colors.js";
+import { useTheme } from "../atmosphere/theme-context.js";
+import type { Palette } from "./palettes.js";
 import { PieceAnimator, type AnimatedRenderState } from "./piece-animation.js";
 import type { ThemePalette } from "../atmosphere/themes.js";
 import {
@@ -130,6 +132,7 @@ function drawMiniPiece(
   boxW: number,
   boxH: number,
   cellSize: number,
+  pieceColors: Record<PieceType, string>,
   dimmed = false,
 ): void {
   const shape = SRSRotation.getShape(pieceType, 0);
@@ -155,7 +158,7 @@ function drawMiniPiece(
   const offsetY = boxY + (boxH - filledH) / 2 - minR * cellSize;
 
   if (dimmed) ctx.globalAlpha = 0.4;
-  drawPieceShape(ctx, shape, PIECE_COLORS[pieceType], offsetX, offsetY, cellSize);
+  drawPieceShape(ctx, shape, pieceColors[pieceType], offsetX, offsetY, cellSize);
   if (dimmed) ctx.globalAlpha = 1;
 }
 
@@ -167,10 +170,12 @@ export function renderBoard(
   ctx: CanvasRenderingContext2D,
   state: GameState,
   cellSize: number,
+  palette: Palette,
   showSidePanels = true,
   anim?: AnimatedRenderState,
   life?: BoardLifeFrame,
 ): void {
+  const pieceColors = palette.colors;
   const boardX = showSidePanels ? (SIDE_PANEL_CELLS + PANEL_GAP) * cellSize : 0;
   const boardW = BOARD_WIDTH * cellSize;
   const boardH = VISIBLE_HEIGHT * cellSize;
@@ -195,7 +200,7 @@ export function renderBoard(
     for (let col = 0; col < BOARD_WIDTH; col++) {
       const cell = row[col];
       if (cell) {
-        const base = PIECE_COLORS[cell];
+        const base = pieceColors[cell];
         const color = life
           ? computeShimmer(base, life.now, life.intensity, visRow * 31 + col, accent)
           : base;
@@ -229,7 +234,7 @@ export function renderBoard(
                 boardX + (col + c) * cellSize,
                 visRow * cellSize,
                 cellSize,
-                PIECE_COLORS[type],
+                pieceColors[type],
               );
             }
           }
@@ -273,7 +278,7 @@ export function renderBoard(
           // spawn (inside the buffer) are not drawn.
           const logicalVisRow = row + r - BUFFER_HEIGHT;
           if (logicalVisRow >= -1 && logicalVisRow < VISIBLE_HEIGHT) {
-            drawCell(ctx, cellX, cellY, cellSize, PIECE_COLORS[type], breathe);
+            drawCell(ctx, cellX, cellY, cellSize, pieceColors[type], breathe);
           }
         }
       }
@@ -332,6 +337,7 @@ export function renderBoard(
       holdPanelW,
       holdBoxH,
       cellSize * 0.7,
+      pieceColors,
       state.holdUsed,
     );
   }
@@ -355,7 +361,7 @@ export function renderBoard(
     const pieceType = state.queue[i]!;
     const slotY = cellSize + i * previewSlotH;
     const miniSize = i === 0 ? cellSize * 0.7 : cellSize * 0.55;
-    drawMiniPiece(ctx, pieceType, previewPanelX, slotY, previewPanelW, previewSlotH, miniSize);
+    drawMiniPiece(ctx, pieceType, previewPanelX, slotY, previewPanelW, previewSlotH, miniSize, pieceColors);
   }
 
 }
@@ -378,10 +384,13 @@ export function BoardCanvas({
   const animatorRef = useRef<PieceAnimator>(new PieceAnimator());
   const intensityRef = useRef(atmosphereIntensity);
   const paletteRef = useRef(themePalette);
+  const { palette: piecePalette } = useTheme();
+  const piecePaletteRef = useRef(piecePalette);
 
   stateRef.current = state;
   intensityRef.current = atmosphereIntensity;
   paletteRef.current = themePalette;
+  piecePaletteRef.current = piecePalette;
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -404,7 +413,7 @@ export function BoardCanvas({
       breathe: computeBreathe(now, intensity),
       gridAlpha: computeGridPulse(now, intensity).alpha,
     };
-    renderBoard(ctx, stateRef.current, cellSize, showSidePanels, anim, life);
+    renderBoard(ctx, stateRef.current, cellSize, piecePaletteRef.current, showSidePanels, anim, life);
 
     // Idle animations need a continuous rAF tick.
     rafRef.current = requestAnimationFrame(draw);

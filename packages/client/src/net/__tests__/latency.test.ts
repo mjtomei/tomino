@@ -3,7 +3,7 @@ import type {
   ClientMessage,
   ServerMessage,
   ServerMessageType,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import {
   LatencyTracker,
   computeLatency,

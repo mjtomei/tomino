@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
-import type { GarbageBatch } from "@tetris/shared";
-import { VISIBLE_HEIGHT } from "@tetris/shared";
+import type { GarbageBatch } from "@tomino/shared";
+import { VISIBLE_HEIGHT } from "@tomino/shared";
 import { GarbageMeter, computeMeterLines } from "../ui/GarbageMeter.js";
 
 function batch(lines: number, gapColumn = 0): GarbageBatch {

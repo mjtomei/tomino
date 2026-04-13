@@ -1,5 +1,5 @@
 /**
- * Guideline scoring — modern Tetris scoring system.
+ * Guideline scoring — modern tetromino scoring system.
  *
  * Features: level-scaled line clears, T-spin bonuses (mini + full),
  * combo counter, back-to-back 1.5× for difficult clears,

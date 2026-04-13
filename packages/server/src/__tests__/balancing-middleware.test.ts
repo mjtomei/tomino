@@ -4,15 +4,15 @@ import type {
   LineClearCount,
   PlayerId,
   TargetingStrategy,
-} from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
-import { makeGarbageBatch } from "@tetris/shared/__test-utils__/factories.js";
-import { assertGarbageInserted } from "@tetris/shared/__test-utils__/assertions.js";
-import { boardFromAscii } from "@tetris/shared/__test-utils__/board-builder.js";
+} from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
+import { makeGarbageBatch } from "@tomino/shared/__test-utils__/factories.js";
+import { assertGarbageInserted } from "@tomino/shared/__test-utils__/assertions.js";
+import { boardFromAscii } from "@tomino/shared/__test-utils__/board-builder.js";
 import { BalancingMiddleware } from "../balancing-middleware.js";
 import { GarbageManager } from "../garbage-manager.js";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "../player-engine.js";
-import { modernRuleSet } from "@tetris/shared";
+import { modernRuleSet } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -42,7 +42,7 @@ function seqRng(values: readonly number[]): () => number {
   };
 }
 
-const TETRIS = {
+const QUAD = {
   linesCleared: 4 as LineClearCount,
   tSpin: "none" as const,
   combo: 0,
@@ -79,8 +79,8 @@ describe("BalancingMiddleware — passthrough (handicap disabled)", () => {
       delayMs: 500,
     });
 
-    const o1 = gm.onLinesCleared("p1", TETRIS);
-    const o2 = mw.onLinesCleared("p1", TETRIS);
+    const o1 = gm.onLinesCleared("p1", QUAD);
+    const o2 = mw.onLinesCleared("p1", QUAD);
 
     expect(o2).toEqual(o1);
     expect(mw.getPending("p2")).toEqual(gm.getPending("p2"));
@@ -96,7 +96,7 @@ describe("BalancingMiddleware — passthrough (handicap disabled)", () => {
       delayMs: 100,
     });
 
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     expect(mw.drainReady("p2", 50)).toEqual([]); // not ready yet
     c.advance(100);
     const drained = mw.drainReady("p2", c.now());
@@ -158,8 +158,8 @@ describe("BalancingMiddleware — per-pair modifiers", () => {
       delayMs: 500,
     });
 
-    // Tetris → 4 lines split evenly across 2 opponents (2 each)
-    mw.onLinesCleared("p1", TETRIS);
+    // Quad → 4 lines split evenly across 2 opponents (2 each)
+    mw.onLinesCleared("p1", QUAD);
 
     // Bob (p2) gets full 2 lines; Carol (p3) gets 0 (multiplier 0.0)
     const bob = mw.getPending("p2");
@@ -193,7 +193,7 @@ describe("BalancingMiddleware — per-pair modifiers", () => {
       rounderRng: fixedRng(0.999),
     });
 
-    const outcome = mw.onLinesCleared("p1", TETRIS);
+    const outcome = mw.onLinesCleared("p1", QUAD);
     expect(outcome.total).toBe(4);
     expect(outcome.residualSent).toBe(0);
     expect(outcome.affectedReceivers).toEqual([]);
@@ -239,7 +239,7 @@ describe("BalancingMiddleware — probabilistic rounding", () => {
         gapRng: fixedRng(0),
         rounderRng: lcg,
       });
-      mw.onLinesCleared("p1", TETRIS);
+      mw.onLinesCleared("p1", QUAD);
       const bob = mw.getPending("p2");
       total += bob[0]?.lines ?? 0;
     }
@@ -273,7 +273,7 @@ describe("BalancingMiddleware — probabilistic rounding", () => {
       gapRng: fixedRng(0),
       rounderRng: fixedRng(0.0),
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     const bob = mw.getPending("p2");
     expect(bob[0]!.lines).toBe(4);
   });
@@ -309,7 +309,7 @@ describe("BalancingMiddleware — optional delay modifier", () => {
       delayMs: 500,
       delayEnabled: false,
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     // ready at now + 500
     expect(mw.drainReady("p2", 499)).toEqual([]);
     expect(mw.drainReady("p2", 500).length).toBe(1);
@@ -327,7 +327,7 @@ describe("BalancingMiddleware — optional delay modifier", () => {
       delayMs: 500,
       delayEnabled: true,
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     // ready at now + 500*2 = 1000
     expect(mw.drainReady("p2", 999)).toEqual([]);
     expect(mw.drainReady("p2", 1000).length).toBe(1);
@@ -363,7 +363,7 @@ describe("BalancingMiddleware — optional messiness modifier", () => {
       rounderRng: fixedRng(0.5),
       messinessEnabled: false,
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     const bob = mw.getPending("p2");
     expect(bob[0]!.gapColumn).toBe(7);
   });
@@ -379,7 +379,7 @@ describe("BalancingMiddleware — optional messiness modifier", () => {
       rounderRng: fixedRng(0.5),
       messinessEnabled: true,
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     const bob = mw.getPending("p2");
     expect(bob[0]!.gapColumn).toBe(0);
   });
@@ -412,7 +412,7 @@ describe("BalancingMiddleware — matrix handles different player counts", () =>
       gapRng: fixedRng(0),
       rounderRng: fixedRng(0.999),
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     expect(mw.getPending("p2")[0]!.lines).toBe(2);
   });
 
@@ -442,7 +442,7 @@ describe("BalancingMiddleware — matrix handles different player counts", () =>
       gapRng: fixedRng(0),
       rounderRng: fixedRng(0.999),
     });
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     expect(mw.getPending("p2")[0]!.lines).toBe(2);
     expect(mw.getPending("p3")[0]!.lines).toBe(1); // 2 * 0.5 = 1
   });
@@ -478,9 +478,9 @@ describe("BalancingMiddleware — integration with garbage insertion", () => {
       delayMs: 0,
     });
 
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     const ready = mw.drainReady("p2", c.now());
-    // Tetris=4 × 0.5 = 2 lines delivered
+    // Quad=4 × 0.5 = 2 lines delivered
     expect(ready).toEqual([makeGarbageBatch({ lines: 2, gapColumn: 3 })]);
 
     // Apply to a real PlayerEngine and assert board state transitions
@@ -530,7 +530,7 @@ describe("BalancingMiddleware — targeting strategy", () => {
       },
     };
     mw.setTargetingStrategy(allToP3);
-    mw.onLinesCleared("p1", TETRIS);
+    mw.onLinesCleared("p1", QUAD);
     expect(mw.getPending("p2")).toEqual([]);
     expect(mw.getPending("p3").reduce((s, b) => s + b.lines, 0)).toBe(4);
   });

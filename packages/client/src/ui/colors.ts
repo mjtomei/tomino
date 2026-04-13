@@ -1,16 +1,3 @@
-import type { PieceType } from "@tetris/shared";
-
-/** Tetris Guideline piece colors. */
-export const PIECE_COLORS: Record<PieceType, string> = {
-  I: "#00D4D4",
-  O: "#E6C000",
-  T: "#A020D0",
-  S: "#00C800",
-  Z: "#D41400",
-  J: "#2020D4",
-  L: "#E08000",
-};
-
 /** Darker variant for cell borders (beveled look). */
 export function darken(hex: string, amount = 0.3): string {
   const r = parseInt(hex.slice(1, 3), 16);

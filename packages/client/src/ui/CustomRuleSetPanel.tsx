@@ -1,4 +1,4 @@
-import type { RuleSet } from "@tetris/shared";
+import type { RuleSet } from "@tomino/shared";
 
 export interface CustomRuleSetPanelProps {
   ruleSet: RuleSet;
@@ -106,7 +106,7 @@ export function CustomRuleSetPanel({ ruleSet, onChange }: CustomRuleSetPanelProp
           value={ruleSet.rotationSystem}
           options={[
             { value: "srs", label: "SRS (Modern)" },
-            { value: "nrs", label: "NRS (Classic)" },
+            { value: "classic", label: "Classic" },
           ]}
           onChange={(v) => update({ rotationSystem: v })}
         />
@@ -124,7 +124,7 @@ export function CustomRuleSetPanel({ ruleSet, onChange }: CustomRuleSetPanelProp
           value={ruleSet.scoringSystem}
           options={[
             { value: "guideline", label: "Guideline" },
-            { value: "nes", label: "NES" },
+            { value: "classic", label: "Classic" },
           ]}
           onChange={(v) => update({ scoringSystem: v })}
         />
@@ -133,7 +133,7 @@ export function CustomRuleSetPanel({ ruleSet, onChange }: CustomRuleSetPanelProp
           value={ruleSet.gravityCurve}
           options={[
             { value: "guideline", label: "Guideline" },
-            { value: "nes", label: "NES" },
+            { value: "classic", label: "Classic" },
           ]}
           onChange={(v) => update({ gravityCurve: v })}
         />

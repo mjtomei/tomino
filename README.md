@@ -1,10 +1,10 @@
-# Tetris
+# Tomino
 
-Multiplayer Tetris with adaptive skill-based handicapping. Built for playing with family and friends of different skill levels — the handicap system evens out win rates so games stay competitive.
+Multiplayer tetromino stacking game with adaptive skill-based handicapping. Built for playing with family and friends of different skill levels — the handicap system evens out win rates so games stay competitive.
 
 ## Features
 
-- **Core Tetris** — SRS rotation, wall kicks, lock delay, ghost piece, hold, next queue, scoring (Guideline and NES), DAS/ARR input handling
+- **Core engine** — SRS rotation, wall kicks, lock delay, ghost piece, hold, next queue, scoring (Guideline and Classic), DAS/ARR input handling
 - **Multiplayer** — WebSocket server, room/lobby system, real-time game sync, garbage sending, opponent board display, disconnect/reconnect handling, rematch flow
 - **Adaptive balancing** — Glicko-2 skill rating, per-player handicaps on garbage send/receive, skill-aware targeting bias, in-game handicap indicator
 - **Sound** — Web Audio API sound effects for piece movement, rotation, line clears, and garbage

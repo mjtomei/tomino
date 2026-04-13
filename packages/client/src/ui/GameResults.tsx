@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PlayerId, PlayerStats, HandicapModifiers, RatingChange } from "@tetris/shared";
+import type { PlayerId, PlayerStats, HandicapModifiers, RatingChange } from "@tomino/shared";
 import { formatTime, placementLabel } from "./formatTime.js";
 import type { RematchVoteData } from "../net/lobby-client";
 import "./GameResults.css";

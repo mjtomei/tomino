@@ -53,8 +53,8 @@ describe("detectBursts", () => {
     expect(out[0]!.kind).toBe("starburst");
   });
 
-  it("maps tetris to a second ripple burst", () => {
-    const events: AtmosphereEvent[] = [{ type: "tetris", magnitude: 4 }];
+  it("maps quad to a second ripple burst", () => {
+    const events: AtmosphereEvent[] = [{ type: "quad", magnitude: 4 }];
     const out = detectBursts(events, signals(), 0, palette);
     expect(out[0]!.kind).toBe("ripple");
     expect(out[0]!.magnitude).toBeGreaterThanOrEqual(4);

@@ -12,7 +12,7 @@ import {
   calculateGarbage,
   evenSplitStrategy,
   modifierKey,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import type {
   GarbageBatch,
   HandicapModifiers,
@@ -21,7 +21,7 @@ import type {
   PlayerId,
   TargetingStrategy,
   TSpinType,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import {
   GarbageManager,
   DEFAULT_GARBAGE_DELAY_MS,

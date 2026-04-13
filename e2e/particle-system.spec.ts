@@ -10,7 +10,7 @@ test.describe("particle system", () => {
     });
 
     await page.goto("/");
-    await expect(page).toHaveTitle("Tetris");
+    await expect(page).toHaveTitle("Tomino");
     await expect(page.locator("#root")).not.toBeEmpty();
 
     // Sanity check: create a ParticleSystem in-page and emit/update to

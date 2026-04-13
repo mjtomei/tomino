@@ -1,9 +1,9 @@
-import type { PieceType, RuleSet, RotationSystem } from "@tetris/shared";
-import { SRSRotation, NRSRotation } from "@tetris/shared";
-import { PIECE_COLORS } from "./colors.js";
+import type { PieceType, RuleSet, RotationSystem } from "@tomino/shared";
+import { SRSRotation, ClassicRotation } from "@tomino/shared";
+import { useTheme } from "../atmosphere/theme-context.js";
 
 export function getRotationSystem(ruleSet: RuleSet): RotationSystem {
-  return ruleSet.rotationSystem === "srs" ? SRSRotation : NRSRotation;
+  return ruleSet.rotationSystem === "srs" ? SRSRotation : ClassicRotation;
 }
 
 export interface PiecePreviewProps {
@@ -17,7 +17,8 @@ export interface PiecePreviewProps {
 export function PiecePreview({ type, ruleSet, size, dimmed, testId }: PiecePreviewProps) {
   const rs = getRotationSystem(ruleSet);
   const shape = rs.getShape(type, 0);
-  const color = PIECE_COLORS[type];
+  const { palette } = useTheme();
+  const color = palette.colors[type];
 
   let minR = shape.length, maxR = 0, minC = shape[0]!.length, maxC = 0;
   for (let r = 0; r < shape.length; r++) {

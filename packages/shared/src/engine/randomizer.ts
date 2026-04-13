@@ -1,5 +1,5 @@
 /**
- * Randomizer interface and factory — piece generation for Tetris.
+ * Randomizer interface and factory — tetromino piece generation.
  *
  * Two implementations: SevenBagRandomizer (modern) and PureRandomRandomizer (classic).
  * Both accept a `() => number` RNG function for deterministic replay.

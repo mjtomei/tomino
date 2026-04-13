@@ -1,13 +1,13 @@
-# Plan 1: Core Single-Player Tetris
+# Plan 1: Core Single-Player Tetromino Stacking
 
 ## Context
-Building a web-based multiplayer Tetris game inspired by tetr.io. The key
+Building a web-based multiplayer tetromino stacking game inspired by tetr.io. The key
 differentiator is adaptive garbage sending that handicaps based on skill level
 to even out win rates between players of different abilities. The user plays
 with siblings who have very different skill levels.
 
 This is the first of three plans:
-1. **Core single-player Tetris** (this plan) — playable game in the browser
+1. **Core single-player tetromino game** (this plan) — playable in the browser
 2. Multiplayer — server, real-time sync, lobby, garbage sending
 3. Adaptive balancing — skill tracking, handicap system
 
@@ -18,8 +18,8 @@ This is the first of three plans:
 - The user is a seasoned developer but new to web apps
 
 ## Goals for This Plan
-Build a complete, polished single-player Tetris game that runs in the browser:
-- Standard Tetris mechanics (SRS rotation, wall kicks, lock delay)
+Build a complete, polished single-player tetromino stacking game that runs in the browser:
+- Standard mechanics (SRS rotation, wall kicks, lock delay)
 - All standard piece types (I, O, T, S, Z, J, L)
 - Next piece preview and hold piece
 - Scoring system (lines cleared, combos, T-spins)
@@ -34,4 +34,4 @@ Build a complete, polished single-player Tetris game that runs in the browser:
   in multiplayer (Plan 2). Consider a game engine class that ticks on a timer
   and emits state, with React/Canvas just rendering that state.
 - The board is a 10-wide, 20-tall (with hidden rows above) grid.
-- Use the SRS (Super Rotation System) which is the modern Tetris standard.
+- Use the SRS (Super Rotation System) which is the modern Guideline standard.

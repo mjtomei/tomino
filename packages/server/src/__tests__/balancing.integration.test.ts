@@ -10,8 +10,8 @@ import type {
   RoomId,
   ServerMessage,
   SkillStore,
-} from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
+} from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
 import { loadBalancingConfig, getDefaultBalancingConfig } from "../balancing-init.js";
 import { computeModifierMatrix, type PlayerRating } from "../handicap-calculator.js";
 import { handlePostGame } from "../post-game-handler.js";

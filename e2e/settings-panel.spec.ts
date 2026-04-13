@@ -19,9 +19,9 @@ test.describe("settings panel", () => {
     await page.getByTestId("theme-swatch-aurora").click();
 
     const stored = await page.evaluate(() => ({
-      sfx: localStorage.getItem("tetris.sfx.volume"),
-      effects: localStorage.getItem("tetris.effects.intensity"),
-      theme: localStorage.getItem("tetris.theme"),
+      sfx: localStorage.getItem("tomino.sfx.volume"),
+      effects: localStorage.getItem("tomino.effects.intensity"),
+      theme: localStorage.getItem("tomino.theme"),
     }));
     expect(stored.sfx).toBe("0.15");
     expect(stored.effects).toBe("subtle");

@@ -16,8 +16,8 @@ test.describe("theme selector", () => {
     await expect(page.getByTestId("genre-select")).toHaveValue("synthwave");
 
     const stored = await page.evaluate(() => ({
-      theme: localStorage.getItem("tetris.theme"),
-      genre: localStorage.getItem("tetris.genre"),
+      theme: localStorage.getItem("tomino.theme"),
+      genre: localStorage.getItem("tomino.genre"),
     }));
     expect(stored).toEqual({ theme: "aurora", genre: "synthwave" });
 

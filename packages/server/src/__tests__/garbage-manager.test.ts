@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type { PlayerId, TargetingStrategy } from "@tetris/shared";
-import { makeGarbageBatch } from "@tetris/shared/__test-utils__/factories.js";
+import type { PlayerId, TargetingStrategy } from "@tomino/shared";
+import { makeGarbageBatch } from "@tomino/shared/__test-utils__/factories.js";
 import { GarbageManager } from "../garbage-manager.js";
 
 // ---------------------------------------------------------------------------
@@ -29,8 +29,8 @@ const PLAYERS: PlayerId[] = ["p1", "p2"];
 const TRIO: PlayerId[] = ["p1", "p2", "p3"];
 const FOUR: PlayerId[] = ["p1", "p2", "p3", "p4"];
 
-// Enough to send: a quad (Tetris) with no T-spin, combo -1, b2b -1 → 4 lines.
-const TETRIS = {
+// Enough to send: a quad with no T-spin, combo -1, b2b -1 → 4 lines.
+const QUAD = {
   linesCleared: 4 as const,
   tSpin: "none" as const,
   combo: 0,
@@ -59,7 +59,7 @@ describe("GarbageManager — distribution", () => {
       delayMs: 500,
     });
 
-    const outcome = gm.onLinesCleared("p1", TETRIS);
+    const outcome = gm.onLinesCleared("p1", QUAD);
     expect(outcome.total).toBeGreaterThanOrEqual(4);
     expect(outcome.cancelled).toBe(0);
     expect(outcome.residualSent).toBe(outcome.total);
@@ -78,7 +78,7 @@ describe("GarbageManager — distribution", () => {
       gapRng: fixedRng(0.5),
     });
 
-    const outcome = gm.onLinesCleared("p1", TETRIS);
+    const outcome = gm.onLinesCleared("p1", QUAD);
     const total = outcome.total;
 
     // 4-player session → 3 opponents. total=4 → 2/1/1 distribution.
@@ -102,7 +102,7 @@ describe("GarbageManager — distribution", () => {
       now: createClock().now,
       gapRng: fixedRng(0),
     });
-    const outcome = gm.onLinesCleared("p1", TETRIS);
+    const outcome = gm.onLinesCleared("p1", QUAD);
     expect(outcome.residualSent).toBe(0);
     expect(outcome.affectedReceivers).toEqual([]);
   });
@@ -122,7 +122,7 @@ describe("GarbageManager — delay timer", () => {
       delayMs: 500,
     });
 
-    gm.onLinesCleared("p1", TETRIS);
+    gm.onLinesCleared("p1", QUAD);
 
     // Right before readyAt
     clock.advance(499);
@@ -146,9 +146,9 @@ describe("GarbageManager — delay timer", () => {
       delayMs: 100,
     });
 
-    gm.onLinesCleared("p1", TETRIS); // readyAt = 100
+    gm.onLinesCleared("p1", QUAD); // readyAt = 100
     clock.advance(50);
-    gm.onLinesCleared("p1", TETRIS); // readyAt = 150
+    gm.onLinesCleared("p1", QUAD); // readyAt = 150
     clock.advance(50); // now = 100
     // First entry ready, second not yet
     expect(gm.drainReady("p2")).toHaveLength(1);
@@ -174,13 +174,13 @@ describe("GarbageManager — cancellation", () => {
     });
 
     // p2 sends garbage to p1 (p1 now has incoming).
-    const sent = gm.onLinesCleared("p2", TETRIS);
+    const sent = gm.onLinesCleared("p2", QUAD);
     const incomingToP1 = sent.total;
     expect(gm.getPending("p1")).toHaveLength(1);
     expect(gm.getPending("p1")[0]!.lines).toBe(incomingToP1);
 
-    // p1 clears a Tetris → cancels all (or most) of their incoming.
-    const outcome = gm.onLinesCleared("p1", TETRIS);
+    // p1 clears a quad → cancels all (or most) of their incoming.
+    const outcome = gm.onLinesCleared("p1", QUAD);
     const expectedCancel = Math.min(outcome.total, incomingToP1);
     expect(outcome.cancelled).toBe(expectedCancel);
     expect(outcome.residualSent).toBe(outcome.total - expectedCancel);
@@ -243,7 +243,7 @@ describe("GarbageManager — queue state broadcast accuracy", () => {
 
     expect(gm.getPending("p2")).toEqual([]);
 
-    gm.onLinesCleared("p1", TETRIS);
+    gm.onLinesCleared("p1", QUAD);
     expect(gm.getPending("p2")).toHaveLength(1);
 
     clock.advance(100);
@@ -259,7 +259,7 @@ describe("GarbageManager — queue state broadcast accuracy", () => {
       now: clock.now,
       gapRng: fixedRng(0),
     });
-    gm.onLinesCleared("p1", TETRIS);
+    gm.onLinesCleared("p1", QUAD);
     const pending = gm.getPending("p2");
     // Shape matches the factory template.
     expect(pending[0]).toMatchObject(makeGarbageBatch({ lines: pending[0]!.lines }));
@@ -287,7 +287,7 @@ describe("GarbageManager — pluggable targeting strategy", () => {
     };
     gm.setTargetingStrategy(stub);
 
-    const outcome = gm.onLinesCleared("p1", TETRIS);
+    const outcome = gm.onLinesCleared("p1", QUAD);
     expect(outcome.affectedReceivers).toEqual(["p3"]);
     expect(gm.getPending("p2")).toEqual([]);
     expect(gm.getPending("p3")).toHaveLength(1);
@@ -325,14 +325,14 @@ describe("GarbageManager — player lifecycle", () => {
     });
 
     // Seed p3 with some incoming
-    gm.onLinesCleared("p1", TETRIS);
+    gm.onLinesCleared("p1", QUAD);
     expect(gm.getPending("p3").length).toBeGreaterThan(0);
 
     gm.removePlayer("p3");
     expect(gm.getPending("p3")).toEqual([]);
 
     // Now p1 sends again — should only target p2.
-    gm.onLinesCleared("p1", TETRIS);
+    gm.onLinesCleared("p1", QUAD);
     expect(gm.getPending("p2").length).toBeGreaterThan(0);
     expect(gm.getPending("p3")).toEqual([]);
   });

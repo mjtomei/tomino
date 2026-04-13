@@ -1,15 +1,15 @@
 /**
  * Opponent reaction detection and effect emission.
  *
- * Detects notable events (Tetris clears, heavy incoming garbage, elimination)
+ * Detects notable events (quad clears, heavy incoming garbage, elimination)
  * from successive `GameStateSnapshot` values, and provides particle burst
  * helpers used by `OpponentBoard` to render the visual reactions.
  */
 
-import type { EmoteKind, GameStateSnapshot, PlayerId } from "@tetris/shared";
+import type { EmoteKind, GameStateSnapshot, PlayerId } from "@tomino/shared";
 import type { ParticleSystem, EmitConfig } from "./particle-system.js";
 
-export type OpponentReaction = "tetris" | "heavyGarbage" | "eliminated";
+export type OpponentReaction = "quad" | "heavyGarbage" | "eliminated";
 
 export interface ReactionEvent {
   playerId: PlayerId;
@@ -18,7 +18,7 @@ export interface ReactionEvent {
 }
 
 const HEAVY_GARBAGE_THRESHOLD = 4;
-const TETRIS_LINES = 4;
+const QUAD_LINES = 4;
 
 function sumPending(queue: GameStateSnapshot["pendingGarbage"]): number {
   let total = 0;
@@ -41,8 +41,8 @@ export function detectReactions(
   if (!prev) return [];
   const events: ReactionEvent[] = [];
 
-  if (next.linesCleared - prev.linesCleared >= TETRIS_LINES) {
-    events.push({ playerId, reaction: "tetris", at: now });
+  if (next.linesCleared - prev.linesCleared >= QUAD_LINES) {
+    events.push({ playerId, reaction: "quad", at: now });
   }
 
   const prevPending = sumPending(prev.pendingGarbage);
@@ -91,7 +91,7 @@ export function playReactionEffect(
   center: { x: number; y: number },
 ): void {
   switch (reaction) {
-    case "tetris":
+    case "quad":
       burst(system, center, 30, {
         shape: "star",
         color: "#ffd84a",

@@ -20,11 +20,11 @@ import type {
   TargetingSettings,
   TargetingStrategyType,
   TargetingContext,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import {
   DEFAULT_TARGETING_SETTINGS,
   modernRuleSet,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "./player-engine.js";
 import { GarbageManager } from "./garbage-manager.js";
 import { BalancingMiddleware } from "./balancing-middleware.js";
@@ -71,7 +71,7 @@ export interface GameSessionConfig {
   /** Optional rule set override (defaults to modernRuleSet). */
   ruleSet?: RuleSet;
   /** Optional targeting strategy override for garbage distribution (legacy). */
-  targetingStrategy?: import("@tetris/shared").TargetingStrategy;
+  targetingStrategy?: import("@tomino/shared").TargetingStrategy;
   /** Optional garbage delay override in milliseconds. */
   garbageDelayMs?: number;
   /** Targeting settings from room configuration. */
@@ -147,7 +147,7 @@ export class GameSession {
   private readonly disconnected = new Set<PlayerId>();
   private tickInterval: ReturnType<typeof setInterval> | null = null;
   private lastTickTime: number = 0;
-  private readonly legacyTargetingStrategy?: import("@tetris/shared").TargetingStrategy;
+  private readonly legacyTargetingStrategy?: import("@tomino/shared").TargetingStrategy;
   private readonly garbageDelayMs?: number;
   private readonly playerRatings?: Record<PlayerId, number>;
   private readonly targetingBiasStrength: number;
@@ -162,7 +162,7 @@ export class GameSession {
   /** Skill-aware targeting bias config (null when no ratings available or 2-player). */
   private skillBiasConfig: TargetingBiasConfig | null = null;
   /** Cached skill-bias strategy (rebuilt when config changes, e.g. player eliminated). */
-  private skillBiasStrategy: import("@tetris/shared").TargetingStrategy | null = null;
+  private skillBiasStrategy: import("@tomino/shared").TargetingStrategy | null = null;
 
   // -- Stats & elimination tracking --
   private gameStartTime: number = 0;

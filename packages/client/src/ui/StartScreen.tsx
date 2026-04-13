@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { RuleSet, GameMode, GameModeConfig } from "@tetris/shared";
-import { classicRuleSet, modernRuleSet, gameModes } from "@tetris/shared";
+import type { RuleSet, GameMode, GameModeConfig } from "@tomino/shared";
+import { classicRuleSet, modernRuleSet, gameModes } from "@tomino/shared";
 import { CustomRuleSetPanel } from "./CustomRuleSetPanel.js";
 import { ThemeSelector } from "./ThemeSelector.js";
 
@@ -61,7 +61,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
   return (
     <div className="start-screen" data-testid="start-screen">
-      <h1 className="start-title">TETRIS</h1>
+      <h1 className="start-title">TOMINO</h1>
 
       <div className="start-section">
         <h2 className="start-section-title">Rule Set</h2>

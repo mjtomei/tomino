@@ -54,15 +54,15 @@ describe("classicRuleSet", () => {
 
   it("has correct Classic preset values", () => {
     expect(classic.name).toBe("Classic");
-    expect(classic.rotationSystem).toBe("nrs");
+    expect(classic.rotationSystem).toBe("classic");
     expect(classic.lockDelay).toBe(0);
     expect(classic.lockResets).toBe(0);
     expect(classic.holdEnabled).toBe(false);
     expect(classic.hardDropEnabled).toBe(false);
     expect(classic.ghostEnabled).toBe(false);
     expect(classic.randomizer).toBe("pure-random");
-    expect(classic.scoringSystem).toBe("nes");
-    expect(classic.gravityCurve).toBe("nes");
+    expect(classic.scoringSystem).toBe("classic");
+    expect(classic.gravityCurve).toBe("classic");
     expect(classic.das).toBe(267);
     expect(classic.arr).toBe(100);
     expect(classic.sdf).toBe(2);
@@ -139,14 +139,14 @@ describe("customRuleSet", () => {
   it("allows mixing settings from different presets", () => {
     const custom = customRuleSet(modernRuleSet(), {
       name: "Hybrid",
-      rotationSystem: "nrs",
-      gravityCurve: "nes",
+      rotationSystem: "classic",
+      gravityCurve: "classic",
       holdEnabled: false,
     });
 
-    // NRS rotation + NES gravity from Classic
-    expect(custom.rotationSystem).toBe("nrs");
-    expect(custom.gravityCurve).toBe("nes");
+    // Classic rotation + classic gravity from Classic
+    expect(custom.rotationSystem).toBe("classic");
+    expect(custom.gravityCurve).toBe("classic");
     expect(custom.holdEnabled).toBe(false);
     // Everything else from Modern base
     expect(custom.lockDelay).toBe(500);

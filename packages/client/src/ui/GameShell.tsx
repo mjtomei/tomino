@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { BOARD_WIDTH, VISIBLE_HEIGHT } from "@tetris/shared";
-import type { RuleSet, GameModeConfig, GameState, GarbageBatch, InputAction } from "@tetris/shared";
-import { TetrisEngine, modernRuleSet } from "@tetris/shared";
+import { BOARD_WIDTH, VISIBLE_HEIGHT } from "@tomino/shared";
+import type { RuleSet, GameModeConfig, GameState, GarbageBatch, InputAction } from "@tomino/shared";
+import { TominoEngine, modernRuleSet } from "@tomino/shared";
 import { BoardCanvas } from "./BoardCanvas.js";
 import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 import { ScoreDisplay } from "./ScoreDisplay.js";
@@ -189,7 +189,7 @@ export function GameShell({
   }
 
   // ---------------------------------------------------------------------------
-  // Solo mode — standalone TetrisEngine
+  // Solo mode — standalone TominoEngine
   // ---------------------------------------------------------------------------
   return (
     <SoloGameShell
@@ -344,7 +344,7 @@ function MultiplayerGameShell({
         soundRef.current?.play(s);
       }
 
-      // Board visual effects (line clear / lock / tetris)
+      // Board visual effects (line clear / lock / quad)
       boardEffectsRef.current?.onFrame(prevStateRef.current, state);
       if (isBoardEffectsDev() && typeof window !== "undefined") {
         window.__boardEffects__ = {
@@ -523,7 +523,7 @@ function SoloGameShell({
   const [ruleSet, setRuleSet] = useState<RuleSet | null>(null);
   const [modeConfig, setModeConfig] = useState<GameModeConfig | null>(null);
 
-  const engineRef = useRef<TetrisEngine | null>(null);
+  const engineRef = useRef<TominoEngine | null>(null);
   const rafRef = useRef<number>(0);
   const prevTimeRef = useRef<number>(0);
   const prevStateRef = useRef<GameState | null>(null);
@@ -594,7 +594,7 @@ function SoloGameShell({
     setRuleSet(rs);
     setModeConfig(mc);
 
-    const engine = new TetrisEngine({
+    const engine = new TominoEngine({
       ruleSet: rs,
       modeConfig: mc,
       seed: seed ?? Math.floor(Math.random() * 2 ** 32),
@@ -656,7 +656,7 @@ function SoloGameShell({
         soundRef.current?.play(s);
       }
 
-      // Board visual effects (line clear / lock / tetris)
+      // Board visual effects (line clear / lock / quad)
       boardEffectsRef.current?.onFrame(prevStateRef.current, state);
       if (isBoardEffectsDev() && typeof window !== "undefined") {
         window.__boardEffects__ = {
@@ -689,7 +689,7 @@ function SoloGameShell({
   }, [gameState?.status]);
 
   // DAS/ARR processing
-  const processDAS = (engine: TetrisEngine, deltaMs: number) => {
+  const processDAS = (engine: TominoEngine, deltaMs: number) => {
     const das = dasRef.current;
     if (!das.key || !das.action) return;
 
@@ -721,7 +721,7 @@ function SoloGameShell({
     }
   };
 
-  const executeAction = (engine: TetrisEngine, action: string) => {
+  const executeAction = (engine: TominoEngine, action: string) => {
     switch (action) {
       case "moveLeft": engine.moveLeft(); break;
       case "moveRight": engine.moveRight(); break;

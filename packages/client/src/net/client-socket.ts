@@ -1,5 +1,5 @@
-import type { ClientMessage, ServerMessage, ServerMessageType } from "@tetris/shared";
-import { parseS2CMessage, serializeMessage } from "@tetris/shared";
+import type { ClientMessage, ServerMessage, ServerMessageType } from "@tomino/shared";
+import { parseS2CMessage, serializeMessage } from "@tomino/shared";
 
 export type MessageHandler<T extends ServerMessage = ServerMessage> = (
   msg: T,
@@ -9,7 +9,7 @@ type ConnectionState = "disconnected" | "connecting" | "connected";
 type ConnectionHandler = (state: ConnectionState) => void;
 
 /**
- * Thin wrapper around a browser WebSocket that speaks the Tetris protocol.
+ * Thin wrapper around a browser WebSocket that speaks the Tomino protocol.
  *
  * - Serializes outgoing `ClientMessage` via `serializeMessage`
  * - Parses incoming data via `parseS2CMessage`

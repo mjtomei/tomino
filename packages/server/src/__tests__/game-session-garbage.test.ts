@@ -4,9 +4,9 @@ import type {
   RoomId,
   ServerMessage,
   TargetingStrategy,
-} from "@tetris/shared";
-import { assertGarbageInserted } from "@tetris/shared/__test-utils__/assertions.js";
-import { makeGarbageBatch } from "@tetris/shared/__test-utils__/factories.js";
+} from "@tomino/shared";
+import { assertGarbageInserted } from "@tomino/shared/__test-utils__/assertions.js";
+import { makeGarbageBatch } from "@tomino/shared/__test-utils__/factories.js";
 import {
   createGameSession,
   removeGameSession,

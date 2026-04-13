@@ -14,7 +14,7 @@ import type {
   TargetAllocation,
   TargetingContext,
   TargetingStrategy,
-} from "@tetris/shared";
+} from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Configuration

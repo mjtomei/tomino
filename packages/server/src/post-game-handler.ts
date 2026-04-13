@@ -15,7 +15,7 @@ import type {
   RoomId,
   ServerMessage,
   SkillStore,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import type { GameEndResult } from "./game-session.js";
 import { updateRatings } from "./rating-algorithm.js";
 import { GLICKO_CONFIG, type RatingConfig } from "./rating-config.js";

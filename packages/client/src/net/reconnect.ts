@@ -7,7 +7,7 @@
  * connect we emit a `rejoinRoom` message so the server can restore state.
  */
 
-import type { PlayerInfo, RoomId } from "@tetris/shared";
+import type { PlayerInfo, RoomId } from "@tomino/shared";
 import type { ClientSocket } from "./client-socket.js";
 
 export const DEFAULT_RECONNECT_WINDOW_MS = 15_000;

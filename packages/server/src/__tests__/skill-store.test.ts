@@ -3,7 +3,7 @@ import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { JsonSkillStore } from "../skill-store.js";
-import type { PlayerProfile, MatchResult } from "@tetris/shared";
+import type { PlayerProfile, MatchResult } from "@tomino/shared";
 
 function makePlayer(overrides: Partial<PlayerProfile> = {}): PlayerProfile {
   return {

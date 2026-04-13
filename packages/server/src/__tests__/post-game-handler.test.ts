@@ -6,7 +6,7 @@ import type {
   RoomId,
   ServerMessage,
   SkillStore,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import { handlePostGame } from "../post-game-handler.js";
 import type { GameEndResult } from "../game-session.js";
 import { GLICKO_CONFIG } from "../rating-config.js";

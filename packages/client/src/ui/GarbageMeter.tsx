@@ -1,5 +1,5 @@
-import type { GarbageBatch } from "@tetris/shared";
-import { VISIBLE_HEIGHT } from "@tetris/shared";
+import type { GarbageBatch } from "@tomino/shared";
+import { VISIBLE_HEIGHT } from "@tomino/shared";
 import "./GarbageMeter.css";
 
 export interface GarbageMeterProps {

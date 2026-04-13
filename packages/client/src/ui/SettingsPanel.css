@@ -153,3 +153,45 @@
   border-color: #ff00aa;
   font-weight: 700;
 }
+
+.settings-palettes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-palette {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.settings-palette.active {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.settings-palette-label {
+  font-size: 0.95em;
+}
+
+.settings-palette-preview {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.settings-palette-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}

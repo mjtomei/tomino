@@ -1,4 +1,4 @@
-import type { HandicapIntensity } from "@tetris/shared";
+import type { HandicapIntensity } from "@tomino/shared";
 
 /** Tunable parameters for the handicap sigmoid curve. */
 export interface HandicapCurveConfig {

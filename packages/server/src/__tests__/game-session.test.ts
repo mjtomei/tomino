@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { ServerMessage, PlayerId, RoomId } from "@tetris/shared";
+import type { ServerMessage, PlayerId, RoomId } from "@tomino/shared";
 import {
   GameSession,
   createGameSession,

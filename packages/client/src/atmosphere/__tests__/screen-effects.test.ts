@@ -73,7 +73,7 @@ describe("computeShakeMagnitude", () => {
   });
   it("unrelated event types produce no shake", () => {
     expect(computeShakeMagnitude("lineClear", 4)).toBe(0);
-    expect(computeShakeMagnitude("tetris", 4)).toBe(0);
+    expect(computeShakeMagnitude("quad", 4)).toBe(0);
   });
 });
 

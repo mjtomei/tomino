@@ -13,7 +13,7 @@ test.describe("smoke", () => {
 
     await page.goto("/");
 
-    await expect(page).toHaveTitle("Tetris");
+    await expect(page).toHaveTitle("Tomino");
 
     // The first view is the player name input screen
     await expect(page.locator("#root")).not.toBeEmpty();

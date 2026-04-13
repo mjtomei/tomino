@@ -62,7 +62,7 @@ describe("Guideline garbage (TetrisWiki reference)", () => {
       { action: "Single", lines: 1 as LineClearCount, expected: 0 },
       { action: "Double", lines: 2 as LineClearCount, expected: 1 },
       { action: "Triple", lines: 3 as LineClearCount, expected: 2 },
-      { action: "Tetris", lines: 4 as LineClearCount, expected: 4 },
+      { action: "Quad", lines: 4 as LineClearCount, expected: 4 },
     ])("$action → $expected garbage", ({ lines, expected }) => {
       expect(baseGarbage(lines, "none")).toBe(expected);
     });
@@ -184,11 +184,11 @@ describe("Guideline garbage (TetrisWiki reference)", () => {
       expect(result.total).toBe(0);
     });
 
-    it("Tetris with max combo and B2B", () => {
+    it("Quad with max combo and B2B", () => {
       const result = calculateGarbage(
         garbageInput({ linesCleared: 4, combo: 7, b2b: 3 }),
       );
-      expect(result.base).toBe(4);  // Tetris
+      expect(result.base).toBe(4);  // Quad
       expect(result.combo).toBe(4); // combo 7 (capped)
       expect(result.b2b).toBe(1);   // active B2B
       expect(result.total).toBe(4 + 4 + 1); // = 9
@@ -205,7 +205,7 @@ describe("Guideline garbage (TetrisWiki reference)", () => {
 
   describe("perfect clear garbage (not implemented)", () => {
     it("calculateGarbage has no perfect clear input — returns normal garbage only", () => {
-      // A Tetris that happens to be a perfect clear still sends only base garbage
+      // A quad that happens to be a perfect clear still sends only base garbage
       const result = calculateGarbage(garbageInput({ linesCleared: 4 }));
       expect(result.total).toBe(4); // No extra PC bonus
     });
@@ -228,7 +228,7 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
       { action: "Single", lines: 1 as LineClearCount, base: 100 },
       { action: "Double", lines: 2 as LineClearCount, base: 300 },
       { action: "Triple", lines: 3 as LineClearCount, base: 500 },
-      { action: "Tetris", lines: 4 as LineClearCount, base: 800 },
+      { action: "Quad", lines: 4 as LineClearCount, base: 800 },
     ])("$action → $base × level", ({ lines, base }) => {
       // Level 1
       const s1 = makeState(1);
@@ -287,7 +287,7 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
       { action: "PC Single", lines: 1 as LineClearCount, lineBase: 100, pcBonus: 800 },
       { action: "PC Double", lines: 2 as LineClearCount, lineBase: 300, pcBonus: 1200 },
       { action: "PC Triple", lines: 3 as LineClearCount, lineBase: 500, pcBonus: 1800 },
-      { action: "PC Tetris", lines: 4 as LineClearCount, lineBase: 800, pcBonus: 2000 },
+      { action: "PC Quad", lines: 4 as LineClearCount, lineBase: 800, pcBonus: 2000 },
     ])("$action → ($lineBase + $pcBonus) × level", ({ lines, lineBase, pcBonus }) => {
       // Level 1
       const s1 = makeState(1);
@@ -304,7 +304,7 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
   // -------------------------------------------------------------------------
   // Back-to-back scoring bonus
   // Reference: TetrisWiki Scoring § "Back-to-Back"
-  // Consecutive "difficult" clears (Tetris or any T-spin with lines) get
+  // Consecutive "difficult" clears (Quad or any T-spin with lines) get
   // floor(points × 1.5). First difficult clear has no multiplier.
   //
   // Note: In our implementation, mini T-spins with lines also count as
@@ -314,7 +314,7 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
   describe("back-to-back scoring bonus (1.5× multiplier)", () => {
     it("first difficult clear: no multiplier (b2b → 0)", () => {
       const state = makeState(1);
-      clearWith(state, 4); // Tetris: 800
+      clearWith(state, 4); // Quad: 800
       expect(state.b2b).toBe(0);
       expect(state.score).toBe(800);
     });
@@ -351,9 +351,9 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
       expect(state.score).toBe(800 + 1200 + 50);
     });
 
-    it("B2B between Tetris and T-spin (cross-type difficult clears)", () => {
+    it("B2B between quad and T-spin (cross-type difficult clears)", () => {
       const state = makeState(1);
-      clearWith(state, 4);            // Tetris: 800, b2b → 0
+      clearWith(state, 4);            // Quad: 800, b2b → 0
       clearWith(state, 2, "full");    // TSD: floor(1200 × 1.5) = 1800, combo +50
       expect(state.score).toBe(800 + 1800 + 50);
     });
@@ -446,7 +446,7 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
       expect(state.level).toBe(2);
     });
 
-    it("multiple level-ups via tetrises", () => {
+    it("multiple level-ups via quads", () => {
       const state = makeState(1);
       clearWith(state, 4); // 4 lines
       clearWith(state, 4); // 8 lines
@@ -465,7 +465,7 @@ describe("Guideline scoring (TetrisWiki reference)", () => {
   describe("combined bonus stacking", () => {
     it("B2B T-spin double perfect clear with combo", () => {
       const state = makeState(1);
-      // 1st: Tetris to start B2B chain
+      // 1st: quad to start B2B chain
       clearWith(state, 4);
       // b2b → 0, combo → 0, score = 800
 

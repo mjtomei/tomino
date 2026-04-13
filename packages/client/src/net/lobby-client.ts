@@ -12,7 +12,7 @@ import type {
   ErrorCode,
   TargetingStrategyType,
   TargetingSettings,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import { ClientSocket } from "./client-socket";
 import { ReconnectController, DEFAULT_RECONNECT_WINDOW_MS } from "./reconnect";
 import {
@@ -115,7 +115,7 @@ export interface LobbyState {
 // Constants
 // ---------------------------------------------------------------------------
 
-const PLAYER_NAME_KEY = "tetris-player-name";
+const PLAYER_NAME_KEY = "tomino-player-name";
 
 function getDefaultServerUrl(): string {
   const host = typeof window !== "undefined" ? window.location.hostname : "localhost";

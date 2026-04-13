@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { computeIndicatorData } from "../ui/handicap-indicator.js";
-import type { HandicapModifiers } from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
+import type { HandicapModifiers } from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Helpers

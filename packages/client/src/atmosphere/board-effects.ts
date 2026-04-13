@@ -1,20 +1,20 @@
 /**
  * Board visual effects — diffs GameState each frame and spawns particles
  * into an injected ParticleSystem for line clears, locks, hard drops, and
- * the amplified tetris variant.
+ * the amplified quad variant.
  *
  * Renders on the particle/effects canvas layer (see ParticleCanvas). Never
  * touches BoardCanvas internals.
  */
 
-import type { GameState, PieceType } from "@tetris/shared";
-import { BOARD_WIDTH, BUFFER_HEIGHT, VISIBLE_HEIGHT } from "@tetris/shared";
+import type { GameState, PieceType } from "@tomino/shared";
+import { BOARD_WIDTH, BUFFER_HEIGHT, VISIBLE_HEIGHT } from "@tomino/shared";
 import type { EmitConfig, ParticleSystem } from "./particle-system.js";
 import type { Theme } from "./themes.js";
 
 export type BoardEffectEvent =
   | { type: "lineClear"; rows: number[]; linesCleared: number }
-  | { type: "tetris"; rows: number[] }
+  | { type: "quad"; rows: number[] }
   | { type: "lock"; row: number; col: number; piece: PieceType }
   | {
       type: "hardDrop";
@@ -102,7 +102,7 @@ export class BoardEffects {
     if (linesDiff > 0) {
       const rows = clearedRows(prev, curr);
       if (linesDiff >= 4) {
-        events.push({ type: "tetris", rows });
+        events.push({ type: "quad", rows });
       } else {
         events.push({ type: "lineClear", rows, linesCleared: linesDiff });
       }
@@ -176,9 +176,9 @@ export class BoardEffects {
       case "lineClear":
         this.spawnLineClear(ev.rows, theme, 1);
         break;
-      case "tetris":
+      case "quad":
         this.spawnLineClear(ev.rows, theme, 2);
-        this.spawnTetrisBurst(ev.rows, theme);
+        this.spawnQuadBurst(ev.rows, theme);
         break;
       case "lock":
         this.spawnLockPulse(ev.row, ev.col, theme);
@@ -242,7 +242,7 @@ export class BoardEffects {
     }
   }
 
-  private spawnTetrisBurst(rows: number[], theme: Theme): void {
+  private spawnQuadBurst(rows: number[], theme: Theme): void {
     if (rows.length === 0) return;
     const cs = this.cellSize;
     const centerY = rows.reduce((a, r) => a + this.visibleY(r), 0) / rows.length;

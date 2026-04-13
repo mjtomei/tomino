@@ -1,4 +1,4 @@
-import type { ActivePiece, PieceType, Rotation } from "@tetris/shared";
+import type { ActivePiece, PieceType, Rotation } from "@tomino/shared";
 
 export const SPAWN_MS = 100;
 export const MOVE_MS = 40;

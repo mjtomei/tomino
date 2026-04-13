@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { ServerMessage, RoomId, ErrorCode } from "@tetris/shared";
+import type { ServerMessage, RoomId, ErrorCode } from "@tomino/shared";
 import { RoomStore } from "../room-store.js";
 import {
   startGameCountdown,

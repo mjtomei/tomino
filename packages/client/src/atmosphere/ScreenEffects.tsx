@@ -107,7 +107,7 @@ export const ScreenEffects = forwardRef<ScreenEffectsHandle, ScreenEffectsProps>
       let shakeBump = 0;
       let flashBump = 0;
       for (const e of atmosphere.events) {
-        if (e.type === "lineClear" || e.type === "tetris" || e.type === "tSpin") {
+        if (e.type === "lineClear" || e.type === "quad" || e.type === "tSpin") {
           flashBump = Math.max(flashBump, computeFlashOpacity(e.magnitude));
         }
         if (e.type === "garbageReceived") {

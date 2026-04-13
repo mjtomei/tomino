@@ -2,7 +2,7 @@
  * RotationSystem interface — strategy pattern for piece rotation.
  *
  * Two implementations exist: SRSRotation (modern, wall kicks) and
- * NRSRotation (classic NES, no wall kicks).
+ * ClassicRotation (classic classic, no wall kicks).
  */
 
 import type { PieceShape, PieceType, Rotation } from "./pieces.js";
@@ -25,6 +25,6 @@ export interface RotationSystem {
     toRotation: Rotation,
   ): readonly KickOffset[];
 
-  /** Number of distinct rotation states for this piece (e.g. 2 for NRS I-piece). */
+  /** Number of distinct rotation states for this piece (e.g. 2 for classic-rotation I-piece). */
   getRotationCount(piece: PieceType): number;
 }

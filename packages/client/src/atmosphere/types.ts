@@ -5,7 +5,7 @@
  * LineClearEvent structure.
  */
 
-import type { LineClearEvent, GameStatus } from "@tetris/shared";
+import type { LineClearEvent, GameStatus } from "@tomino/shared";
 
 /** Multiplayer signal inputs. Populated in multiplayer games; zeros in solo. */
 export interface MultiplayerSignals {
@@ -30,7 +30,7 @@ export interface GameSignals {
   linesCleared: number;
   /** Pending garbage line total (sum across batches). */
   pendingGarbage: number;
-  /** Optional last line-clear event for tSpin/tetris classification. */
+  /** Optional last line-clear event for tSpin/quad classification. */
   lastLineClear?: LineClearEvent | null;
   multiplayer?: MultiplayerSignals;
 }
@@ -38,7 +38,7 @@ export interface GameSignals {
 export type AtmosphereEventType =
   | "lineClear"
   | "tSpin"
-  | "tetris"
+  | "quad"
   | "levelUp"
   | "garbageReceived"
   | "garbageSent"

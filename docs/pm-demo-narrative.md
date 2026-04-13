@@ -5,7 +5,7 @@
 A `notes.txt` file with three lines:
 
 ```
-- multiplayer version of tetris with adaptive garbage sending
+- multiplayer tetromino stacking game with adaptive garbage sending
   - adapts based on skill level to handicap more skilled player and even out win rates
 - supports online play
 ```
@@ -22,7 +22,7 @@ pm is built the other way around. The project structure, the plans, the dependen
 
 ## What happened
 
-The pm guide agent expanded those three lines into three layered plans — core single-player Tetris, multiplayer networking, and adaptive skill balancing — totaling 50+ PRs with a full dependency graph. The human's role during planning was not scoping or architecture. It was stepping in at a few places where the system missed things that required understanding *how the game should feel* — how garbage sending should work dynamically, how handicaps should feel fair to human players. Design intent, not engineering decomposition.
+The pm guide agent expanded those three lines into three layered plans — core single-player tetromino stacking, multiplayer networking, and adaptive skill balancing — totaling 50+ PRs with a full dependency graph. The human's role during planning was not scoping or architecture. It was stepping in at a few places where the system missed things that required understanding *how the game should feel* — how garbage sending should work dynamically, how handicaps should feel fair to human players. Design intent, not engineering decomposition.
 
 With the dependency graph in place, `autostart` began executing. Agents picked up PRs whose dependencies had merged, implemented them, opened GitHub PRs, and moved on. Work proceeded nonlinearly — the engine, rating system, lobby UI, and network protocol all advanced in parallel because the dependency graph made it safe to do so.
 
@@ -34,7 +34,7 @@ Partway through, a fourth plan was added: automated testing infrastructure. This
 - **~2 hours** of human time (initial setup, guiding plans, tweaking a few design decisions)
 - **~10 hours** of autonomous agent execution (across two bursts, with an overnight pause when API usage limits were hit)
 - **>250 commits**, **>50 merged PRs**, **>30,000 lines of code** (>14k production, >18k tests)
-- A working multiplayer Tetris game with real-time networking, lobby system, garbage mechanics, Glicko-2 skill rating, adaptive handicapping, and end-to-end test coverage
+- A working multiplayer tetromino stacking game with real-time networking, lobby system, garbage mechanics, Glicko-2 skill rating, adaptive handicapping, and end-to-end test coverage
 
 The one time the developer sat down to play the game, it was playable. The bugs found were UX-level: down-arrow auto-repeat scrolling the browser page instead of soft-dropping, DAS/ARR not feeling right on side arrow keys. The codebase itself is well-structured — small focused modules, typed interfaces at boundaries, a browser-dependency-free engine with injectable time, and 1,400+ tests — because the PR decomposition forced modular boundaries and the review agents enforced them.
 
@@ -66,7 +66,7 @@ The developer didn't need to scope PRs, draw dependency graphs, or manage agents
 
 **For straightforward software, the human role becomes UX.** The engineering is handled. What's left is the part that requires a person sitting in front of the screen saying "this doesn't feel right" and knowing why. No test catches that the DAS timing feels sluggish. No dependency graph produces good game feel.
 
-This isn't a capability gap — Claude can reason about juice, input latency, visual hierarchy, game psychology. The gap is structural. The notes file said "multiplayer tetris with adaptive garbage." It didn't say "the piece should feel snappy when it locks, the garbage indicator should create a sense of dread, the handicap should be invisible enough that the weaker player feels like they earned the win." That knowledge exists but it wasn't in the spec, so agents never optimized for it. It is up to the human to draw attention to the things that matter to them that don't matter to the computer.
+This isn't a capability gap — Claude can reason about juice, input latency, visual hierarchy, game psychology. The gap is structural. The notes file said "multiplayer tetromino stacking game with adaptive garbage." It didn't say "the piece should feel snappy when it locks, the garbage indicator should create a sense of dread, the handicap should be invisible enough that the weaker player feels like they earned the win." That knowledge exists but it wasn't in the spec, so agents never optimized for it. It is up to the human to draw attention to the things that matter to them that don't matter to the computer.
 
 ## What this points toward
 

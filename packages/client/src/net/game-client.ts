@@ -18,8 +18,8 @@ import type {
   PlayerId,
   RoomId,
   RuleSet,
-} from "@tetris/shared";
-import { modernRuleSet } from "@tetris/shared";
+} from "@tomino/shared";
+import { modernRuleSet } from "@tomino/shared";
 import type { ClientSocket } from "./client-socket.js";
 import { PredictionEngine } from "./prediction.js";
 

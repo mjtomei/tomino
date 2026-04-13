@@ -1,5 +1,5 @@
-import type { HandicapModifiers, HandicapSettings, ModifierMatrix } from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
+import type { HandicapModifiers, HandicapSettings, ModifierMatrix } from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
 import {
   type HandicapCurveConfig,
   DEFAULT_CURVE_CONFIG,

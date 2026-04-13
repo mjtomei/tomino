@@ -1,7 +1,7 @@
 /**
- * ScoringSystem interface and shared types for Tetris scoring.
+ * ScoringSystem interface and shared types for line-clear scoring.
  *
- * Two implementations: GuidelineScoring (modern) and NESScoring (classic).
+ * Two implementations: GuidelineScoring (modern) and ClassicScoring (classic).
  * The game engine calls methods on this interface after piece events.
  */
 
@@ -27,7 +27,7 @@ export interface ScoringState {
   combo: number;
   /** Back-to-back counter. -1 = no active B2B. */
   b2b: number;
-  /** Starting level (needed for NES level-up threshold). */
+  /** Starting level (needed for classic level-up threshold). */
   startLevel: number;
   /** Total pieces locked onto the board. */
   piecesPlaced: number;

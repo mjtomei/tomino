@@ -26,8 +26,8 @@ import { useAtmosphere } from "../atmosphere/use-atmosphere.js";
 import { useTheme } from "../atmosphere/theme-context.js";
 import type { AtmosphereState, AtmosphereEvent } from "../atmosphere/types.js";
 
-const VOLUME_KEY = "tetris.music.volume";
-const MUTED_KEY = "tetris.music.muted";
+const VOLUME_KEY = "tomino.music.volume";
+const MUTED_KEY = "tomino.music.muted";
 
 function isDevOrTest(): boolean {
   try {
@@ -201,7 +201,7 @@ export function useMenuMusic(
       ctx.engine.start();
       const entryEvents: AtmosphereEvent[] =
         view === "results" && winnerBurst
-          ? [{ type: "tetris", magnitude: 4 }]
+          ? [{ type: "quad", magnitude: 4 }]
           : [];
       const state: AtmosphereState =
         entryEvents.length > 0

@@ -16,7 +16,7 @@ import {
   GLINT_DURATION_MS,
 } from "../board-life.js";
 
-const BASE = "#00D4D4";
+const BASE = "#00F5D4";
 
 describe("hexToHsl / hslToHex round trip", () => {
   it("round-trips pure red", () => {

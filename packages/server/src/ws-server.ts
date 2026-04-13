@@ -1,8 +1,8 @@
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server as HttpServer } from "node:http";
-import type { PlayerId, ServerMessage, SkillStore } from "@tetris/shared";
+import type { PlayerId, ServerMessage, SkillStore } from "@tomino/shared";
 import type { BalancingConfig } from "./balancing-init.js";
-import { parseC2SMessage, serializeMessage } from "@tetris/shared";
+import { parseC2SMessage, serializeMessage } from "@tomino/shared";
 import { RoomStore } from "./room-store.js";
 import {
   handleCreateRoom,
@@ -36,7 +36,7 @@ interface ClientInfo {
   pongTimer: ReturnType<typeof setTimeout> | null;
 }
 
-export interface TetrisWebSocketServer {
+export interface TominoWebSocketServer {
   /** Number of currently connected clients */
   clientCount: number;
   /** The shared room store */
@@ -57,7 +57,7 @@ export interface WebSocketServerOptions {
 export function createWebSocketServer(
   httpServer: HttpServer,
   options: WebSocketServerOptions = {},
-): TetrisWebSocketServer {
+): TominoWebSocketServer {
   const { skillStore, balancingConfig } = options;
   const wss = new WebSocketServer({ server: httpServer });
   const clients = new Map<string, ClientInfo>();

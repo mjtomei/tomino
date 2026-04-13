@@ -1,8 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
-import type { GameState, ActivePiece, ScoringState } from "@tetris/shared";
-import { createGrid, BUFFER_HEIGHT } from "@tetris/shared";
+import type { GameState, ActivePiece, ScoringState } from "@tomino/shared";
+import { createGrid, BUFFER_HEIGHT } from "@tomino/shared";
 import { BoardCanvas, renderBoard } from "../ui/BoardCanvas.js";
+import { PALETTES, DEFAULT_PALETTE_ID } from "../ui/palettes.js";
+
+const TEST_PALETTE = PALETTES[DEFAULT_PALETTE_ID];
 
 // ---------------------------------------------------------------------------
 // Test helpers
@@ -103,7 +106,7 @@ describe("renderBoard", () => {
     // Place a T cell at visible row 0 (board row 20), col 5
     state.board[BUFFER_HEIGHT]![5] = "T";
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // fillRect should have been called for the placed cell (main + highlight + shadow)
     const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;
@@ -116,7 +119,7 @@ describe("renderBoard", () => {
     const piece = makePiece({ row: 20, col: 3 });
     const state = makeState({ currentPiece: piece });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // The T piece at rotation 0 has 4 filled cells, each drawn with 3 fillRect calls
     // (main + top/left highlight + bottom/right shadow = 3 per cell)
@@ -130,7 +133,7 @@ describe("renderBoard", () => {
     const piece = makePiece({ row: 20, col: 3 });
     const state = makeState({ currentPiece: piece, ghostRow: 37 });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // Ghost cells use strokeRect
     const strokeCalls = (ctx.strokeRect as ReturnType<typeof vi.fn>).mock.calls;
@@ -143,7 +146,7 @@ describe("renderBoard", () => {
     const piece = makePiece({ row: 20, col: 3 });
     const state = makeState({ currentPiece: piece, ghostRow: null });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // strokeRect calls: only the board border (1 call), no ghost cells
     const strokeCalls = (ctx.strokeRect as ReturnType<typeof vi.fn>).mock.calls;
@@ -156,7 +159,7 @@ describe("renderBoard", () => {
     // Ghost at same row as piece — should be skipped
     const state = makeState({ currentPiece: piece, ghostRow: 37 });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     const strokeCalls = (ctx.strokeRect as ReturnType<typeof vi.fn>).mock.calls;
     expect(strokeCalls.length).toBe(1); // board border only
@@ -166,7 +169,7 @@ describe("renderBoard", () => {
     const ctx = createMockCtx();
     const state = makeState({ hold: "J" });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // fillText should include "HOLD" and "NEXT" labels
     const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
@@ -179,13 +182,13 @@ describe("renderBoard", () => {
     const state = makeState({ hold: null });
 
     // Count fillRect calls with hold null
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
     const callsWithoutHold = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls.length;
 
     // Reset and draw with hold present
     const ctx2 = createMockCtx();
     const state2 = makeState({ hold: "J" });
-    renderBoard(ctx2, state2, 30);
+    renderBoard(ctx2, state2, 30, TEST_PALETTE);
     const callsWithHold = (ctx2.fillRect as ReturnType<typeof vi.fn>).mock.calls.length;
 
     // Hold piece adds cells → more fillRect calls
@@ -196,7 +199,7 @@ describe("renderBoard", () => {
     const ctx = createMockCtx();
     const state = makeState({ queue: ["I", "O", "T"] });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // fillText should include "NEXT"
     const textCalls = (ctx.fillText as ReturnType<typeof vi.fn>).mock.calls;
@@ -226,7 +229,7 @@ describe("renderBoard", () => {
     const ctx = createMockCtx();
     const state = makeState();
     state.board[BUFFER_HEIGHT]![5] = "T";
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
     const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;
     expect(calls.length).toBeGreaterThan(0);
   });
@@ -237,7 +240,7 @@ describe("renderBoard", () => {
     const piece = makePiece({ row: 18, col: 3 });
     const state = makeState({ currentPiece: piece });
 
-    renderBoard(ctx, state, 30);
+    renderBoard(ctx, state, 30, TEST_PALETTE);
 
     // Should still render without error — cells above visible area are skipped
     const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;

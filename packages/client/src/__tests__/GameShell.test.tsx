@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import type { GameState, ScoringState, RuleSet, GameModeConfig } from "@tetris/shared";
+import type { GameState, ScoringState, RuleSet, GameModeConfig } from "@tomino/shared";
 import {
   createGrid,
   modernRuleSet,
@@ -9,7 +9,7 @@ import {
   sprintMode,
   ultraMode,
   zenMode,
-} from "@tetris/shared";
+} from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -388,7 +388,7 @@ describe("StartScreen", () => {
     expect(onStart).toHaveBeenCalledOnce();
     const [ruleSet, modeConfig] = onStart.mock.calls[0]!;
     expect(ruleSet.name).toBe("Classic");
-    expect(ruleSet.rotationSystem).toBe("nrs");
+    expect(ruleSet.rotationSystem).toBe("classic");
     expect(ruleSet.holdEnabled).toBe(false);
     expect(ruleSet.previewCount).toBe(1);
     expect(modeConfig.mode).toBe("sprint");

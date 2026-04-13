@@ -13,7 +13,7 @@
  *   handler.dispose();
  */
 
-import type { RuleSet, InputAction } from "@tetris/shared";
+import type { RuleSet, InputAction } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Key mapping

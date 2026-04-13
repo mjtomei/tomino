@@ -1,4 +1,4 @@
-import type { HandicapIntensity, HandicapMode, HandicapSettings as HandicapSettingsType } from "@tetris/shared";
+import type { HandicapIntensity, HandicapMode, HandicapSettings as HandicapSettingsType } from "@tomino/shared";
 import "./HandicapSettings.css";
 
 export interface HandicapSettingsValues extends HandicapSettingsType {

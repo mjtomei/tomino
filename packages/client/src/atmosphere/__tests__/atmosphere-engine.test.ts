@@ -88,11 +88,11 @@ describe("AtmosphereEngine — events", () => {
     expect(events.find((ev) => ev.type === "lineClear")?.magnitude).toBe(2);
   });
 
-  it("fires tetris when four lines clear at once", () => {
+  it("fires quad when four lines clear at once", () => {
     const e = new AtmosphereEngine();
     e.update(base({ linesCleared: 0 }));
     const { events } = e.update(base({ linesCleared: 4 }));
-    expect(events.some((ev) => ev.type === "tetris")).toBe(true);
+    expect(events.some((ev) => ev.type === "quad")).toBe(true);
   });
 
   it("fires tSpin when lastLineClear marks a spin", () => {

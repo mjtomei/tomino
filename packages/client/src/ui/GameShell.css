@@ -188,7 +188,7 @@
 .overlay-stat.highlight {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #00D4D4;
+  color: #00F5D4;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.5rem;
   margin-bottom: 0.3rem;
@@ -238,7 +238,7 @@
   font-weight: 900;
   letter-spacing: 0.15em;
   margin: 0 0 2rem;
-  background: linear-gradient(135deg, #00D4D4, #A020D0);
+  background: linear-gradient(135deg, #00F5D4, #9B5DE5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -79,13 +79,13 @@ describe("menu-atmosphere", () => {
   });
 
   describe("computeMenuEntryEvents", () => {
-    it("fires a tetris event for the winner on results entry", () => {
+    it("fires a quad event for the winner on results entry", () => {
       const events = computeMenuEntryEvents({
         view: "results",
         results: { winnerId: "p1", localPlayerId: "p1" },
       });
       expect(events).toHaveLength(1);
-      expect(events[0]!.type).toBe("tetris");
+      expect(events[0]!.type).toBe("quad");
     });
 
     it("emits no events for non-winner on results", () => {

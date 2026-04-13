@@ -36,9 +36,9 @@ export const DEFAULT_SETTINGS: SerializedSettings = {
   effectsIntensity: "full",
 };
 
-const SFX_VOLUME_KEY = "tetris.sfx.volume";
-const MASTER_MUTED_KEY = "tetris.master.muted";
-const EFFECTS_INTENSITY_KEY = "tetris.effects.intensity";
+const SFX_VOLUME_KEY = "tomino.sfx.volume";
+const MASTER_MUTED_KEY = "tomino.master.muted";
+const EFFECTS_INTENSITY_KEY = "tomino.effects.intensity";
 
 const INTENSITIES: readonly EffectsIntensity[] = ["off", "subtle", "full"];
 

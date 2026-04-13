@@ -13,9 +13,9 @@ import type {
   RoomStatus,
   HandicapSettings,
   TargetingSettings,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import { generateRoomCode, createRoomState } from "./room.js";
-import type { RoomConfig } from "@tetris/shared";
+import type { RoomConfig } from "@tomino/shared";
 
 export class RoomStore {
   private readonly rooms = new Map<RoomId, RoomState>();

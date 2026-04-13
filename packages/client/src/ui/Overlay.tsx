@@ -1,4 +1,4 @@
-import type { GameState, GameModeConfig, EndReason } from "@tetris/shared";
+import type { GameState, GameModeConfig, EndReason } from "@tomino/shared";
 import { formatTime } from "./formatTime.js";
 
 export interface OverlayProps {

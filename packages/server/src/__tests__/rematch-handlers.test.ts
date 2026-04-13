@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import type { ServerMessage, RoomId, PlayerId } from "@tetris/shared";
+import type { ServerMessage, RoomId, PlayerId } from "@tomino/shared";
 import { RoomStore } from "../room-store.js";
 import {
   handleRequestRematch,

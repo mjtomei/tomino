@@ -1,11 +1,11 @@
 /**
- * NES scoring — classic Nintendo Tetris scoring system.
+ * Classic scoring — classic Nintendo-style line-clear scoring system.
  *
  * Features: line clears × (level + 1), soft drop (1/cell).
  * No T-spins, no combos, no B2B, no hard drop, no perfect clear bonus.
  */
 
-import { nesDropInterval } from "./gravity.js";
+import { classicDropInterval } from "./gravity.js";
 import type {
   LineClearCount,
   ScoringState,
@@ -18,8 +18,8 @@ import { createScoringState } from "./scoring.js";
 // Point table
 // ---------------------------------------------------------------------------
 
-/** NES line clear base points. Multiplied by (level + 1). */
-const NES_LINE_POINTS: Record<LineClearCount, number> = {
+/** classic line clear base points. Multiplied by (level + 1). */
+const CLASSIC_LINE_POINTS: Record<LineClearCount, number> = {
   0: 0,
   1: 40,
   2: 100,
@@ -32,7 +32,7 @@ const NES_LINE_POINTS: Record<LineClearCount, number> = {
 // ---------------------------------------------------------------------------
 
 /**
- * Calculate the number of lines needed for the first level-up in NES mode.
+ * Calculate the number of lines needed for the first level-up in classic mode.
  * After the first level-up, every 10 additional lines triggers the next.
  *
  * Formula: min(startLevel × 10 + 10, max(100, startLevel × 10 - 50))
@@ -41,7 +41,7 @@ function firstLevelUpThreshold(startLevel: number): number {
   return Math.min(startLevel * 10 + 10, Math.max(100, startLevel * 10 - 50));
 }
 
-function updateNESLevel(state: ScoringState): void {
+function updateClassicLevel(state: ScoringState): void {
   const threshold = firstLevelUpThreshold(state.startLevel);
   if (state.lines < threshold) {
     state.level = state.startLevel;
@@ -52,10 +52,10 @@ function updateNESLevel(state: ScoringState): void {
 }
 
 // ---------------------------------------------------------------------------
-// NESScoring
+// ClassicScoring
 // ---------------------------------------------------------------------------
 
-export const NESScoring: ScoringSystem = {
+export const ClassicScoring: ScoringSystem = {
   createState: createScoringState,
 
   onLineClear(
@@ -64,13 +64,13 @@ export const NESScoring: ScoringSystem = {
     _tSpin: TSpinType,
     _isPerfectClear: boolean,
   ): void {
-    // NES ignores T-spins, combos, B2B, and perfect clears
+    // classic ignores T-spins, combos, B2B, and perfect clears
     if (linesCleared === 0) return;
 
-    const base = NES_LINE_POINTS[linesCleared];
+    const base = CLASSIC_LINE_POINTS[linesCleared];
     state.score += base * (state.level + 1);
     state.lines += linesCleared;
-    updateNESLevel(state);
+    updateClassicLevel(state);
   },
 
   onSoftDrop(state: ScoringState, cells: number): void {
@@ -78,8 +78,8 @@ export const NESScoring: ScoringSystem = {
   },
 
   onHardDrop(_state: ScoringState, _cells: number): void {
-    // NES has no hard drop — no-op
+    // classic has no hard drop — no-op
   },
 
-  getDropInterval: nesDropInterval,
+  getDropInterval: classicDropInterval,
 };

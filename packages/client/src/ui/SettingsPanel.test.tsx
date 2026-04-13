@@ -55,7 +55,7 @@ describe("SettingsPanel", () => {
     const slider = screen.getByTestId("sfx-volume-slider") as HTMLInputElement;
     fireEvent.change(slider, { target: { value: "0.3" } });
     expect(slider.value).toBe("0.3");
-    expect(localStorage.getItem("tetris.sfx.volume")).toBe("0.3");
+    expect(localStorage.getItem("tomino.sfx.volume")).toBe("0.3");
   });
 
   it("toggles master mute", async () => {
@@ -65,27 +65,27 @@ describe("SettingsPanel", () => {
     expect(toggle.checked).toBe(false);
     await user.click(toggle);
     expect(toggle.checked).toBe(true);
-    expect(localStorage.getItem("tetris.master.muted")).toBe("1");
+    expect(localStorage.getItem("tomino.master.muted")).toBe("1");
   });
 
   it("selects effects intensity", async () => {
     const user = userEvent.setup();
     renderPanel();
     await user.click(screen.getByTestId("effects-subtle"));
-    expect(localStorage.getItem("tetris.effects.intensity")).toBe("subtle");
+    expect(localStorage.getItem("tomino.effects.intensity")).toBe("subtle");
   });
 
   it("selects a theme swatch", async () => {
     const user = userEvent.setup();
     renderPanel();
     await user.click(screen.getByTestId("theme-swatch-aurora"));
-    expect(localStorage.getItem("tetris.theme")).toBe("aurora");
+    expect(localStorage.getItem("tomino.theme")).toBe("aurora");
   });
 
   it("selects a genre", async () => {
     const user = userEvent.setup();
     renderPanel();
     await user.click(screen.getByTestId("genre-option-chiptune"));
-    expect(localStorage.getItem("tetris.genre")).toBe("chiptune");
+    expect(localStorage.getItem("tomino.genre")).toBe("chiptune");
   });
 });

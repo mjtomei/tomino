@@ -16,7 +16,7 @@
 
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import type { MatchResult, PlayerProfile, SkillStore } from "@tetris/shared";
+import type { MatchResult, PlayerProfile, SkillStore } from "@tomino/shared";
 
 interface StoreData {
   players: Record<string, PlayerProfile>;

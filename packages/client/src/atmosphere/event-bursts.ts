@@ -92,8 +92,8 @@ export function createBursts(
       });
       break;
     }
-    case "tetris": {
-      // Tetris: extra-bright ripple on top of the standard line-clear ripple.
+    case "quad": {
+      // Quad: extra-bright ripple on top of the standard line-clear ripple.
       out.push({
         id: nextId(),
         kind: "ripple",

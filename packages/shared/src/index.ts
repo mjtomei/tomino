@@ -1,5 +1,5 @@
 /**
- * @tetris/shared — shared types and game logic
+ * @tomino/shared — shared types and game logic
  *
  * This package contains:
  * - Game state types (board, pieces, scoring)
@@ -86,7 +86,7 @@ export type {
 } from "./engine/rotation.js";
 
 export { SRSRotation } from "./engine/rotation-srs.js";
-export { NRSRotation } from "./engine/rotation-nrs.js";
+export { ClassicRotation } from "./engine/rotation-classic.js";
 
 export type { Randomizer } from "./engine/randomizer.js";
 export { createRandomizer, seededRng } from "./engine/randomizer.js";
@@ -108,8 +108,8 @@ export type {
 
 export { createScoringState, detectTSpin } from "./engine/scoring.js";
 export { GuidelineScoring } from "./engine/scoring-guideline.js";
-export { NESScoring } from "./engine/scoring-nes.js";
-export { guidelineDropInterval, nesDropInterval } from "./engine/gravity.js";
+export { ClassicScoring } from "./engine/scoring-classic.js";
+export { guidelineDropInterval, classicDropInterval } from "./engine/gravity.js";
 
 export type { Cell, Grid } from "./engine/board.js";
 
@@ -145,7 +145,7 @@ export type {
   LineClearEvent,
 } from "./engine/engine.js";
 
-export { TetrisEngine } from "./engine/engine.js";
+export { TominoEngine } from "./engine/engine.js";
 
 export type { StateDelta } from "./state-snapshot.js";
 export {

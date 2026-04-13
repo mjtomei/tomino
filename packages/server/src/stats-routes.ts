@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { SkillStore, StatsResponse } from "@tetris/shared";
-import { getRankLabel } from "@tetris/shared";
+import type { SkillStore, StatsResponse } from "@tomino/shared";
+import { getRankLabel } from "@tomino/shared";
 
 export function createStatsRouter(store: SkillStore): Router {
   const router = Router();

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import type { GameState, PieceType } from "@tetris/shared";
-import { BOARD_WIDTH, BUFFER_HEIGHT } from "@tetris/shared";
+import type { GameState, PieceType } from "@tomino/shared";
+import { BOARD_WIDTH, BUFFER_HEIGHT } from "@tomino/shared";
 import { ParticleSystem } from "../particle-system";
 import { BoardEffects } from "../board-effects";
 import type { Theme } from "../themes";
@@ -121,7 +121,7 @@ describe("BoardEffects", () => {
     expect(system.count()).toBeGreaterThan(0);
   });
 
-  it("detects a tetris (4-line clear) with amplified particle count", () => {
+  it("detects a quad (4-line clear) with amplified particle count", () => {
     // Baseline single clear
     const prevSingle = state();
     fillRow(prevSingle.board as (PieceType | null)[][], BUFFER_HEIGHT + 19);
@@ -132,17 +132,17 @@ describe("BoardEffects", () => {
     const singleCount = system.count();
     system.clear();
 
-    // Tetris
-    const prevTetris = state();
+    // Quad
+    const prevQuad = state();
     for (let r = BUFFER_HEIGHT + 16; r < BUFFER_HEIGHT + 20; r++) {
-      fillRow(prevTetris.board as (PieceType | null)[][], r);
+      fillRow(prevQuad.board as (PieceType | null)[][], r);
     }
-    const currTetris = state({
-      scoring: { ...prevTetris.scoring, lines: 4 },
+    const currQuad = state({
+      scoring: { ...prevQuad.scoring, lines: 4 },
     });
-    const events = effects.onFrame(prevTetris, currTetris);
-    expect(events[0]!.type).toBe("tetris");
-    // Tetris spawns per-row dissolve (with 2× multiplier) plus a burst.
+    const events = effects.onFrame(prevQuad, currQuad);
+    expect(events[0]!.type).toBe("quad");
+    // Quad spawns per-row dissolve (with 2× multiplier) plus a burst.
     expect(system.count()).toBeGreaterThan(singleCount);
   });
 

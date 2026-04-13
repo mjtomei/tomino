@@ -11,14 +11,14 @@ import {
   BOARD_WIDTH,
   calculateGarbage,
   evenSplitStrategy,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import type {
   GarbageBatch,
   LineClearCount,
   PlayerId,
   TargetingStrategy,
   TSpinType,
-} from "@tetris/shared";
+} from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Types

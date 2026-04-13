@@ -12,7 +12,7 @@ import type { RatingConfig } from "./rating-config.js";
 import { GLICKO_CONFIG } from "./rating-config.js";
 import type { HandicapCurveConfig } from "./handicap-config.js";
 import { DEFAULT_CURVE_CONFIG } from "./handicap-config.js";
-import type { HandicapIntensity, HandicapMode } from "@tetris/shared";
+import type { HandicapIntensity, HandicapMode } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Types

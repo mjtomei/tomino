@@ -10,7 +10,7 @@ test.describe("event bursts", () => {
     });
 
     await page.goto("/");
-    await expect(page).toHaveTitle("Tetris");
+    await expect(page).toHaveTitle("Tomino");
 
     const result = await page.evaluate(async () => {
       const mod = await import(

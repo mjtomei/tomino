@@ -1,4 +1,4 @@
-import type { TargetingStrategyType } from "@tetris/shared";
+import type { TargetingStrategyType } from "@tomino/shared";
 
 const STRATEGY_LABELS: Record<TargetingStrategyType, string> = {
   random: "Random",

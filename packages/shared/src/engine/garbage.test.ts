@@ -69,7 +69,7 @@ describe("calculateGarbage", () => {
       expect(result.base).toBe(2);
     });
 
-    it("sends 4 garbage for a Tetris", () => {
+    it("sends 4 garbage for a quad", () => {
       const result = calculateGarbage(input({ linesCleared: 4 }));
       expect(result.total).toBe(4);
       expect(result.base).toBe(4);
@@ -146,7 +146,7 @@ describe("calculateGarbage", () => {
         input({ linesCleared: 4, b2b: 1 }),
       );
       expect(result.b2b).toBe(1);
-      expect(result.total).toBe(4 + 1); // Tetris + B2B
+      expect(result.total).toBe(4 + 1); // Quad + B2B
     });
 
     it("adds no bonus when b2b is 0 (first difficult clear)", () => {

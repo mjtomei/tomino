@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
-import type { GameStateSnapshot, Board, Row } from "@tetris/shared";
-import { BOARD_WIDTH, BOARD_TOTAL_HEIGHT, BUFFER_HEIGHT } from "@tetris/shared";
+import type { GameStateSnapshot, Board, Row } from "@tomino/shared";
+import { BOARD_WIDTH, BOARD_TOTAL_HEIGHT, BUFFER_HEIGHT } from "@tomino/shared";
 import { OpponentBoard, opponentCellSize } from "../ui/OpponentBoard.js";
 import { renderOpponentBoard } from "../ui/OpponentBoardCanvas.js";
+import { PALETTES, DEFAULT_PALETTE_ID } from "../ui/palettes.js";
+
+const TEST_PALETTE = PALETTES[DEFAULT_PALETTE_ID];
 
 function emptyRow(): Row {
   return Array<null>(BOARD_WIDTH).fill(null);
@@ -56,7 +59,7 @@ describe("opponentCellSize", () => {
 describe("renderOpponentBoard", () => {
   it("draws only background for null snapshot", () => {
     const ctx = createMockCtx();
-    renderOpponentBoard(ctx, null, 10);
+    renderOpponentBoard(ctx, null, 10, TEST_PALETTE);
     // Exactly one fillRect call (background)
     expect((ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
@@ -67,7 +70,7 @@ describe("renderOpponentBoard", () => {
     // Place two cells in visible area
     snap.board[BUFFER_HEIGHT]![0] = "T";
     snap.board[BUFFER_HEIGHT + 5]![3] = "L";
-    renderOpponentBoard(ctx, snap, 10);
+    renderOpponentBoard(ctx, snap, 10, TEST_PALETTE);
     const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;
     // background + 2 cells
     expect(calls.length).toBe(3);
@@ -78,7 +81,7 @@ describe("renderOpponentBoard", () => {
     const snap = makeSnapshot({
       activePiece: { type: "O", x: 4, y: BUFFER_HEIGHT, rotation: 0 },
     });
-    renderOpponentBoard(ctx, snap, 10);
+    renderOpponentBoard(ctx, snap, 10, TEST_PALETTE);
     const calls = (ctx.fillRect as ReturnType<typeof vi.fn>).mock.calls;
     // background + 4 O-piece cells
     expect(calls.length).toBe(5);
@@ -88,7 +91,7 @@ describe("renderOpponentBoard", () => {
     const ctx = createMockCtx();
     const snap = makeSnapshot({ isGameOver: true });
     snap.board[BUFFER_HEIGHT]![0] = "T";
-    renderOpponentBoard(ctx, snap, 10);
+    renderOpponentBoard(ctx, snap, 10, TEST_PALETTE);
     // globalAlpha is reset to 1 at the end
     expect(ctx.globalAlpha).toBe(1);
   });

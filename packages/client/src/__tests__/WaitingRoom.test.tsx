@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { RoomState } from "@tetris/shared";
+import type { RoomState } from "@tomino/shared";
 import { WaitingRoom } from "../ui/WaitingRoom";
 import { DEFAULT_HANDICAP_SETTINGS, type HandicapSettingsValues } from "../ui/HandicapSettings";
 

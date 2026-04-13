@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { EmoteKind } from "@tetris/shared";
+import type { EmoteKind } from "@tomino/shared";
 
 interface EmotePickerProps {
   onEmote: (emote: EmoteKind) => void;

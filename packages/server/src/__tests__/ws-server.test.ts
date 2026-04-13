@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi, beforeEach } from "vitest";
 import { createServer, type Server as HttpServer } from "node:http";
 import { WebSocket } from "ws";
-import { createWebSocketServer, type TetrisWebSocketServer } from "../ws-server.js";
+import { createWebSocketServer, type TominoWebSocketServer } from "../ws-server.js";
 
 function waitForOpen(ws: WebSocket): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ function waitForClose(ws: WebSocket): Promise<void> {
 
 describe("WebSocket Server", () => {
   let httpServer: HttpServer;
-  let wsServer: TetrisWebSocketServer;
+  let wsServer: TominoWebSocketServer;
   let port: number;
   const openClients: WebSocket[] = [];
 

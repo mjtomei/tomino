@@ -3,7 +3,7 @@
  *
  * Given a stream of GameSignals, produces AtmosphereState with continuous
  * values (intensity, danger, momentum) and edge-detected events
- * (lineClear, tSpin, tetris, levelUp, garbageReceived).
+ * (lineClear, tSpin, quad, levelUp, garbageReceived).
  */
 
 import type {
@@ -144,7 +144,7 @@ export class AtmosphereEngine {
           events.push({ type: "tSpin", magnitude: last.linesCleared });
         }
         if (linesDelta >= 4) {
-          events.push({ type: "tetris", magnitude: linesDelta });
+          events.push({ type: "quad", magnitude: linesDelta });
         }
       }
 
