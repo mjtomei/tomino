@@ -1,6 +1,6 @@
 project:
-  name: tetris
-  repo: https://github.com/mjtomei/tetris.git
+  name: tomino
+  repo: https://github.com/mjtomei/tomino.git
   base_branch: master
   backend: github
   active_pr: pr-f13ebbf
@@ -9,7 +9,7 @@ project:
   hide_merged: false
 plans:
 - id: plan-48e829d
-  name: plans/01-core-tetris.md
+  name: plans/01-core-tetromino.md
   file: plans/plan-48e829d.md
   status: draft
   parent: null
@@ -58,7 +58,7 @@ prs:
     Files: `package.json`, `tsconfig.json`, `vite.config.ts`, `.eslintrc.cjs`, `.prettierrc`,
     `index.html`, `src/main.tsx`, `src/App.tsx`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/2
+  gh_pr: https://github.com/mjtomei/tomino/pull/2
   gh_pr_number: 2
   created_at: '2026-04-11T20:46:48.057154+00:00'
   updated_at: '2026-04-11T22:16:27.040063+00:00'
@@ -98,7 +98,7 @@ prs:
 
     Files: `src/engine/types.ts`, `src/engine/rulesets.ts`, `src/engine/rulesets.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/13
+  gh_pr: https://github.com/mjtomei/tomino/pull/13
   gh_pr_number: 13
   created_at: '2026-04-11T20:46:48.057172+00:00'
   updated_at: '2026-04-11T23:00:03.915697+00:00'
@@ -132,7 +132,7 @@ prs:
     Files: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`,
     `src/engine/rotation.ts`, `src/engine/pieces.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/1
+  gh_pr: https://github.com/mjtomei/tomino/pull/1
   gh_pr_number: 1
   created_at: '2026-04-11T20:46:48.057187+00:00'
   updated_at: '2026-04-11T22:37:59.755449+00:00'
@@ -166,7 +166,7 @@ prs:
 
     Files: `src/engine/board.ts`, `src/engine/board.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/19
+  gh_pr: https://github.com/mjtomei/tomino/pull/19
   gh_pr_number: 19
   created_at: '2026-04-11T20:46:48.057194+00:00'
   updated_at: '2026-04-11T23:31:30.567711+00:00'
@@ -203,7 +203,7 @@ prs:
 
     Files: `src/engine/movement.ts`, `src/engine/movement.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/23
+  gh_pr: https://github.com/mjtomei/tomino/pull/23
   gh_pr_number: 23
   created_at: '2026-04-11T20:46:48.057199+00:00'
   updated_at: '2026-04-11T23:40:37.433811+00:00'
@@ -241,7 +241,7 @@ prs:
     Files: `src/engine/randomizer.ts`, `src/engine/randomizer-7bag.ts`, `src/engine/randomizer-pure.ts`,
     `src/engine/hold.ts`, `src/engine/randomizer.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/20
+  gh_pr: https://github.com/mjtomei/tomino/pull/20
   gh_pr_number: 20
   created_at: '2026-04-11T20:46:48.057207+00:00'
   updated_at: '2026-04-11T23:29:29.634317+00:00'
@@ -283,7 +283,7 @@ prs:
     Files: `src/engine/scoring.ts`, `src/engine/scoring-guideline.ts`, `src/engine/scoring-nes.ts`,
     `src/engine/gravity.ts`, `src/engine/scoring.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/24
+  gh_pr: https://github.com/mjtomei/tomino/pull/24
   gh_pr_number: 24
   created_at: '2026-04-11T20:46:48.057213+00:00'
   updated_at: '2026-04-11T23:42:14.859177+00:00'
@@ -329,7 +329,7 @@ prs:
 
     Files: `src/engine/engine.ts`, `src/engine/engine.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/25
+  gh_pr: https://github.com/mjtomei/tomino/pull/25
   gh_pr_number: 25
   created_at: '2026-04-11T20:46:48.057223+00:00'
   updated_at: '2026-04-12T00:10:19.195589+00:00'
@@ -366,7 +366,7 @@ prs:
 
     Files: `src/ui/BoardCanvas.tsx`, `src/ui/BoardCanvas.test.tsx`, `src/ui/colors.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/34
+  gh_pr: https://github.com/mjtomei/tomino/pull/34
   gh_pr_number: 34
   created_at: '2026-04-11T20:46:48.057228+00:00'
   updated_at: '2026-04-12T03:53:42.422239+00:00'
@@ -402,7 +402,7 @@ prs:
 
     Files: `src/input/keyboard.ts`, `src/input/keyboard.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/56
+  gh_pr: https://github.com/mjtomei/tomino/pull/56
   gh_pr_number: 56
   created_at: '2026-04-11T20:46:48.057233+00:00'
   updated_at: '2026-04-12T04:00:05.657297+00:00'
@@ -452,7 +452,7 @@ prs:
     `src/ui/HoldDisplay.tsx`, `src/ui/Overlay.tsx`, `src/ui/StartScreen.tsx`, `src/ui/CustomRuleSetPanel.tsx`,
     `src/ui/GameShell.css`, `src/App.tsx`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/57
+  gh_pr: https://github.com/mjtomei/tomino/pull/57
   gh_pr_number: 57
   created_at: '2026-04-11T20:46:48.057238+00:00'
   updated_at: '2026-04-12T13:14:32.520253+00:00'
@@ -484,7 +484,7 @@ prs:
 
     Files: `src/audio/sounds.ts`, `src/audio/sounds.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/35
+  gh_pr: https://github.com/mjtomei/tomino/pull/35
   gh_pr_number: 35
   created_at: '2026-04-11T20:46:48.057243+00:00'
   updated_at: '2026-04-12T03:53:42.422248+00:00'
@@ -521,7 +521,7 @@ prs:
 
     Files: `src/App.tsx`, `src/main.tsx`, `src/game/GameController.ts`'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/42
+  gh_pr: https://github.com/mjtomei/tomino/pull/42
   gh_pr_number: 42
   created_at: '2026-04-11T20:46:48.057251+00:00'
   updated_at: '2026-04-12T04:11:38.451283+00:00'
@@ -557,7 +557,7 @@ prs:
     Files: `server/index.ts`, `server/ws-server.ts`, `package.json` (new deps: ws,
     express, @types/ws, @types/express), `tsconfig.server.json`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/6
+  gh_pr: https://github.com/mjtomei/tomino/pull/6
   gh_pr_number: 6
   created_at: '2026-04-11T21:27:51.614766+00:00'
   updated_at: '2026-04-11T22:46:50.767737+00:00'
@@ -587,7 +587,7 @@ prs:
     Files: `shared/protocol.ts`, `shared/messages.ts`, `shared/types.ts`, `tsconfig.json`
     (path aliases for shared/)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/7
+  gh_pr: https://github.com/mjtomei/tomino/pull/7
   gh_pr_number: 7
   created_at: '2026-04-11T21:27:51.614785+00:00'
   updated_at: '2026-04-11T22:56:41.527118+00:00'
@@ -616,7 +616,7 @@ prs:
 
     Files: `server/room.ts`, `server/room-store.ts`, `server/handlers/lobby-handlers.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/15
+  gh_pr: https://github.com/mjtomei/tomino/pull/15
   gh_pr_number: 15
   created_at: '2026-04-11T21:27:51.614793+00:00'
   updated_at: '2026-04-11T23:23:34.518839+00:00'
@@ -647,7 +647,7 @@ prs:
     Files: `src/ui/Lobby.tsx`, `src/ui/WaitingRoom.tsx`, `src/ui/JoinDialog.tsx`,
     `src/ui/PlayerNameInput.tsx`, `src/net/client-socket.ts`, `src/net/lobby-client.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/16
+  gh_pr: https://github.com/mjtomei/tomino/pull/16
   gh_pr_number: 16
   created_at: '2026-04-11T21:27:51.614799+00:00'
   updated_at: '2026-04-11T23:23:43.526797+00:00'
@@ -678,7 +678,7 @@ prs:
     Files: `server/handlers/game-handlers.ts`, `server/game-session.ts`, `shared/protocol.ts`
     (add game start messages), `src/ui/Countdown.tsx`, `src/net/game-client.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/21
+  gh_pr: https://github.com/mjtomei/tomino/pull/21
   gh_pr_number: 21
   created_at: '2026-04-11T21:27:51.614804+00:00'
   updated_at: '2026-04-11T23:50:08.562923+00:00'
@@ -714,7 +714,7 @@ prs:
     Files: `server/player-engine.ts`, `server/game-session.ts` (extend), `server/handlers/game-handlers.ts`
     (extend), `shared/state-snapshot.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/58
+  gh_pr: https://github.com/mjtomei/tomino/pull/58
   gh_pr_number: 58
   created_at: '2026-04-11T21:27:51.614817+00:00'
   updated_at: '2026-04-12T13:14:32.520266+00:00'
@@ -764,7 +764,7 @@ prs:
     Files: `src/net/game-client.ts` (extend), `src/net/prediction.ts`, `src/engine/engine-proxy.ts`
     (multiplayer-aware engine wrapper)'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/43
+  gh_pr: https://github.com/mjtomei/tomino/pull/43
   gh_pr_number: 43
   created_at: '2026-04-11T21:27:51.614824+00:00'
   updated_at: '2026-04-12T04:11:38.598070+00:00'
@@ -809,7 +809,7 @@ prs:
 
     Files: `src/engine/garbage.ts`, `src/engine/garbage-table.ts`, `shared/garbage-types.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/26
+  gh_pr: https://github.com/mjtomei/tomino/pull/26
   gh_pr_number: 26
   created_at: '2026-04-11T21:27:51.614830+00:00'
   updated_at: '2026-04-11T23:53:18.684927+00:00'
@@ -856,7 +856,7 @@ prs:
     Files: `server/garbage-manager.ts`, `server/game-session.ts` (extend), `shared/protocol.ts`
     (add garbage messages), `shared/targeting-types.ts` (targeting strategy interface)'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/44
+  gh_pr: https://github.com/mjtomei/tomino/pull/44
   gh_pr_number: 44
   created_at: '2026-04-11T21:27:51.614839+00:00'
   updated_at: '2026-04-12T04:11:38.741317+00:00'
@@ -897,7 +897,7 @@ prs:
 
     Files: `src/ui/OpponentBoard.tsx`, `src/ui/OpponentBoardCanvas.ts`, `src/ui/GameMultiplayer.tsx`'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/48
+  gh_pr: https://github.com/mjtomei/tomino/pull/48
   gh_pr_number: 48
   created_at: '2026-04-11T21:27:51.614846+00:00'
   updated_at: '2026-04-12T04:11:39.338116+00:00'
@@ -925,7 +925,7 @@ prs:
 
     Files: `src/ui/GarbageMeter.tsx`, `src/ui/GarbageMeter.css`'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/50
+  gh_pr: https://github.com/mjtomei/tomino/pull/50
   gh_pr_number: 50
   created_at: '2026-04-11T21:27:51.614850+00:00'
   updated_at: '2026-04-12T04:11:39.660288+00:00'
@@ -958,7 +958,7 @@ prs:
     Files: `server/game-session.ts` (extend with elimination logic), `src/ui/GameResults.tsx`,
     `src/ui/SpectatorOverlay.tsx`, `shared/protocol.ts` (add elimination/results messages)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/51
+  gh_pr: https://github.com/mjtomei/tomino/pull/51
   gh_pr_number: 51
   created_at: '2026-04-11T21:27:51.614855+00:00'
   updated_at: '2026-04-12T13:22:01.773939+00:00'
@@ -1000,7 +1000,7 @@ prs:
     Files: `server/disconnect-handler.ts`, `server/game-session.ts` (extend), `src/net/reconnect.ts`,
     `src/ui/DisconnectOverlay.tsx`'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/45
+  gh_pr: https://github.com/mjtomei/tomino/pull/45
   gh_pr_number: 45
   created_at: '2026-04-11T21:27:51.614860+00:00'
   updated_at: '2026-04-12T04:11:38.886669+00:00'
@@ -1030,7 +1030,7 @@ prs:
     `src/ui/GameResults.tsx` (extend with rematch button), `shared/protocol.ts` (add
     rematch messages)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/54
+  gh_pr: https://github.com/mjtomei/tomino/pull/54
   gh_pr_number: 54
   created_at: '2026-04-11T21:27:51.614863+00:00'
   updated_at: '2026-04-12T13:40:00.125913+00:00'
@@ -1057,7 +1057,7 @@ prs:
 
     Files: `src/net/latency.ts`, `src/ui/LatencyIndicator.tsx`'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/49
+  gh_pr: https://github.com/mjtomei/tomino/pull/49
   gh_pr_number: 49
   created_at: '2026-04-11T21:27:51.614867+00:00'
   updated_at: '2026-04-12T04:11:39.483949+00:00'
@@ -1130,7 +1130,7 @@ prs:
     (extend with target selection), `src/net/game-client.ts` (extend with targeting
     commands)'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/52
+  gh_pr: https://github.com/mjtomei/tomino/pull/52
   gh_pr_number: 52
   created_at: '2026-04-11T21:48:08.878486+00:00'
   updated_at: '2026-04-12T04:11:39.793974+00:00'
@@ -1162,7 +1162,7 @@ prs:
 
     Files: `shared/skill-types.ts`, `shared/handicap-types.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/8
+  gh_pr: https://github.com/mjtomei/tomino/pull/8
   gh_pr_number: 8
   created_at: '2026-04-11T21:50:04.211722+00:00'
   updated_at: '2026-04-11T22:47:51.691343+00:00'
@@ -1192,7 +1192,7 @@ prs:
 
     Files: `server/skill-store.ts`, `server/skill-store.test.ts`, `data/.gitkeep`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/10
+  gh_pr: https://github.com/mjtomei/tomino/pull/10
   gh_pr_number: 10
   created_at: '2026-04-11T21:50:04.211740+00:00'
   updated_at: '2026-04-11T22:55:44.035575+00:00'
@@ -1223,7 +1223,7 @@ prs:
 
     Files: `server/rating-algorithm.ts`, `server/rating-algorithm.test.ts`, `server/rating-config.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/11
+  gh_pr: https://github.com/mjtomei/tomino/pull/11
   gh_pr_number: 11
   created_at: '2026-04-11T21:50:04.211748+00:00'
   updated_at: '2026-04-11T22:55:20.625935+00:00'
@@ -1262,7 +1262,7 @@ prs:
     Files: `server/handicap-calculator.ts`, `server/handicap-calculator.test.ts`,
     `server/handicap-config.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/12
+  gh_pr: https://github.com/mjtomei/tomino/pull/12
   gh_pr_number: 12
   created_at: '2026-04-11T21:50:04.211754+00:00'
   updated_at: '2026-04-11T22:54:37.572898+00:00'
@@ -1293,7 +1293,7 @@ prs:
 
     Files: `server/metrics-collector.ts`, `server/metrics-collector.test.ts`'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/46
+  gh_pr: https://github.com/mjtomei/tomino/pull/46
   gh_pr_number: 46
   created_at: '2026-04-11T21:50:04.211759+00:00'
   updated_at: '2026-04-12T04:11:39.031882+00:00'
@@ -1336,7 +1336,7 @@ prs:
     Files: `server/balancing-middleware.ts`, `server/balancing-middleware.test.ts`,
     `server/game-session.ts` (extend to inject middleware)'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/47
+  gh_pr: https://github.com/mjtomei/tomino/pull/47
   gh_pr_number: 47
   created_at: '2026-04-11T21:50:04.211764+00:00'
   updated_at: '2026-04-12T04:11:39.197703+00:00'
@@ -1388,7 +1388,7 @@ prs:
     Files: `server/targeting-bias.ts`, `server/targeting-bias.test.ts`, `server/game-session.ts`
     (extend to wire targeting strategy)'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/53
+  gh_pr: https://github.com/mjtomei/tomino/pull/53
   gh_pr_number: 53
   created_at: '2026-04-11T21:50:04.211768+00:00'
   updated_at: '2026-04-12T04:11:39.948975+00:00'
@@ -1423,7 +1423,7 @@ prs:
     Files: `server/post-game-handler.ts`, `server/post-game-handler.test.ts`, `server/game-session.ts`
     (extend with post-game hook)'
   agent_machine: null
-  gh_pr: https://github.com/mjtomei/tetris/pull/55
+  gh_pr: https://github.com/mjtomei/tomino/pull/55
   gh_pr_number: 55
   created_at: '2026-04-11T21:50:04.211773+00:00'
   updated_at: '2026-04-12T13:48:26.737303+00:00'
@@ -1463,7 +1463,7 @@ prs:
     (extend), `shared/protocol.ts` (add handicap settings messages), `server/handlers/lobby-handlers.ts`
     (extend)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/22
+  gh_pr: https://github.com/mjtomei/tomino/pull/22
   gh_pr_number: 22
   created_at: '2026-04-11T21:50:04.211777+00:00'
   updated_at: '2026-04-11T23:45:31.737177+00:00'
@@ -1492,7 +1492,7 @@ prs:
     testing needed** to verify indicator placement doesn''t obscure gameplay and is
     readable at a glance.'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/59
+  gh_pr: https://github.com/mjtomei/tomino/pull/59
   gh_pr_number: 59
   created_at: '2026-04-11T21:50:04.211781+00:00'
   updated_at: '2026-04-12T13:21:35.893026+00:00'
@@ -1526,7 +1526,7 @@ prs:
     Files: `src/ui/StatsScreen.tsx`, `src/ui/StatsScreen.css`, `src/ui/Sparkline.tsx`,
     `server/routes/stats-routes.ts`, `src/ui/App.tsx` (add stats route)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/14
+  gh_pr: https://github.com/mjtomei/tomino/pull/14
   gh_pr_number: 14
   created_at: '2026-04-11T21:50:04.211786+00:00'
   updated_at: '2026-04-11T23:13:39.573824+00:00'
@@ -1550,7 +1550,7 @@ prs:
     **INPUT_REQUIRED: Human testing needed** to verify rating animation, delta display,
     and navigation to stats screen.'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/62
+  gh_pr: https://github.com/mjtomei/tomino/pull/62
   gh_pr_number: 62
   created_at: '2026-04-11T21:50:04.211791+00:00'
   updated_at: '2026-04-12T14:41:17.334742+00:00'
@@ -1588,7 +1588,7 @@ prs:
     Files: `server/balancing-init.ts`, `balancing-config.json`, `server/index.ts`
     (extend startup), `server/integration/balancing.integration.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/63
+  gh_pr: https://github.com/mjtomei/tomino/pull/63
   gh_pr_number: 63
   created_at: '2026-04-11T21:50:04.211796+00:00'
   updated_at: '2026-04-12T14:05:18.605367+00:00'
@@ -1613,7 +1613,7 @@ prs:
     garbage sending, opponent display, win/loss, rematch, disconnect handling, and
     latency display.'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/61
+  gh_pr: https://github.com/mjtomei/tomino/pull/61
   gh_pr_number: 61
   created_at: '2026-04-11T21:59:57.456616+00:00'
   updated_at: '2026-04-12T14:11:40.441126+00:00'
@@ -1645,7 +1645,7 @@ prs:
     handicapping, gameplay, garbage balancing, post-game rating updates, and stats
     display.'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/66
+  gh_pr: https://github.com/mjtomei/tomino/pull/66
   gh_pr_number: 66
   created_at: '2026-04-11T22:00:02.150190+00:00'
   updated_at: '2026-04-12T15:18:15.687216+00:00'
@@ -1679,7 +1679,7 @@ prs:
     board state), server logic (WebSocket handlers, room management), and client components
     (React Testing Library). All subsequent game logic PRs should ship with tests.
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/9
+  gh_pr: https://github.com/mjtomei/tomino/pull/9
   gh_pr_number: 9
   created_at: '2026-04-11T22:02:31.247218+00:00'
   updated_at: '2026-04-11T22:51:30.569535+00:00'
@@ -1713,7 +1713,7 @@ prs:
     Files: `src/engine/pieces.ts`, `src/engine/rotation-srs.ts`, `src/engine/rotation-nrs.ts`,
     `src/engine/rotation.ts`, `src/engine/pieces.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/18
+  gh_pr: https://github.com/mjtomei/tomino/pull/18
   gh_pr_number: 18
   created_at: '2026-04-11T22:43:21.911875+00:00'
   updated_at: '2026-04-11T23:21:01.401491+00:00'
@@ -1746,7 +1746,7 @@ prs:
 
     Files: `packages/shared/src/engine/rng.ts`, `packages/shared/src/engine/rng.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/27
+  gh_pr: https://github.com/mjtomei/tomino/pull/27
   gh_pr_number: 27
   created_at: '2026-04-11T23:10:58.040016+00:00'
   updated_at: '2026-04-12T00:09:29.082838+00:00'
@@ -1775,7 +1775,7 @@ prs:
     Files: `packages/shared/src/__test-utils__/board-builder.ts`, `packages/shared/src/__test-utils__/board-builder.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/28
+  gh_pr: https://github.com/mjtomei/tomino/pull/28
   gh_pr_number: 28
   created_at: '2026-04-11T23:10:58.040033+00:00'
   updated_at: '2026-04-12T03:53:42.422253+00:00'
@@ -1804,7 +1804,7 @@ prs:
     Files: `packages/shared/src/__test-utils__/factories.ts`, `packages/shared/src/__test-utils__/factories.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/29
+  gh_pr: https://github.com/mjtomei/tomino/pull/29
   gh_pr_number: 29
   created_at: '2026-04-11T23:10:58.040040+00:00'
   updated_at: '2026-04-12T00:07:48.362082+00:00'
@@ -1833,7 +1833,7 @@ prs:
 
     Files: `packages/shared/src/engine/piece-data.test.ts`, `packages/shared/src/engine/kick-tables.test.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/30
+  gh_pr: https://github.com/mjtomei/tomino/pull/30
   gh_pr_number: 30
   created_at: '2026-04-11T23:10:58.040047+00:00'
   updated_at: '2026-04-12T03:53:42.422254+00:00'
@@ -1869,7 +1869,7 @@ prs:
     Files: `packages/shared/src/__test-utils__/game-harness.ts`, `packages/shared/src/__test-utils__/game-harness.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/33
+  gh_pr: https://github.com/mjtomei/tomino/pull/33
   gh_pr_number: 33
   created_at: '2026-04-11T23:10:58.040053+00:00'
   updated_at: '2026-04-12T03:53:42.422255+00:00'
@@ -1901,7 +1901,7 @@ prs:
     Files: `packages/shared/src/__test-utils__/assertions.ts`, `packages/shared/src/__test-utils__/assertions.test.ts`,
     `packages/shared/src/__test-utils__/index.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/60
+  gh_pr: https://github.com/mjtomei/tomino/pull/60
   gh_pr_number: 60
   created_at: '2026-04-11T23:10:58.040059+00:00'
   updated_at: '2026-04-12T03:57:27.136999+00:00'
@@ -1930,7 +1930,7 @@ prs:
 
     Files: `playwright.config.ts`, `package.json`, `e2e/smoke.spec.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/31
+  gh_pr: https://github.com/mjtomei/tomino/pull/31
   gh_pr_number: 31
   created_at: '2026-04-11T23:10:58.040063+00:00'
   updated_at: '2026-04-12T00:13:47.290809+00:00'
@@ -1965,7 +1965,7 @@ prs:
     Files: `e2e/helpers/player.ts`, `e2e/helpers/lobby.ts`, `e2e/helpers/input.ts`,
     `e2e/helpers/game-state.ts`, `e2e/helpers/index.ts`, `e2e/multiplayer-lobby.spec.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/36
+  gh_pr: https://github.com/mjtomei/tomino/pull/36
   gh_pr_number: 36
   created_at: '2026-04-11T23:10:58.040068+00:00'
   updated_at: '2026-04-12T03:53:42.422257+00:00'
@@ -1996,7 +1996,7 @@ prs:
 
     Files: `e2e/multiplayer-game.spec.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/64
+  gh_pr: https://github.com/mjtomei/tomino/pull/64
   gh_pr_number: 64
   created_at: '2026-04-11T23:10:58.040072+00:00'
   updated_at: '2026-04-12T14:23:57.489643+00:00'
@@ -2024,7 +2024,7 @@ prs:
     Files: `packages/shared/vitest.config.ts`, `packages/server/vitest.config.ts`,
     `package.json`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/32
+  gh_pr: https://github.com/mjtomei/tomino/pull/32
   gh_pr_number: 32
   created_at: '2026-04-11T23:10:58.040077+00:00'
   updated_at: '2026-04-12T03:53:42.422258+00:00'
@@ -2046,7 +2046,7 @@ prs:
   - pr-edcf972
   description: ''
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/65
+  gh_pr: https://github.com/mjtomei/tomino/pull/65
   gh_pr_number: 65
   created_at: '2026-04-11T23:55:24.401345+00:00'
   updated_at: '2026-04-12T14:32:09.912180+00:00'
@@ -2068,7 +2068,7 @@ prs:
     cover all PRs across all four plans (core Tetris, multiplayer, adaptive balancing,
     automated testing). No implementation — close once all dependencies are merged.
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/67
+  gh_pr: https://github.com/mjtomei/tomino/pull/67
   gh_pr_number: 67
   created_at: '2026-04-11T23:56:03.030691+00:00'
   updated_at: '2026-04-12T15:44:48.049866+00:00'
@@ -2155,7 +2155,7 @@ prs:
     (new), `e2e/helpers/index.ts`, `e2e/helpers.spec.ts` (new), `packages/client/src/ui/ScoreDisplay.tsx`,
     `packages/client/src/ui/GameShell.tsx`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/68
+  gh_pr: https://github.com/mjtomei/tomino/pull/68
   gh_pr_number: 68
   created_at: '2026-04-12T16:05:51.469496+00:00'
   updated_at: '2026-04-12T16:23:24.465576+00:00'
@@ -2184,7 +2184,7 @@ prs:
 
     Files: `packages/client/src/ui/GameShell.tsx`, `e2e/input-bugs.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/72
+  gh_pr: https://github.com/mjtomei/tomino/pull/72
   gh_pr_number: 72
   created_at: '2026-04-12T16:05:51.469516+00:00'
   updated_at: '2026-04-12T16:30:47.604660+00:00'
@@ -2215,7 +2215,7 @@ prs:
     Files: `packages/client/src/ui/GameShell.tsx`, `packages/client/src/input/keyboard.ts`
     (if integrating), `e2e/input-bugs.spec.ts`'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/73
+  gh_pr: https://github.com/mjtomei/tomino/pull/73
   gh_pr_number: 73
   created_at: '2026-04-12T16:05:51.469525+00:00'
   updated_at: '2026-04-12T16:42:22.884272+00:00'
@@ -2248,7 +2248,7 @@ prs:
     Files: `packages/client/src/net/lobby-client.ts`, `e2e/multiplayer-garbage.spec.ts`
     (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/74
+  gh_pr: https://github.com/mjtomei/tomino/pull/74
   gh_pr_number: 74
   created_at: '2026-04-12T16:05:51.469532+00:00'
   updated_at: '2026-04-12T16:57:21.572196+00:00'
@@ -2279,7 +2279,7 @@ prs:
     `packages/shared/src/engine/engine.ts` (if gravity curve wiring needs fixing),
     `e2e/single-player.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/75
+  gh_pr: https://github.com/mjtomei/tomino/pull/75
   gh_pr_number: 75
   created_at: '2026-04-12T16:05:51.469538+00:00'
   updated_at: '2026-04-12T16:30:40.949073+00:00'
@@ -2366,7 +2366,7 @@ prs:
 
     Files: `e2e/single-player.spec.ts` (new or extend)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/76
+  gh_pr: https://github.com/mjtomei/tomino/pull/76
   gh_pr_number: 76
   created_at: '2026-04-12T16:05:51.469545+00:00'
   updated_at: '2026-04-12T16:59:43.847632+00:00'
@@ -2393,7 +2393,7 @@ prs:
 
     Files: `packages/shared/src/__tests__/reference-nes.test.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/69
+  gh_pr: https://github.com/mjtomei/tomino/pull/69
   gh_pr_number: 69
   created_at: '2026-04-12T16:05:51.469550+00:00'
   updated_at: '2026-04-12T16:20:26.431378+00:00'
@@ -2419,7 +2419,7 @@ prs:
 
     Files: `packages/shared/src/__tests__/reference-srs.test.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/70
+  gh_pr: https://github.com/mjtomei/tomino/pull/70
   gh_pr_number: 70
   created_at: '2026-04-12T16:05:51.469555+00:00'
   updated_at: '2026-04-12T16:55:50.822412+00:00'
@@ -2445,7 +2445,7 @@ prs:
 
     Files: `packages/shared/src/__tests__/reference-guideline.test.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/71
+  gh_pr: https://github.com/mjtomei/tomino/pull/71
   gh_pr_number: 71
   created_at: '2026-04-12T16:05:51.469560+00:00'
   updated_at: '2026-04-12T16:24:57.666757+00:00'
@@ -2507,7 +2507,7 @@ prs:
 
     Files: `e2e/multiplayer-rematch.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/77
+  gh_pr: https://github.com/mjtomei/tomino/pull/77
   gh_pr_number: 77
   created_at: '2026-04-12T16:05:51.469565+00:00'
   updated_at: '2026-04-12T16:42:54.461327+00:00'
@@ -2537,7 +2537,7 @@ prs:
 
     Files: `e2e/multiplayer-reconnect.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/78
+  gh_pr: https://github.com/mjtomei/tomino/pull/78
   gh_pr_number: 78
   created_at: '2026-04-12T16:05:51.469569+00:00'
   updated_at: '2026-04-12T16:51:55.829073+00:00'
@@ -2569,7 +2569,7 @@ prs:
 
     Files: `e2e/room-settings.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/79
+  gh_pr: https://github.com/mjtomei/tomino/pull/79
   gh_pr_number: 79
   created_at: '2026-04-12T16:05:51.469575+00:00'
   updated_at: '2026-04-12T16:46:11.485168+00:00'
@@ -2637,7 +2637,7 @@ prs:
 
     Files: `e2e/multiplayer-3player.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/80
+  gh_pr: https://github.com/mjtomei/tomino/pull/80
   gh_pr_number: 80
   created_at: '2026-04-12T16:05:51.469579+00:00'
   updated_at: '2026-04-12T16:38:37.562967+00:00'
@@ -2710,7 +2710,7 @@ prs:
 
     Files: `e2e/stats-screen.spec.ts` (new)'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/81
+  gh_pr: https://github.com/mjtomei/tomino/pull/81
   gh_pr_number: 81
   created_at: '2026-04-12T16:05:51.469584+00:00'
   updated_at: '2026-04-12T16:42:06.818929+00:00'
@@ -2789,7 +2789,7 @@ prs:
     `packages/client/src/atmosphere/use-atmosphere.ts`, `e2e/atmosphere-engine.spec.ts`,
     tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/82
+  gh_pr: https://github.com/mjtomei/tomino/pull/82
   gh_pr_number: 82
   created_at: '2026-04-12T16:47:15.411971+00:00'
   updated_at: '2026-04-12T17:29:52.922531+00:00'
@@ -2823,7 +2823,7 @@ prs:
     `packages/client/src/atmosphere/theme-context.ts`, `packages/client/src/ui/ThemeSelector.tsx`,
     `e2e/theme-selector.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/83
+  gh_pr: https://github.com/mjtomei/tomino/pull/83
   gh_pr_number: 83
   created_at: '2026-04-12T16:47:15.411995+00:00'
   updated_at: '2026-04-12T17:11:23.428895+00:00'
@@ -2859,7 +2859,7 @@ prs:
     `packages/client/src/ui/GameShell.tsx`, `packages/client/src/ui/GameShell.css`,
     `e2e/background-atmosphere.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/88
+  gh_pr: https://github.com/mjtomei/tomino/pull/88
   gh_pr_number: 88
   created_at: '2026-04-12T16:47:15.412003+00:00'
   updated_at: '2026-04-12T18:58:15.590345+00:00'
@@ -2892,7 +2892,7 @@ prs:
     Files: `packages/client/src/atmosphere/particle-system.ts`, `packages/client/src/atmosphere/ParticleCanvas.tsx`,
     `e2e/particle-system.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/85
+  gh_pr: https://github.com/mjtomei/tomino/pull/85
   gh_pr_number: 85
   created_at: '2026-04-12T16:47:15.412009+00:00'
   updated_at: '2026-04-12T17:18:44.552596+00:00'
@@ -2926,7 +2926,7 @@ prs:
     Files: `packages/client/src/atmosphere/board-effects.ts`, `packages/client/src/ui/GameShell.tsx`,
     `e2e/board-effects.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/89
+  gh_pr: https://github.com/mjtomei/tomino/pull/89
   gh_pr_number: 89
   created_at: '2026-04-12T16:47:15.412017+00:00'
   updated_at: '2026-04-12T17:42:39.487469+00:00'
@@ -2962,7 +2962,7 @@ prs:
     Files: `packages/client/src/atmosphere/event-bursts.ts`, `packages/client/src/atmosphere/EventBurstCanvas.tsx`,
     `e2e/event-bursts.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/90
+  gh_pr: https://github.com/mjtomei/tomino/pull/90
   gh_pr_number: 90
   created_at: '2026-04-12T16:47:15.412022+00:00'
   updated_at: '2026-04-12T17:46:59.912620+00:00'
@@ -2997,7 +2997,7 @@ prs:
     Files: `packages/client/src/atmosphere/screen-effects.ts`, `packages/client/src/atmosphere/ScreenEffects.tsx`,
     `packages/client/src/ui/GameShell.tsx`, `e2e/screen-effects.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/91
+  gh_pr: https://github.com/mjtomei/tomino/pull/91
   gh_pr_number: 91
   created_at: '2026-04-12T16:47:15.412028+00:00'
   updated_at: '2026-04-12T18:55:28.780577+00:00'
@@ -3035,7 +3035,7 @@ prs:
     Files: `packages/client/src/audio/music-engine.ts`, `packages/client/src/audio/music-layers.ts`,
     `packages/client/src/audio/use-music.ts`, `e2e/music-engine.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/92
+  gh_pr: https://github.com/mjtomei/tomino/pull/92
   gh_pr_number: 92
   created_at: '2026-04-12T16:47:15.412033+00:00'
   updated_at: '2026-04-12T19:05:39.088497+00:00'
@@ -3074,7 +3074,7 @@ prs:
     `packages/client/src/ui/GameMultiplayer.tsx`, `e2e/multiplayer-atmosphere.spec.ts`,
     tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/94
+  gh_pr: https://github.com/mjtomei/tomino/pull/94
   gh_pr_number: 94
   created_at: '2026-04-12T16:47:15.412038+00:00'
   updated_at: '2026-04-12T19:10:18.712173+00:00'
@@ -3111,7 +3111,7 @@ prs:
     `packages/client/src/ui/WaitingRoom.tsx`, `packages/client/src/ui/GameResults.tsx`,
     `packages/client/src/App.tsx`, `e2e/menu-atmosphere.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/95
+  gh_pr: https://github.com/mjtomei/tomino/pull/95
   gh_pr_number: 95
   created_at: '2026-04-12T16:47:15.412042+00:00'
   updated_at: '2026-04-12T19:32:15.098757+00:00'
@@ -3146,7 +3146,7 @@ prs:
     `packages/client/src/atmosphere/settings-context.ts`, `packages/client/src/audio/sounds.ts`,
     `packages/client/src/ui/Lobby.tsx`, `e2e/settings-panel.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/96
+  gh_pr: https://github.com/mjtomei/tomino/pull/96
   gh_pr_number: 96
   created_at: '2026-04-12T16:47:15.412047+00:00'
   updated_at: '2026-04-12T19:21:55.633464+00:00'
@@ -3185,7 +3185,7 @@ prs:
     Files: `packages/client/src/atmosphere/flow-detection.ts`, `packages/client/src/atmosphere/atmosphere-engine.ts`,
     `e2e/flow-state.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/97
+  gh_pr: https://github.com/mjtomei/tomino/pull/97
   gh_pr_number: 97
   created_at: '2026-04-12T16:47:15.412052+00:00'
   updated_at: '2026-04-12T19:16:28.554807+00:00'
@@ -3221,7 +3221,7 @@ prs:
     Files: `packages/client/src/ui/BoardCanvas.tsx`, `packages/client/src/ui/piece-animation.ts`,
     `e2e/piece-animation.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/84
+  gh_pr: https://github.com/mjtomei/tomino/pull/84
   gh_pr_number: 84
   created_at: '2026-04-12T16:47:15.412057+00:00'
   updated_at: '2026-04-12T17:12:41.590991+00:00'
@@ -3257,7 +3257,7 @@ prs:
     Files: `packages/client/src/ui/BoardCanvas.tsx`, `packages/client/src/atmosphere/board-life.ts`,
     `e2e/board-life.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/93
+  gh_pr: https://github.com/mjtomei/tomino/pull/93
   gh_pr_number: 93
   created_at: '2026-04-12T16:47:15.412062+00:00'
   updated_at: '2026-04-12T19:04:54.121493+00:00'
@@ -3294,7 +3294,7 @@ prs:
     Files: `packages/client/src/audio/sounds.ts`, `packages/client/src/audio/sfx-profiles.ts`,
     `packages/client/src/audio/synth-helpers.ts`, `e2e/sfx-profiles.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/86
+  gh_pr: https://github.com/mjtomei/tomino/pull/86
   gh_pr_number: 86
   created_at: '2026-04-12T16:47:15.412068+00:00'
   updated_at: '2026-04-12T17:22:10.837551+00:00'
@@ -3333,7 +3333,7 @@ prs:
     `packages/client/src/ui/EmotePicker.tsx`, `packages/client/src/atmosphere/opponent-reactions.ts`,
     `e2e/emotes-reactions.spec.ts`, tests'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/87
+  gh_pr: https://github.com/mjtomei/tomino/pull/87
   gh_pr_number: 87
   created_at: '2026-04-12T16:47:15.412072+00:00'
   updated_at: '2026-04-12T17:32:43.618951+00:00'
@@ -3374,7 +3374,7 @@ prs:
 
     Files: none.'
   agent_machine: spark-424d
-  gh_pr: https://github.com/mjtomei/tetris/pull/98
+  gh_pr: https://github.com/mjtomei/tomino/pull/98
   gh_pr_number: 98
   created_at: '2026-04-12T16:56:59.049749+00:00'
   updated_at: '2026-04-12T19:33:59.578273+00:00'
@@ -3387,7 +3387,7 @@ prs:
   plan: null
   title: Rename project from Tetris to Tomino
   branch: pm/pr-f13ebbf-rename-project-from-tetris-to-tomino
-  status: pending
+  status: merged
   depends_on: []
   description: "Rename the project throughout the codebase from \"Tetris\" to \"Tomino\"\
     \ to distance from the Tetris trademark. Also replace the user-visible/code-symbol\
@@ -3526,7 +3526,7 @@ prs:
     \ copyrightable expression (17 USC §102(b)). Keep implementations intact.\n- **10-wide\
     \ playfield** — de facto standard across every clone; leave as-is.\n- **`plans/01-core-tetris.md`\
     \ filename** — historical plan artifact.\n- **Files under `pm/`** (transcripts,\
-    \ specs) — historical records, untouched.\n- **Repo directory `/home/matt/claude-work/tetris`**\
+    \ specs) — historical records, untouched.\n- **Repo directory `/home/matt/claude-work/tomino`**\
     \ — the user will rename the directory and GitHub remote separately to avoid breaking\
     \ the active pm session and worktrees.\n\n## Verification\n\n- `npm install` regenerates\
     \ `package-lock.json` cleanly\n- `npm run build` succeeds\n- `npm run lint` clean\n\
@@ -3544,12 +3544,44 @@ prs:
     \ `#00C800`, `#D41400`, `#2020D4`, `#E08000`) appear nowhere in the codebase\n\
     - External references to \"Tetris Guideline\", \"NES Tetris\", and `tetris.wiki`\
     \ URLs in doc comments and test file headers remain intact"
-  agent_machine: null
-  gh_pr: null
-  gh_pr_number: null
+  agent_machine: spark-424d
+  gh_pr: https://github.com/mjtomei/tomino/pull/99
+  gh_pr_number: 99
   created_at: '2026-04-13T03:47:49.593017+00:00'
-  updated_at: '2026-04-13T03:55:17.531488+00:00'
-  started_at: null
+  updated_at: '2026-04-13T04:29:14.010417+00:00'
+  started_at: '2026-04-13T03:56:59.896675+00:00'
   reviewed_at: null
-  merged_at: null
-  notes: []
+  merged_at: '2026-04-13T04:29:14.010417+00:00'
+  notes:
+  - id: note-78ad1da
+    text: "Part 4 — User-visible NES/NRS labels → \"Classic\"\n\nThe NES scoring formulas,\
+      \ NRS rotation, NES speed curve, and all internal symbols (NESScoring, NES_LINE_POINTS,\
+      \ scoring-nes.ts, rotation-nrs.ts) are functional rules and citations — not\
+      \ copyrightable (17 USC §102(b)) and protected as nominative fair use respectively.\
+      \ Leave all internal code and code comments citing \"classic NES Tetris\" untouched.\n\
+      \nOnly the *user-visible* \"NES\"/\"NRS\" labels need to change, because \"\
+      NES\" is a Nintendo trademark and using it as a label for our own feature is\
+      \ more exposed than citing it in a code comment. The codebase already uses \"\
+      Classic\" as the user-facing term for this ruleset (see `packages/client/src/ui/StartScreen.tsx:14`\
+      \ — `classic: \"Classic\"`), so follow that precedent.\n\nChanges:\n\n1. **packages/client/src/ui/CustomRuleSetPanel.tsx**\n\
+      \   - Line ~109: `{ value: \"nrs\", label: \"NRS (Classic)\" }` → `{ value:\
+      \ \"nrs\", label: \"Classic\" }`\n   - Line ~127: `{ value: \"nes\", label:\
+      \ \"NES\" }` → `{ value: \"nes\", label: \"Classic\" }`\n   - Line ~136: `{\
+      \ value: \"nes\", label: \"NES\" }` → `{ value: \"nes\", label: \"Classic\"\
+      \ }`\n   - Keep the internal `value` strings (`\"nrs\"`, `\"nes\"`) unchanged\
+      \ — they are non-exposed identifiers and renaming them would ripple through\
+      \ the ruleset wiring unnecessarily.\n\n2. **README.md** line 7 — `scoring (Guideline\
+      \ and NES)` → `scoring (Guideline and Classic)`.\n\n3. **Tests** — update any\
+      \ test that asserts the literal label text \"NES\" or \"NRS (Classic)\" on the\
+      \ rule set panel to assert \"Classic\" instead. Grep for `\"NES\"` and `\"NRS\
+      \ (Classic)\"` in `packages/client/src/**/__tests__/**` and `e2e/**` to find\
+      \ them.\n\nDo NOT change:\n- `NESScoring` class, `NES_LINE_POINTS`, `scoring-nes.ts`,\
+      \ `rotation-nrs.ts`, or any symbols/filenames — internal code.\n- Code comments\
+      \ like \"classic NES Tetris rotation\", \"NES scoring — classic Nintendo Tetris\
+      \ scoring system\" — nominative fair use citations of the source.\n- Test `describe`\
+      \ blocks like `describe(\"NESScoring\", ...)` — internal test descriptions,\
+      \ not user-visible.\n- The `value: \"nes\"` / `value: \"nrs\"` internal identifiers\
+      \ in the selector options."
+    created_at: '2026-04-13T04:07:11Z'
+    last_edited: '2026-04-13T04:07:11Z'
+  workdir: /home/matt/.pm/workdirs/tetris-1530e927/pm-pr-f13ebbf-rename-project-from-tetris-to-tomino-2fbf9916
