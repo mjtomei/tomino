@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { GameStateSnapshot } from "@tetris/shared";
+import type { GameStateSnapshot } from "@tomino/shared";
 import {
   detectReactions,
   playEmoteEffect,
@@ -39,18 +39,18 @@ describe("detectReactions", () => {
     expect(detectReactions(s, s, pid, now)).toEqual([]);
   });
 
-  it("fires tetris when linesCleared jumps by 4+", () => {
+  it("fires quad when linesCleared jumps by 4+", () => {
     const prev = makeSnapshot({ linesCleared: 2 });
     const next = makeSnapshot({ linesCleared: 6 });
     const events = detectReactions(prev, next, pid, now);
-    expect(events).toContainEqual({ playerId: pid, reaction: "tetris", at: now });
+    expect(events).toContainEqual({ playerId: pid, reaction: "quad", at: now });
   });
 
-  it("does not fire tetris on single/double/triple clears", () => {
+  it("does not fire quad on single/double/triple clears", () => {
     const prev = makeSnapshot({ linesCleared: 2 });
     const next = makeSnapshot({ linesCleared: 5 });
     const events = detectReactions(prev, next, pid, now);
-    expect(events.find((e) => e.reaction === "tetris")).toBeUndefined();
+    expect(events.find((e) => e.reaction === "quad")).toBeUndefined();
   });
 
   it("fires heavyGarbage when pending queue grows by 4+", () => {
@@ -98,18 +98,18 @@ describe("detectReactions", () => {
     expect(events.find((e) => e.reaction === "eliminated")).toBeUndefined();
   });
 
-  it("fires multiple events at once (tetris + elimination)", () => {
+  it("fires multiple events at once (quad + elimination)", () => {
     const prev = makeSnapshot({ linesCleared: 0, isGameOver: false });
     const next = makeSnapshot({ linesCleared: 4, isGameOver: true });
     const events = detectReactions(prev, next, pid, now);
     const kinds = events.map((e) => e.reaction).sort();
-    expect(kinds).toEqual(["eliminated", "tetris"]);
+    expect(kinds).toEqual(["eliminated", "quad"]);
   });
 });
 
 describe("playReactionEffect / playEmoteEffect", () => {
   it("emits particles for each reaction kind", () => {
-    for (const reaction of ["tetris", "heavyGarbage", "eliminated"] as const) {
+    for (const reaction of ["quad", "heavyGarbage", "eliminated"] as const) {
       const sys = new ParticleSystem();
       playReactionEffect(sys, reaction, { x: 50, y: 50 });
       expect(sys.count()).toBeGreaterThan(0);

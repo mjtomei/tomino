@@ -14,7 +14,7 @@ describe("App", () => {
   });
 
   it("shows lobby menu when name is already stored", () => {
-    localStorage.setItem("tetris-player-name", "Alice");
+    localStorage.setItem("tomino-player-name", "Alice");
     render(<App />);
     expect(screen.getByText("Welcome, Alice")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create Room" })).toBeInTheDocument();

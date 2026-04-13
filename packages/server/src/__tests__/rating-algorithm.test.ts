@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { PlayerProfile } from "@tetris/shared";
+import type { PlayerProfile } from "@tomino/shared";
 import { updateRatings } from "../rating-algorithm.js";
 import { GLICKO_CONFIG } from "../rating-config.js";
 

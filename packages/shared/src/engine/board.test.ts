@@ -206,7 +206,7 @@ describe("findCompletedRows", () => {
     expect(findCompletedRows(grid)).toEqual([5]);
   });
 
-  it("detects four full rows (Tetris)", () => {
+  it("detects four full rows (quad)", () => {
     const grid = createGrid();
     fillRow(grid, 36);
     fillRow(grid, 37);
@@ -268,7 +268,7 @@ describe("clearLines", () => {
     expect(grid[39]![4]).toBe("S");
   });
 
-  it("clears a Tetris (4 lines)", () => {
+  it("clears a quad (4 lines)", () => {
     const grid = createGrid();
     grid[35]![7] = "I";
     fillRow(grid, 36);

@@ -7,7 +7,7 @@
  * and the WebSocket layer to coordinate.
  */
 
-import type { PlayerId, RoomId } from "@tetris/shared";
+import type { PlayerId, RoomId } from "@tomino/shared";
 
 export const RECONNECT_WINDOW_MS = 15_000;
 

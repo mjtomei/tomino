@@ -1,5 +1,5 @@
 /**
- * Server-side wrapper around TetrisEngine for a single player.
+ * Server-side wrapper around TominoEngine for a single player.
  *
  * Manages a tick counter, converts engine state to protocol snapshots,
  * and provides an input application API that maps InputAction strings
@@ -14,11 +14,11 @@ import type {
   PlayerId,
   RuleSet,
   GameModeConfig,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import {
-  TetrisEngine,
+  TominoEngine,
   engineStateToSnapshot,
-} from "@tetris/shared";
+} from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Multiplayer mode config
@@ -51,13 +51,13 @@ export interface PlayerEngineOptions {
 
 export class PlayerEngine {
   readonly playerId: PlayerId;
-  private readonly engine: TetrisEngine;
+  private readonly engine: TominoEngine;
   private tick = 0;
   private pendingGarbage: GarbageBatch[] = [];
 
   constructor(options: PlayerEngineOptions) {
     this.playerId = options.playerId;
-    this.engine = new TetrisEngine({
+    this.engine = new TominoEngine({
       ruleSet: options.ruleSet,
       modeConfig: options.modeConfig ?? MULTIPLAYER_MODE_CONFIG,
       seed: options.seed,
@@ -160,7 +160,7 @@ export class PlayerEngine {
    * Replace the board grid. TEST ONLY — for setting up specific board states
    * (e.g., near-topout boards via boardFromAscii).
    */
-  _testSetBoard(grid: import("@tetris/shared").Grid): void {
+  _testSetBoard(grid: import("@tomino/shared").Grid): void {
     this.engine._testSetBoard(grid);
   }
 }

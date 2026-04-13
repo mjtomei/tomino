@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import express from "express";
 import { JsonSkillStore } from "../skill-store.js";
 import { createStatsRouter } from "../stats-routes.js";
-import type { PlayerProfile, MatchResult } from "@tetris/shared";
+import type { PlayerProfile, MatchResult } from "@tomino/shared";
 
 function makePlayer(overrides: Partial<PlayerProfile> = {}): PlayerProfile {
   return {

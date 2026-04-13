@@ -1,5 +1,5 @@
 /**
- * @tetris/shared — shared types and game logic
+ * @tomino/shared — shared types and game logic
  *
  * This package contains:
  * - Game state types (board, pieces, scoring)
@@ -145,7 +145,7 @@ export type {
   LineClearEvent,
 } from "./engine/engine.js";
 
-export { TetrisEngine } from "./engine/engine.js";
+export { TominoEngine } from "./engine/engine.js";
 
 export type { StateDelta } from "./state-snapshot.js";
 export {

@@ -18,7 +18,7 @@ export function PlayerNameInput({ initialName, onConfirm }: PlayerNameInputProps
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Tetris</h1>
+      <h1 style={styles.title}>Tomino</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <label htmlFor="player-name" style={styles.label}>
           Enter your name

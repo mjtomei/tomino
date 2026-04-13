@@ -10,7 +10,7 @@
  * set from atmosphere intensity (via music-layers.ts::isLayerActive).
  * Layer activation crossfades over CROSSFADE_MS. Tempo is recomputed
  * each tick from the latest game level. Scale is shifted per-step by
- * the current danger value. Atmosphere events (lineClear, tetris,
+ * the current danger value. Atmosphere events (lineClear, quad,
  * levelUp) schedule one-shot accents.
  */
 
@@ -273,7 +273,7 @@ export class MusicEngine {
   private onEvent(ev: AtmosphereEvent): void {
     if (ev.type === "levelUp") {
       this.flourishStepsLeft = STEPS_PER_BAR;
-    } else if (ev.type === "lineClear" || ev.type === "tetris") {
+    } else if (ev.type === "lineClear" || ev.type === "quad") {
       this.pendingAccentMagnitude = Math.max(
         this.pendingAccentMagnitude,
         ev.magnitude,

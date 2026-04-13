@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TetrisEngine } from "./engine.js";
+import { TominoEngine } from "./engine.js";
 import type { EngineOptions, GameState } from "./engine.js";
 import { modernRuleSet, classicRuleSet } from "./rulesets.js";
 import { marathonMode, sprintMode, ultraMode, zenMode } from "./rulesets.js";
@@ -13,8 +13,8 @@ const SEED = 42;
 
 function createEngine(
   overrides: Partial<EngineOptions> = {},
-): TetrisEngine {
-  return new TetrisEngine({
+): TominoEngine {
+  return new TominoEngine({
     ruleSet: modernRuleSet(),
     modeConfig: marathonMode,
     seed: SEED,
@@ -23,12 +23,12 @@ function createEngine(
 }
 
 /** Tick for a given number of milliseconds in one call. */
-function tickMs(engine: TetrisEngine, ms: number): GameState {
+function tickMs(engine: TominoEngine, ms: number): GameState {
   return engine.tick(ms);
 }
 
 /** Tick in small increments to simulate realistic game loop. */
-function tickSmall(engine: TetrisEngine, totalMs: number, stepMs = 16): GameState {
+function tickSmall(engine: TominoEngine, totalMs: number, stepMs = 16): GameState {
   let state: GameState = engine.getState();
   let remaining = totalMs;
   while (remaining > 0) {
@@ -43,7 +43,7 @@ function tickSmall(engine: TetrisEngine, totalMs: number, stepMs = 16): GameStat
 // Tests
 // ===========================================================================
 
-describe("TetrisEngine", () => {
+describe("TominoEngine", () => {
   // -------------------------------------------------------------------------
   // Initialization
   // -------------------------------------------------------------------------
@@ -754,7 +754,7 @@ describe("TetrisEngine", () => {
   describe("determinism", () => {
     it("same seed + same inputs = same state", () => {
       function playSequence(seed: number): GameState {
-        const engine = new TetrisEngine({
+        const engine = new TominoEngine({
           ruleSet: modernRuleSet(),
           modeConfig: marathonMode,
           seed,

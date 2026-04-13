@@ -92,7 +92,7 @@ export function createBursts(
       });
       break;
     }
-    case "tetris": {
+    case "quad": {
       // Tetris: extra-bright ripple on top of the standard line-clear ripple.
       out.push({
         id: nextId(),

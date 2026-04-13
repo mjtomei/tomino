@@ -281,7 +281,7 @@ describe("SoundManager", () => {
       }
     });
 
-    it("plays more oscillators for tetris (4 lines) than single", () => {
+    it("plays more oscillators for quad (4 lines) than single", () => {
       const sm1 = new SoundManager();
       sm1.play("lineClear1");
       const singleCount = oscillatorInstances.length;
@@ -290,9 +290,9 @@ describe("SoundManager", () => {
 
       const sm2 = new SoundManager();
       sm2.play("lineClear4");
-      const tetrisCount = oscillatorInstances.length;
+      const quadCount = oscillatorInstances.length;
 
-      expect(tetrisCount).toBeGreaterThan(singleCount);
+      expect(quadCount).toBeGreaterThan(singleCount);
     });
 
     it("creates distinct oscillator configs for move vs rotate", () => {

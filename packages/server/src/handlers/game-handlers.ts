@@ -14,15 +14,15 @@ import type {
   RoomId,
   ServerMessage,
   SkillStore,
-} from "@tetris/shared";
-import { ALL_TARGETING_STRATEGIES, EMOTE_KINDS } from "@tetris/shared";
+} from "@tomino/shared";
+import { ALL_TARGETING_STRATEGIES, EMOTE_KINDS } from "@tomino/shared";
 import type {
   C2S_PlayerInput,
   C2S_RejoinRoom,
   C2S_SendEmote,
   C2S_SetTargetingStrategy,
   C2S_SetManualTarget,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import type { RoomStore } from "../room-store.js";
 import {
   createGameSession,

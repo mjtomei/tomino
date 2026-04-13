@@ -1,5 +1,5 @@
-import type { ClientMessage, ServerMessage, ServerMessageType } from "@tetris/shared";
-import { parseS2CMessage, serializeMessage } from "@tetris/shared";
+import type { ClientMessage, ServerMessage, ServerMessageType } from "@tomino/shared";
+import { parseS2CMessage, serializeMessage } from "@tomino/shared";
 
 export type MessageHandler<T extends ServerMessage = ServerMessage> = (
   msg: T,

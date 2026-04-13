@@ -11,7 +11,7 @@ import type {
   PlayerId,
   RoomId,
   ServerMessage,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import type { RoomStore } from "../room-store.js";
 import { removeGameSession } from "../game-session.js";
 

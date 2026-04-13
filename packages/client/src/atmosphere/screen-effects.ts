@@ -15,7 +15,7 @@ export const SHAKE_HARD_DROP_PX = 2;
 export const SHAKE_GARBAGE_MIN_PX = 2;
 export const SHAKE_GARBAGE_MAX_PX = 4;
 
-/** Flash alpha ceiling for a 4-line (tetris) clear. */
+/** Flash alpha ceiling for a 4-line (quad) clear. */
 export const FLASH_MAX_OPACITY = 0.5;
 
 /** Half-lives of exponential decay for transient effects (ms). */
@@ -84,7 +84,7 @@ export function computeShakeMagnitude(
 
 /**
  * Flash alpha for a line-clear event. 1 line is a gentle blink, 4 lines
- * (tetris) hits the ceiling.
+ * (quad) hits the ceiling.
  */
 export function computeFlashOpacity(lines: number): number {
   if (lines <= 0) return 0;

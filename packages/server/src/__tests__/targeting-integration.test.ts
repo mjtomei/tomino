@@ -6,7 +6,7 @@ import type {
   S2C_TargetingUpdated,
   S2C_AttackPowerUpdated,
   S2C_GameStarted,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import {
   createGameSession,
   removeGameSession,

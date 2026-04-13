@@ -1,7 +1,7 @@
 # Plan 1: Core Single-Player Tetris
 
 ## Context
-Building a web-based multiplayer Tetris game inspired by tetr.io. The key
+Building a web-based multiplayer tetromino stacking game inspired by tetr.io. The key
 differentiator is adaptive garbage sending that handicaps based on skill level
 to even out win rates between players of different abilities. The user plays
 with siblings who have very different skill levels.

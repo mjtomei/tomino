@@ -1,5 +1,5 @@
 /**
- * TetrisEngine — core game loop and state machine.
+ * TominoEngine — core game loop and state machine.
  *
  * Takes a RuleSet and GameModeConfig, instantiates the appropriate subsystems
  * (rotation, randomizer, scoring), and ties them together with the board and
@@ -99,7 +99,7 @@ function spawnCol(shape: PieceShape): number {
 // Engine
 // ---------------------------------------------------------------------------
 
-export class TetrisEngine {
+export class TominoEngine {
   // -- Configuration --
   readonly ruleSet: RuleSet;
   readonly modeConfig: GameModeConfig;

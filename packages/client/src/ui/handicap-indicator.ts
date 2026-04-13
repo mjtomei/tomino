@@ -3,8 +3,8 @@
  * from the modifier matrix sent at game start.
  */
 
-import type { HandicapModifiers, HandicapMode } from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
+import type { HandicapModifiers, HandicapMode } from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
 import type { HandicapIndicatorData } from "./HandicapIndicator.js";
 
 /**

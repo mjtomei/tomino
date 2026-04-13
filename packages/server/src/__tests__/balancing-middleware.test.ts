@@ -4,15 +4,15 @@ import type {
   LineClearCount,
   PlayerId,
   TargetingStrategy,
-} from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
-import { makeGarbageBatch } from "@tetris/shared/__test-utils__/factories.js";
-import { assertGarbageInserted } from "@tetris/shared/__test-utils__/assertions.js";
-import { boardFromAscii } from "@tetris/shared/__test-utils__/board-builder.js";
+} from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
+import { makeGarbageBatch } from "@tomino/shared/__test-utils__/factories.js";
+import { assertGarbageInserted } from "@tomino/shared/__test-utils__/assertions.js";
+import { boardFromAscii } from "@tomino/shared/__test-utils__/board-builder.js";
 import { BalancingMiddleware } from "../balancing-middleware.js";
 import { GarbageManager } from "../garbage-manager.js";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "../player-engine.js";
-import { modernRuleSet } from "@tetris/shared";
+import { modernRuleSet } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Helpers

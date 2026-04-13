@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { RuleSet, GameMode, GameModeConfig } from "@tetris/shared";
-import { classicRuleSet, modernRuleSet, gameModes } from "@tetris/shared";
+import type { RuleSet, GameMode, GameModeConfig } from "@tomino/shared";
+import { classicRuleSet, modernRuleSet, gameModes } from "@tomino/shared";
 import { CustomRuleSetPanel } from "./CustomRuleSetPanel.js";
 import { ThemeSelector } from "./ThemeSelector.js";
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { modernRuleSet } from "@tetris/shared";
-import { makeGameState } from "@tetris/shared/__test-utils__/factories.js";
+import { modernRuleSet } from "@tomino/shared";
+import { makeGameState } from "@tomino/shared/__test-utils__/factories.js";
 import { PredictionEngine } from "../prediction";
 
 const SEED = 42;

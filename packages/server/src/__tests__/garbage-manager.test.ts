@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type { PlayerId, TargetingStrategy } from "@tetris/shared";
-import { makeGarbageBatch } from "@tetris/shared/__test-utils__/factories.js";
+import type { PlayerId, TargetingStrategy } from "@tomino/shared";
+import { makeGarbageBatch } from "@tomino/shared/__test-utils__/factories.js";
 import { GarbageManager } from "../garbage-manager.js";
 
 // ---------------------------------------------------------------------------

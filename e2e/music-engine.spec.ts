@@ -58,7 +58,7 @@ test.describe("music engine — adaptive layered playback", () => {
 
   test("building stack height activates more layers", async ({ page }) => {
     await page.goto("/");
-    await page.evaluate(() => localStorage.setItem("tetris.genre", "ambient"));
+    await page.evaluate(() => localStorage.setItem("tomino.genre", "ambient"));
     await setupSoloGame(page, { preset: "modern", mode: "marathon" });
 
     const calm = await waitForMusic(page);
@@ -87,7 +87,7 @@ test.describe("music engine — adaptive layered playback", () => {
   }) => {
     await page.goto("/");
     await page.evaluate(() =>
-      localStorage.setItem("tetris.genre", "chiptune"),
+      localStorage.setItem("tomino.genre", "chiptune"),
     );
     await setupSoloGame(page, { preset: "modern", mode: "marathon" });
     const m = await waitForMusic(page);

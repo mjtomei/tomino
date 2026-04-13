@@ -1,8 +1,8 @@
 import { WebSocketServer, WebSocket } from "ws";
 import type { Server as HttpServer } from "node:http";
-import type { PlayerId, ServerMessage, SkillStore } from "@tetris/shared";
+import type { PlayerId, ServerMessage, SkillStore } from "@tomino/shared";
 import type { BalancingConfig } from "./balancing-init.js";
-import { parseC2SMessage, serializeMessage } from "@tetris/shared";
+import { parseC2SMessage, serializeMessage } from "@tomino/shared";
 import { RoomStore } from "./room-store.js";
 import {
   handleCreateRoom,

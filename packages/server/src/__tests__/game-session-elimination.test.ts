@@ -6,8 +6,8 @@ import type {
   RoomId,
   S2C_GameOver,
   S2C_GameEnd,
-} from "@tetris/shared";
-import { boardFromAscii } from "@tetris/shared/__test-utils__/board-builder.js";
+} from "@tomino/shared";
+import { boardFromAscii } from "@tomino/shared/__test-utils__/board-builder.js";
 import {
   GameSession,
   createGameSession,

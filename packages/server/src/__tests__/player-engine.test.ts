@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { PlayerEngine, MULTIPLAYER_MODE_CONFIG } from "../player-engine.js";
-import { modernRuleSet, createRNG } from "@tetris/shared";
-import { GameTestHarness } from "@tetris/shared/__test-utils__/game-harness.js";
+import { modernRuleSet, createRNG } from "@tomino/shared";
+import { GameTestHarness } from "@tomino/shared/__test-utils__/game-harness.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -231,7 +231,7 @@ describe("PlayerEngine", () => {
 
   describe("determinism", () => {
     it("two engines with same seed produce identical piece sequences", () => {
-      // TetrisEngine uses seededRng (mulberry32), not createRNG (xoshiro128**),
+      // TominoEngine uses seededRng (mulberry32), not createRNG (xoshiro128**),
       // so we verify same-engine determinism rather than cross-engine.
       const engine1 = createEngine("p1", SEED);
       const engine2 = createEngine("p2", SEED);

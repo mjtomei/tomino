@@ -1,5 +1,5 @@
 /**
- * Verify that skill and handicap types are importable from @tetris/shared
+ * Verify that skill and handicap types are importable from @tomino/shared
  * in the server package (nodenext module resolution).
  */
 
@@ -12,9 +12,9 @@ import type {
   ModifierMatrix,
   TargetingBias,
   HandicapSettings,
-} from "@tetris/shared";
+} from "@tomino/shared";
 
-import { modifierKey } from "@tetris/shared";
+import { modifierKey } from "@tomino/shared";
 
 // Quick shape checks — if this compiles, imports work
 const _profile: PlayerProfile = {

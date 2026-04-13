@@ -1,11 +1,12 @@
-import type { GameStateSnapshot, PieceType } from "@tetris/shared";
+import type { GameStateSnapshot, PieceType } from "@tomino/shared";
 import {
   BOARD_WIDTH,
   VISIBLE_HEIGHT,
   BUFFER_HEIGHT,
   SRSRotation,
-} from "@tetris/shared";
-import { PIECE_COLORS, BOARD_BG } from "./colors.js";
+} from "@tomino/shared";
+import { BOARD_BG } from "./colors.js";
+import type { Palette } from "./palettes.js";
 
 export const OPPONENT_BOARD_WIDTH_CELLS = BOARD_WIDTH;
 export const OPPONENT_BOARD_HEIGHT_CELLS = VISIBLE_HEIGHT;
@@ -22,7 +23,9 @@ export function renderOpponentBoard(
   ctx: CanvasRenderingContext2D,
   snapshot: GameStateSnapshot | null,
   cellSize: number,
+  palette: Palette,
 ): void {
+  const pieceColors = palette.colors;
   const w = opponentCanvasWidth(cellSize);
   const h = opponentCanvasHeight(cellSize);
 
@@ -41,7 +44,7 @@ export function renderOpponentBoard(
     for (let col = 0; col < BOARD_WIDTH; col++) {
       const cell = row[col];
       if (cell) {
-        ctx.fillStyle = PIECE_COLORS[cell as PieceType];
+        ctx.fillStyle = pieceColors[cell as PieceType];
         ctx.fillRect(col * cellSize, visRow * cellSize, cellSize, cellSize);
       }
     }
@@ -50,7 +53,7 @@ export function renderOpponentBoard(
   const piece = snapshot.activePiece;
   if (piece) {
     const shape = SRSRotation.getShape(piece.type, piece.rotation);
-    ctx.fillStyle = PIECE_COLORS[piece.type];
+    ctx.fillStyle = pieceColors[piece.type];
     for (let r = 0; r < shape.length; r++) {
       const row = shape[r]!;
       for (let c = 0; c < row.length; c++) {

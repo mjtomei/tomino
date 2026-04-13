@@ -50,7 +50,7 @@ describe("GuidelineScoring", () => {
       expect(state.score).toBe(500);
     });
 
-    it("awards 800 × level for a tetris", () => {
+    it("awards 800 × level for a quad", () => {
       const state = GuidelineScoring.createState(1);
       clearWith(GuidelineScoring, state, 4);
       expect(state.score).toBe(800);
@@ -245,14 +245,14 @@ describe("GuidelineScoring", () => {
       expect(state.b2b).toBe(-1);
     });
 
-    it("first tetris sets b2b=0, no bonus", () => {
+    it("first quad sets b2b=0, no bonus", () => {
       const state = GuidelineScoring.createState(1);
       clearWith(GuidelineScoring, state, 4);
       expect(state.b2b).toBe(0);
       expect(state.score).toBe(800);
     });
 
-    it("second consecutive tetris gets 1.5× bonus", () => {
+    it("second consecutive quad gets 1.5× bonus", () => {
       const state = GuidelineScoring.createState(1);
       clearWith(GuidelineScoring, state, 4); // 800
       clearWith(GuidelineScoring, state, 4); // 800×1.5 = 1200, combo +50
@@ -312,7 +312,7 @@ describe("GuidelineScoring", () => {
       expect(state.score).toBe(500 + 1800);
     });
 
-    it("awards 2000 × level for PC tetris", () => {
+    it("awards 2000 × level for PC quad", () => {
       const state = GuidelineScoring.createState(1);
       clearWith(GuidelineScoring, state, 4, "none", true);
       expect(state.score).toBe(800 + 2000);
@@ -327,7 +327,7 @@ describe("GuidelineScoring", () => {
 
     it("PC stacks with B2B and T-spin", () => {
       const state = GuidelineScoring.createState(1);
-      // First: tetris to start B2B
+      // First: quad to start B2B
       clearWith(GuidelineScoring, state, 4); // 800, b2b → 0
       // Second: T-spin double perfect clear with B2B
       clearWith(GuidelineScoring, state, 2, "full", true);
@@ -391,9 +391,9 @@ describe("GuidelineScoring", () => {
       expect(state.level).toBe(6);
     });
 
-    it("multiple level-ups with tetrises", () => {
+    it("multiple level-ups with quads", () => {
       const state = GuidelineScoring.createState(1);
-      // 3 tetrises = 12 lines = level 2
+      // 3 quads = 12 lines = level 2
       clearWith(GuidelineScoring, state, 4);
       clearWith(GuidelineScoring, state, 4);
       clearWith(GuidelineScoring, state, 4);
@@ -431,7 +431,7 @@ describe("NESScoring", () => {
       expect(state.score).toBe(300);
     });
 
-    it("awards 1200 × (level+1) for a tetris", () => {
+    it("awards 1200 × (level+1) for a quad", () => {
       const state = NESScoring.createState(0);
       NESScoring.onLineClear(state, 4, "none", false);
       expect(state.score).toBe(1200);

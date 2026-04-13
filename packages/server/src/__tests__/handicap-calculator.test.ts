@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type { HandicapSettings } from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
+import type { HandicapSettings } from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
 import { computePairHandicap, computeModifierMatrix } from "../handicap-calculator.js";
 import type { HandicapCurveConfig } from "../handicap-config.js";
 import { DEFAULT_CURVE_CONFIG } from "../handicap-config.js";

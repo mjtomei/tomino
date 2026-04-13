@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@testing-library/react";
-import type { PlayerId, PlayerStats } from "@tetris/shared";
+import type { PlayerId, PlayerStats } from "@tomino/shared";
 import { GameResults } from "../ui/GameResults.js";
 
 const PLACEMENTS: Record<PlayerId, number> = {

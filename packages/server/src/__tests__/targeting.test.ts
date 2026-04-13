@@ -6,7 +6,7 @@ import {
   manualStrategy,
   getStrategy,
 } from "../targeting.js";
-import type { TargetingContext } from "@tetris/shared";
+import type { TargetingContext } from "@tomino/shared";
 
 const PLAYERS = ["p1", "p2", "p3", "p4"];
 

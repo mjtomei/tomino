@@ -15,7 +15,7 @@ import type {
   GameStateSnapshot,
   InputAction,
   RuleSet,
-} from "@tetris/shared";
+} from "@tomino/shared";
 import { EngineProxy, MULTIPLAYER_MODE_CONFIG } from "../engine/engine-proxy.js";
 
 export interface PredictionEngineOptions {

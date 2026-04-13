@@ -18,7 +18,7 @@ const defaultProps = {
 describe("Lobby", () => {
   it("renders title and player greeting", () => {
     render(<Lobby {...defaultProps} />);
-    expect(screen.getByText("Tetris")).toBeInTheDocument();
+    expect(screen.getByText("Tomino")).toBeInTheDocument();
     expect(screen.getByText("Welcome, Alice")).toBeInTheDocument();
   });
 

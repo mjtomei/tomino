@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from "react";
-import type { EmoteKind, GameStateSnapshot, PlayerId } from "@tetris/shared";
+import type { EmoteKind, GameStateSnapshot, PlayerId } from "@tomino/shared";
 import {
   renderOpponentBoard,
   opponentCanvasWidth,
@@ -12,6 +12,7 @@ import {
   playReactionEffect,
   type OpponentReaction,
 } from "../atmosphere/opponent-reactions.js";
+import { useTheme } from "../atmosphere/theme-context.js";
 
 export function opponentCellSize(opponentCount: number): number {
   if (opponentCount <= 1) return 15;
@@ -40,7 +41,7 @@ export interface OpponentBoardProps {
 const FLASH_DURATION_MS = 600;
 
 const FLASH_COLOR: Record<OpponentReaction, string> = {
-  tetris: "#ffd84a",
+  quad: "#ffd84a",
   heavyGarbage: "#e74c3c",
   eliminated: "#ffffff",
 };
@@ -67,6 +68,9 @@ export function OpponentBoard({
   const lastEmoteTsRef = useRef<number | null>(null);
   const lastPulseAtRef = useRef<number | null>(null);
   const [flash, setFlash] = useState<OpponentReaction | null>(null);
+  const { palette } = useTheme();
+  const paletteRef = useRef(palette);
+  paletteRef.current = palette;
 
   snapshotRef.current = snapshot;
 
@@ -78,7 +82,7 @@ export function OpponentBoard({
     }
     const ctx = ctxRef.current;
     if (!ctx) return;
-    renderOpponentBoard(ctx, snapshotRef.current, cellSize);
+    renderOpponentBoard(ctx, snapshotRef.current, cellSize, paletteRef.current);
   }, [cellSize]);
 
   useEffect(() => {

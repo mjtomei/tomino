@@ -20,8 +20,8 @@ import type {
   SkillStore,
   TargetingSettings,
   TargetingStrategyType,
-} from "@tetris/shared";
-import { ALL_TARGETING_STRATEGIES } from "@tetris/shared";
+} from "@tomino/shared";
+import { ALL_TARGETING_STRATEGIES } from "@tomino/shared";
 import type { RoomStore } from "../room-store.js";
 import type { BalancingConfig } from "../balancing-init.js";
 import { startGameCountdown } from "./game-handlers.js";

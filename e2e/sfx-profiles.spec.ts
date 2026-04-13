@@ -28,14 +28,14 @@ test.describe("theme- and genre-aware SFX", () => {
       // Prime localStorage so the theme selector picks it up on first render.
       await page.goto("/");
       await page.evaluate((g) => {
-        localStorage.setItem("tetris.genre", g);
+        localStorage.setItem("tomino.genre", g);
       }, genre);
 
       await setupSoloGame(page, { preset: "modern", mode: "marathon" });
 
       // Verify the genre was persisted / is active.
       const storedGenre = await page.evaluate(() =>
-        localStorage.getItem("tetris.genre"),
+        localStorage.getItem("tomino.genre"),
       );
       expect(storedGenre).toBe(genre);
 
@@ -66,7 +66,7 @@ test.describe("theme- and genre-aware SFX", () => {
     // Fire some sounds, flip the stored genre, fire more sounds.
     await sendKeyboardInput(page, "moveLeft");
     await page.evaluate(() => {
-      localStorage.setItem("tetris.genre", "chiptune");
+      localStorage.setItem("tomino.genre", "chiptune");
     });
     await sendKeyboardInput(page, "rotateClockwise");
     await sendKeyboardInput(page, "hardDrop");

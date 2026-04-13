@@ -6,7 +6,7 @@
  * reach into `GameState` internals.
  */
 
-import type { GameState, LineClearEvent, GarbageBatch } from "@tetris/shared";
+import type { GameState, LineClearEvent, GarbageBatch } from "@tomino/shared";
 import type { GameSignals, MultiplayerSignals } from "./types.js";
 import { BOARD_VISIBLE_HEIGHT } from "./types.js";
 

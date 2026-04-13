@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { modernRuleSet } from "@tetris/shared";
+import { modernRuleSet } from "@tomino/shared";
 import { EngineProxy } from "../engine-proxy";
 
 const SEED = 12345;

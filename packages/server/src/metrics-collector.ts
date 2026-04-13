@@ -8,8 +8,8 @@
  * in isolation from the engine.
  */
 
-import type { PerformanceMetrics } from "@tetris/shared";
-import type { TSpinType } from "@tetris/shared";
+import type { PerformanceMetrics } from "@tomino/shared";
+import type { TSpinType } from "@tomino/shared";
 
 export interface PieceLockEvent {
   /** Lines cleared by this lock (0..4). */

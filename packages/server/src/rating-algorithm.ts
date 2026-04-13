@@ -1,4 +1,4 @@
-import type { PlayerProfile } from "@tetris/shared";
+import type { PlayerProfile } from "@tomino/shared";
 import { GLICKO_CONFIG, type RatingConfig } from "./rating-config.js";
 
 /** Glicko-2 scale factor: 173.7178 per the Glickman paper. */

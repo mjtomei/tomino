@@ -9,7 +9,7 @@ import {
   handleDisconnect,
   type HandlerContext,
 } from "../handlers/lobby-handlers.js";
-import type { ServerMessage, HandicapSettings } from "@tetris/shared";
+import type { ServerMessage, HandicapSettings } from "@tomino/shared";
 
 function createMockContext(playerId: string): HandlerContext & {
   sent: ServerMessage[];

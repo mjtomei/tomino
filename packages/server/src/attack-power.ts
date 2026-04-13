@@ -12,7 +12,7 @@
  *   6+ KOs → 2.0x
  */
 
-import type { PlayerId } from "@tetris/shared";
+import type { PlayerId } from "@tomino/shared";
 
 /** KO thresholds in ascending order: [minKOs, multiplier]. */
 const ATTACK_POWER_THRESHOLDS: readonly [number, number][] = [

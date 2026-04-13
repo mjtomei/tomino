@@ -3,6 +3,9 @@ import { useSettings, type EffectsIntensity } from "../atmosphere/settings-conte
 import { useTheme } from "../atmosphere/theme-context.js";
 import { THEMES } from "../atmosphere/themes.js";
 import { GENRES } from "../atmosphere/genres.js";
+import { PALETTES } from "./palettes.js";
+
+const PIECE_PREVIEW_ORDER = ["I", "O", "T", "S", "Z", "J", "L"] as const;
 import { SoundManager } from "../audio/sounds.js";
 import "./SettingsPanel.css";
 
@@ -27,7 +30,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     setMasterMuted,
     setEffectsIntensity,
   } = useSettings();
-  const { themeId, genreId, setThemeId, setGenreId } = useTheme();
+  const { themeId, genreId, paletteId, setThemeId, setGenreId, setPaletteId } = useTheme();
 
   const previewRef = useRef<SoundManager | null>(null);
 
@@ -182,6 +185,35 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 aria-pressed={genreId === g.id}
               >
                 {g.name}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h3>Piece Palette</h3>
+          <div className="settings-palettes" data-testid="palette-list">
+            {Object.values(PALETTES).map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={
+                  "settings-palette" + (paletteId === p.id ? " active" : "")
+                }
+                data-testid={`palette-option-${p.id}`}
+                onClick={() => setPaletteId(p.id)}
+                aria-pressed={paletteId === p.id}
+              >
+                <span className="settings-palette-label">{p.name}</span>
+                <span className="settings-palette-preview" aria-hidden="true">
+                  {PIECE_PREVIEW_ORDER.map((pt) => (
+                    <span
+                      key={pt}
+                      className="settings-palette-swatch"
+                      style={{ background: p.colors[pt] }}
+                    />
+                  ))}
+                </span>
               </button>
             ))}
           </div>

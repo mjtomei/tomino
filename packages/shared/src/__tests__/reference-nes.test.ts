@@ -73,7 +73,7 @@ const REFERENCE_LINE_POINTS: readonly {
   { lines: 1, label: "Single", basePoints: 40 },
   { lines: 2, label: "Double", basePoints: 100 },
   { lines: 3, label: "Triple", basePoints: 300 },
-  { lines: 4, label: "Tetris", basePoints: 1200 },
+  { lines: 4, label: "Quad", basePoints: 1200 },
 ];
 
 /**
@@ -213,7 +213,7 @@ describe("NES reference: scoring table", () => {
       expect(state.score).toBe(120); // exactly 3 × 40, no combo bonus
     });
 
-    it("consecutive tetrises do not award back-to-back bonus", () => {
+    it("consecutive quads do not award back-to-back bonus", () => {
       const state = NESScoring.createState(0);
       NESScoring.onLineClear(state, 4, "none", false); // 1200
       NESScoring.onLineClear(state, 4, "none", false); // 1200 (no 1.5×)
@@ -284,7 +284,7 @@ describe("NES reference: level progression", () => {
     expect(state.score).toBe(400);
     expect(state.level).toBe(1);
 
-    // 1 tetris at level 1: 1200 × (1+1) = 2400
+    // 1 quad at level 1: 1200 × (1+1) = 2400
     NESScoring.onLineClear(state, 4, "none", false);
     expect(state.score).toBe(400 + 2400);
   });

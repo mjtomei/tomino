@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { StatsResponse } from "@tetris/shared";
+import type { StatsResponse } from "@tomino/shared";
 import { Sparkline } from "./Sparkline";
 import "./StatsScreen.css";
 

@@ -12,8 +12,8 @@ import type {
   PieceShape,
   GameStateSnapshot,
   ScoringState,
-} from "@tetris/shared";
-import { SRSRotation } from "@tetris/shared";
+} from "@tomino/shared";
+import { SRSRotation } from "@tomino/shared";
 
 /**
  * Look up the piece shape for a given type and rotation using SRS.

@@ -1,4 +1,4 @@
-import type { PieceType, RuleSet } from "@tetris/shared";
+import type { PieceType, RuleSet } from "@tomino/shared";
 import { PiecePreview } from "./PiecePreview.js";
 
 export interface HoldDisplayProps {

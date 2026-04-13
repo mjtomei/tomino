@@ -12,8 +12,8 @@ import type {
   GameStateSnapshot,
   InputAction,
   RuleSet,
-} from "@tetris/shared";
-import { TetrisEngine, engineStateToSnapshot } from "@tetris/shared";
+} from "@tomino/shared";
+import { TominoEngine, engineStateToSnapshot } from "@tomino/shared";
 
 /** Default mode config used by the multiplayer client (matches server). */
 export const MULTIPLAYER_MODE_CONFIG: GameModeConfig = {
@@ -34,7 +34,7 @@ export interface EngineProxyOptions {
 
 export class EngineProxy {
   private readonly opts: EngineProxyOptions;
-  private engine: TetrisEngine;
+  private engine: TominoEngine;
   private tick = 0;
 
   constructor(options: EngineProxyOptions) {
@@ -42,8 +42,8 @@ export class EngineProxy {
     this.engine = this.buildEngine();
   }
 
-  private buildEngine(): TetrisEngine {
-    const engine = new TetrisEngine({
+  private buildEngine(): TominoEngine {
+    const engine = new TominoEngine({
       ruleSet: this.opts.ruleSet,
       modeConfig: this.opts.modeConfig ?? MULTIPLAYER_MODE_CONFIG,
       seed: this.opts.seed,

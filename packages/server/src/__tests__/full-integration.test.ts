@@ -20,11 +20,11 @@ import type {
   ServerMessage,
   SkillStore,
   TargetingStrategy,
-} from "@tetris/shared";
-import { modifierKey } from "@tetris/shared";
-import { GameTestHarness } from "@tetris/shared/__test-utils__/game-harness.js";
-import { makeGarbageBatch } from "@tetris/shared/__test-utils__/factories.js";
-import { assertGarbageInserted } from "@tetris/shared/__test-utils__/assertions.js";
+} from "@tomino/shared";
+import { modifierKey } from "@tomino/shared";
+import { GameTestHarness } from "@tomino/shared/__test-utils__/game-harness.js";
+import { makeGarbageBatch } from "@tomino/shared/__test-utils__/factories.js";
+import { assertGarbageInserted } from "@tomino/shared/__test-utils__/assertions.js";
 import {
   createGameSession,
   removeGameSession,

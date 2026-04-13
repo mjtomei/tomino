@@ -1,4 +1,4 @@
-import type { RatingPoint } from "@tetris/shared";
+import type { RatingPoint } from "@tomino/shared";
 
 interface SparklineProps {
   data: RatingPoint[];

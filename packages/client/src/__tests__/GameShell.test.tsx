@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import type { GameState, ScoringState, RuleSet, GameModeConfig } from "@tetris/shared";
+import type { GameState, ScoringState, RuleSet, GameModeConfig } from "@tomino/shared";
 import {
   createGrid,
   modernRuleSet,
@@ -9,7 +9,7 @@ import {
   sprintMode,
   ultraMode,
   zenMode,
-} from "@tetris/shared";
+} from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // Shared helpers

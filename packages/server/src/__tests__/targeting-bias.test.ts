@@ -5,7 +5,7 @@ import {
   createSkillBiasStrategy,
   type TargetingBiasConfig,
 } from "../targeting-bias.js";
-import type { TargetingContext } from "@tetris/shared";
+import type { TargetingContext } from "@tomino/shared";
 
 // ---------------------------------------------------------------------------
 // computeTargetingWeights

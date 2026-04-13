@@ -125,7 +125,7 @@ export function computeMenuEntryEvents(
   const r = input.results;
   if (!r) return [];
   if (r.winnerId === r.localPlayerId) {
-    return [{ type: "tetris", magnitude: 4 }];
+    return [{ type: "quad", magnitude: 4 }];
   }
   return [];
 }

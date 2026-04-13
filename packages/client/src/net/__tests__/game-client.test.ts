@@ -6,8 +6,8 @@ import type {
   RoomId,
   ServerMessage,
   ServerMessageType,
-} from "@tetris/shared";
-import { makeGameState } from "@tetris/shared/__test-utils__/factories.js";
+} from "@tomino/shared";
+import { makeGameState } from "@tomino/shared/__test-utils__/factories.js";
 import { GameClient, type GameSessionData } from "../game-client";
 import type { ClientSocket, MessageHandler } from "../client-socket";
 

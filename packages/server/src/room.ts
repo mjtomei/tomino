@@ -2,7 +2,7 @@
  * Room code generation and room factory helpers.
  */
 
-import type { PlayerInfo, RoomConfig, RoomState } from "@tetris/shared";
+import type { PlayerInfo, RoomConfig, RoomState } from "@tomino/shared";
 
 // Uppercase alphanumeric excluding confusable characters: 0/O, 1/I/L
 const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ2345678";

@@ -1,4 +1,4 @@
-import type { RuleSet } from "@tetris/shared";
+import type { RuleSet } from "@tomino/shared";
 
 export interface CustomRuleSetPanelProps {
   ruleSet: RuleSet;
